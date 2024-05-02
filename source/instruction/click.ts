@@ -2,7 +2,7 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 
-export class ClickInstruction implements Instruction {
+export class ClickInstruction extends Instruction {
 	private clickableName: string;
 
 	private x: number;
@@ -10,9 +10,13 @@ export class ClickInstruction implements Instruction {
 
 	constructor(
 		private tags: string[]
-	){}
+	){
+		super();
+	}
 
-	public step(click: ClickInstruction): string {
+	public step(instruction: ClickInstruction): string {
+		super.checkState();
+
 		return ``;
 	}
 
