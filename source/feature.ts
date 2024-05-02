@@ -1,3 +1,4 @@
+import { Page } from "puppeteer";
 import { ClickInstruction } from "./instruction/click";
 import { Instruction } from "./instruction/instruction";
 import { NavigationInstruction } from "./instruction/navigate";
@@ -10,7 +11,6 @@ export class Feature {
 	private instructions: Instruction[];
 
 	constructor (
-		private project: Project,
 		public name: string,
 		public description: string,
 	) {
@@ -19,37 +19,39 @@ export class Feature {
 
 	public prepare(name: string, route: string): Feature {
 		this.instructions.push(new PrepareInstruction(name, route));
+
 		return this;
 	}
 
 	public click(tags: string[]): Feature {
-		const htmlTags = tags.map(tag => this.project.htmlTag(tag));
-		this.instructions.push(new ClickInstruction(htmlTags));
+		this.instructions.push(new ClickInstruction(tags));
+
 		return this;
 	}
 
 	public navigate(tag: string): Feature {
-		this.instructions.push(new NavigationInstruction(this.project.htmlTag(tag)));
+		this.instructions.push(new NavigationInstruction(tag));
+
 		return this;
 	}
 
 	public write(tag: string, content: string): Feature {
-		this.instructions.push(new WriteInstruction(this.project.htmlTag(tag), content));
+		this.instructions.push(new WriteInstruction(tag, content));
+
 		return this;
 	}
 
 	public present(tag: string): Feature {
-		this.instructions.push(new PresentInstruction(this.project.htmlTag(tag)));
+		this.instructions.push(new PresentInstruction(tag));
+
 		return this;
 	}
 
-	public async execute() {
-		// todo: add screenshots and video
-		
+	public async execute(project: Project, page: Page) {
 		const tasks: Promise<any>[] = [];
 
 		for (let instruction of this.instructions) {
-			tasks.push(instruction.execute());
+			tasks.push(instruction.execute(project, page));
 		}
 
 		await Promise.all(tasks);

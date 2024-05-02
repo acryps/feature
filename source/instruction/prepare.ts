@@ -1,3 +1,5 @@
+import { Page } from "puppeteer";
+import { Project } from "../project";
 import { Instruction } from "./instruction";
 
 export class PrepareInstruction implements Instruction {
@@ -10,7 +12,7 @@ export class PrepareInstruction implements Instruction {
 		return ``;
 	}
 
-	public async execute() {
+	public async execute(project: Project, page: Page) {
 		// todo
 	}
 }

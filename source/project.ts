@@ -1,9 +1,6 @@
-import { Browser } from "puppeteer";
 import { Instruction } from "./instruction/instruction";
 
 export class Project {
-	private browser: Browser;
-
 	constructor(
 		public baseUrl
 	) {}
