@@ -55,8 +55,16 @@ export class Feature {
 	}
 
 	public async execute(project: Project, page: Page) {
-		for (let instruction of this.instructions) {
-			await instruction.execute(project, page);
+		try {
+			for (let instruction of this.instructions) {
+				await instruction.execute(project, page);
+			}
+		} catch (error) {
+			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
+
+			if (error instanceof Error) {
+				console.error(`[error] ${error.stack}`);
+			}
 		}
 	}
 
