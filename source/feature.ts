@@ -6,6 +6,7 @@ import { PrepareInstruction } from "./instruction/prepare";
 import { PresentInstruction } from "./instruction/present";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
+import { RedirectInstruction } from "./instruction/redirect";
 
 export class Feature {
 	private instructions: Instruction[];
@@ -35,6 +36,12 @@ export class Feature {
 		return this;
 	}
 
+	public redirect(url: string): Feature {
+		this.instructions.push(new RedirectInstruction(url));
+
+		return this;
+	}
+
 	public write(tag: string, content: string): Feature {
 		this.instructions.push(new WriteInstruction(tag, content));
 
@@ -48,13 +55,9 @@ export class Feature {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const tasks: Promise<any>[] = [];
-
 		for (let instruction of this.instructions) {
-			tasks.push(instruction.execute(project, page));
+			await instruction.execute(project, page);
 		}
-
-		await Promise.all(tasks);
 	}
 
 	public generateGuide(): string {
