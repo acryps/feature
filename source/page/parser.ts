@@ -69,9 +69,24 @@ export class PageParser {
 		return await page.viewport();
 	}
 
-	static async clickElement(page: Page, htmlTags: string[]) {
+	static async clickElementByTags(page: Page, htmlTags: string[]) {
 		await this.checkIfSingleElement(page, htmlTags);
 		await page.click(htmlTags.join(' '));
+	}
+
+	static async clickElementByContent(page: Page, htmlTags: string[], content: string) {
+		const successful = await page.evaluate((htmlTags, content) => {
+			const element = [...document.querySelectorAll(htmlTags.join(' '))].find(element => element.textContent.toLowerCase() === content.toLowerCase());
+			
+			if (element instanceof HTMLElement) {
+				element.click();
+				return true;
+			}
+
+			return false;
+		}, htmlTags, content);
+
+		return successful;
 	}
 
 	static async checkIfSingleElement(page: Page, htmlTags: string[]): Promise<void> {

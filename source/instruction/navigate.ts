@@ -1,13 +1,15 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
+import { PageParser } from "../page/parser";
 
 export class NavigationInstruction extends Instruction {
-	private targetTitle: string;	// title of next page
-	private navigationName: string;	// location information
+	private targetUrl: string;	// title of next page
+	private sourceUrl: string;	// location information
 
 	constructor(
-		private tag: string
+		private tags: string[],
+		private title: string,
 	){
 		super();
 	}
@@ -15,10 +17,23 @@ export class NavigationInstruction extends Instruction {
 	public step(instruction: NavigationInstruction): string {
 		super.checkState();
 
-		return ``;
+		return `Go to '${this.title}' '${this.targetUrl}' from '${this.sourceUrl}'.`;
 	}
 
 	public async execute(project: Project, page: Page) {
-		// todo
+		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
+		this.sourceUrl = await page.url();
+
+		const successful = await PageParser.clickElementByContent(page, htmlTags, this.title);
+
+		if (successful) {
+			this.targetUrl = await page.url();
+		} else {
+			throw new Error(`[error] navigation on '${this.tags.join(' ')}' '${this.title}' was unsuccessful!`);
+		}
+
+		super.onSuccess(project);
+		
+		console.log(`[info] navigated to '${this.title}' '${this.targetUrl}' from '${this.sourceUrl}'`);
 	}
 }
