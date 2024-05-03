@@ -42,8 +42,8 @@ export class Feature {
 		return this;
 	}
 
-	public write(tag: string, content: string): Feature {
-		this.instructions.push(new WriteInstruction(tag, content));
+	public write(tags: string[], content: string): Feature {
+		this.instructions.push(new WriteInstruction(tags, content));
 
 		return this;
 	}

@@ -27,6 +27,24 @@ export class PageParser {
 		return elementContent
 	}
 
+	static async fillInput(content: string, page: Page, htmlTags: string[]) {
+		await this.checkIfSingleElement(page, htmlTags);
+
+		const inputPlaceholder = await page.$$eval(htmlTags.join(' '), (elements, content) => {
+			for (let element of elements) {
+				if (element instanceof HTMLInputElement) {
+					// set content
+					element.value = content;
+
+					// return placeholder
+					return element.placeholder;
+				}
+			}
+		}, content);
+
+		return inputPlaceholder;
+	}
+
 	static async getCoordinatesOfElement(page: Page, htmlTags: string[]): Promise<{x: number, y: number}> {
 		await this.checkIfSingleElement(page, htmlTags);
 
