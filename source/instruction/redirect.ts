@@ -7,7 +7,7 @@ export class RedirectInstruction extends Instruction {
 	private source: string;
 
 	constructor(
-		private tag: string
+		private url: string
 	){
 		super();
 	}
@@ -15,10 +15,16 @@ export class RedirectInstruction extends Instruction {
 	public step(instruction: RedirectInstruction): string {
 		super.checkState();
 
-		return ``;
+		return `Redirect to '${this.url}'`;
 	}
 
 	public async execute(project: Project, page: Page) {
-		// todo
+		const response = await page.goto(`${this.url}`);
+
+		if (+response.status >= 400) {
+			throw new Error(`[error] failed to load page '${this.url}'`);
+		}
+
+		super.onSuccess(project);
 	}
 }

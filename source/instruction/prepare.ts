@@ -13,7 +13,7 @@ export class PrepareInstruction extends Instruction {
 	public step(instruction: PrepareInstruction): string {
 		super.checkState();
 
-		return `Configure product '${this.name}' at '${this.project?.baseUrl}${this.route}'`;
+		return `Configure product '${this.name}' at '${this.project?.baseUrl}${this.route}'.`;
 	}
 
 	public async execute(project: Project, page: Page) {
