@@ -39,6 +39,8 @@ export class ClickInstruction extends Instruction {
 
 		await PageParser.clickElementByTags(page, htmlTags);
 
+		await page.waitForNetworkIdle();
+
 		console.log(`[info] clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'`);
 
 		super.onSuccess(project);
