@@ -17,12 +17,16 @@ export class PrepareInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const response = await page.goto(`${project.baseUrl}${this.route}`);
+		const response = await page.goto(`${project.baseUrl}${this.route}`, {
+			waitUntil: 'networkidle0',
+		});
 
 		if (+response.status >= 400) {
 			throw new Error(`[error] failed to load page '${project.baseUrl}${this.route}'`);
 		}
-
+		
 		super.onSuccess(project);
+		
+		console.log(`[info] prepared '${this.name}' on '${project.baseUrl}${this.route}'`);
 	}
 }
