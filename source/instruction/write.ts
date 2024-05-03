@@ -25,5 +25,7 @@ export class WriteInstruction extends Instruction {
 		this.fieldName = await PageParser.fillInput(this.content, page, htmlTags);
 
 		super.onSuccess(project);
+
+		console.log(`[info] wrote '${this.content}' in '${this.fieldName}' field`)
 	}
 }
