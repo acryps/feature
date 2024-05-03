@@ -30,8 +30,8 @@ export class Feature {
 		return this;
 	}
 
-	public navigate(tag: string): Feature {
-		this.instructions.push(new NavigationInstruction(tag));
+	public navigate(tags: string[], title: string): Feature {
+		this.instructions.push(new NavigationInstruction(tags, title));
 
 		return this;
 	}
