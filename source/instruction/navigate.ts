@@ -26,6 +26,8 @@ export class NavigationInstruction extends Instruction {
 
 		const successful = await PageParser.clickElementByContent(page, htmlTags, this.title);
 
+		await page.waitForNetworkIdle();
+
 		if (successful) {
 			this.targetUrl = await page.url();
 		} else {
@@ -33,7 +35,7 @@ export class NavigationInstruction extends Instruction {
 		}
 
 		super.onSuccess(project);
-		
+
 		console.log(`[info] navigated to '${this.title}' '${this.targetUrl}' from '${this.sourceUrl}'`);
 	}
 }
