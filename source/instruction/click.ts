@@ -21,7 +21,7 @@ export class ClickInstruction extends Instruction {
 	public step(instruction: ClickInstruction): string {
 		super.checkState();
 
-		return ``;
+		return `Clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'.`;
 	}
 
 	public async execute(project: Project, page: Page) {

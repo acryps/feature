@@ -15,7 +15,7 @@ export class RedirectInstruction extends Instruction {
 	public step(instruction: RedirectInstruction): string {
 		super.checkState();
 
-		return `Redirect to '${this.url}'`;
+		return `Redirect to '${this.url}'.`;
 	}
 
 	public async execute(project: Project, page: Page) {
