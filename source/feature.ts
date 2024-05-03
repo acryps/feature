@@ -48,8 +48,8 @@ export class Feature {
 		return this;
 	}
 
-	public present(tag: string): Feature {
-		this.instructions.push(new PresentInstruction(tag));
+	public present(tags: string[]): Feature {
+		this.instructions.push(new PresentInstruction(tags));
 
 		return this;
 	}

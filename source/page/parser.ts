@@ -61,8 +61,14 @@ export class PageParser {
 		return coordinates;
 	}
 
-	static async countElements(page: Page, htmlTags: string[]) {
-		return await page.$$eval(htmlTags.join(' '), elements => elements.length)
+	static async countElements(page: Page, htmlTags: string[], content?: string) {
+		return await page.$$eval(htmlTags.join(' '), (elements, content) => {
+			if (content) {
+				return elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase()).length;
+			} else {
+				return elements.length;
+			}
+		}, content);
 	}
 
 	static async getViewport(page: Page, htmlTag: string[]): Promise<{width: number, height: number}> {
@@ -75,6 +81,8 @@ export class PageParser {
 	}
 
 	static async clickElementByContent(page: Page, htmlTags: string[], content: string) {
+		await this.checkIfSingleElement(page, htmlTags, content);
+		
 		const successful = await page.evaluate((htmlTags, content) => {
 			const element = [...document.querySelectorAll(htmlTags.join(' '))].find(element => element.textContent.toLowerCase() === content.toLowerCase());
 			
@@ -89,8 +97,8 @@ export class PageParser {
 		return successful;
 	}
 
-	static async checkIfSingleElement(page: Page, htmlTags: string[]): Promise<void> {
-		const elements = await this.countElements(page, htmlTags);
+	static async checkIfSingleElement(page: Page, htmlTags: string[], content?: string): Promise<void> {
+		const elements = await this.countElements(page, htmlTags, content);
 
 		if (elements > 1) {
 			console.warn(`[warning] several elements match '${htmlTags.join(' ')}'! Currently, the first one is used.`);
