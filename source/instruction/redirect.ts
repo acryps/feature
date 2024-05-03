@@ -19,12 +19,16 @@ export class RedirectInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const response = await page.goto(`${this.url}`);
+		const response = await page.goto(`${this.url}`, {
+			waitUntil: 'networkidle0',
+		});
 
 		if (+response.status >= 400) {
 			throw new Error(`[error] failed to load page '${this.url}'`);
 		}
 
 		super.onSuccess(project);
+
+		console.log(`[info] redirected to '${this.url}'`);
 	}
 }
