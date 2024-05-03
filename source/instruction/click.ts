@@ -37,9 +37,9 @@ export class ClickInstruction extends Instruction {
 		const viewport = await PageParser.getViewport(page, htmlTags);
 		this.setPositionDescription(coordinates, viewport);
 
-		await PageParser.clickElement(page, htmlTags);
+		await PageParser.clickElementByTags(page, htmlTags);
 
-		console.log(`[info] clicked button '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'`);
+		console.log(`[info] clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'`);
 
 		super.onSuccess(project);
 	}
@@ -52,9 +52,9 @@ export class ClickInstruction extends Instruction {
 		}
 
 		if (coordinates.y > viewport.height / 2) {
-			this.vertical = 'bottom';
+			this.vertical = 'lower';
 		} else {
-			this.vertical = 'top';
+			this.vertical = 'upper';
 		}
 	}
 }
