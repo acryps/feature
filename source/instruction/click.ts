@@ -35,15 +35,15 @@ export class ClickInstruction extends Instruction {
 		const viewport = await PageParser.getViewport(page, htmlTags);
 		this.setPositionDescription(coordinates, viewport);
 
-		await PageParser.clickElement(page, htmlTags, this.elementContent);
-
 		if (this.elementContent) {
 			this.clickableName = this.elementContent;
 		} else {
 			const content = await PageParser.findElementContent(page, htmlTags);
 			this.clickableName = content;
 		}
-
+		
+		await PageParser.clickElement(page, htmlTags, this.elementContent);
+		
 		await page.waitForNetworkIdle();
 
 		console.log(`[info] clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'`);
