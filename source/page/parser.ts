@@ -1,16 +1,30 @@
 import { Page } from "puppeteer";
 
 export class PageParser {
-	static async findElementsContent(page: Page, htmlTags: string[]) {
-		const elementContents = await page.$$eval(htmlTags.join(' '), elements => {
+	static async findElementsContent(page: Page, htmlTags: string[], valueTags: string[]) {
+		const elementContents = await page.$$eval(htmlTags.join(' '), (elements, valueTags) => {
 			const items = [];
 
 			for (let element of elements) {
-				items.push(element.textContent);
+				if (valueTags) {
+					let elementValues = [];
+
+					for (let valueTag of valueTags) {
+						const values = element.querySelectorAll(valueTag);
+
+						for (let value of values) {
+							elementValues.push(value.textContent);
+						}
+					}
+
+					items.push(elementValues.join(' '));
+				} else {
+					items.push(element.textContent);
+				}
 			}
 
 			return items;
-		});
+		}, valueTags);
 
 		return elementContents
 	}
@@ -30,19 +44,16 @@ export class PageParser {
 	static async fillInput(content: string, page: Page, htmlTags: string[]) {
 		await this.checkIfSingleElement(page, htmlTags);
 
-		const inputPlaceholder = await page.$$eval(htmlTags.join(' '), (elements, content) => {
-			for (let element of elements) {
-				if (element instanceof HTMLInputElement) {
-					// set content
-					element.value = content;
+		await page.focus(htmlTags.join(' '));
+		await page.keyboard.type(content);
 
-					// return placeholder
-					return element.placeholder;
-				}
+		const placeholder = await page.$eval(htmlTags.join(' '), element => {
+			if (element instanceof HTMLInputElement) {
+				return element.placeholder;
 			}
-		}, content);
+		});
 
-		return inputPlaceholder;
+		return placeholder;
 	}
 
 	static async getCoordinatesOfElement(page: Page, htmlTags: string[], elementContent?: string): Promise<{x: number, y: number}> {

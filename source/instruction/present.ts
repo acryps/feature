@@ -8,7 +8,8 @@ export class PresentInstruction extends Instruction {
 	private elements: string[]
 
 	constructor(
-		private tags: string[]
+		private tags: string[],
+		private valueTags?: string[]
 	){
 		super();
 	}
@@ -21,12 +22,13 @@ export class PresentInstruction extends Instruction {
 
 	public async execute(project: Project, page: Page) {
 		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
+
 		const count = await PageParser.countElements(page, htmlTags);
 
 		if (count == 0) {
 			console.error(`[error] could not find area to present`);
 		} else {
-			this.elements = await PageParser.findElementsContent(page, htmlTags)
+			this.elements = await PageParser.findElementsContent(page, htmlTags, this.valueTags);
 		}
 
 		super.onSuccess(project);
