@@ -21,10 +21,11 @@ export class NavigationInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
+		const selector = project.generateSelector(this.tags);
+		
 		this.sourceUrl = await page.url();
 
-		const successful = await PageParser.clickElement(page, htmlTags, this.title);
+		const successful = await PageParser.clickElement(page, selector, this.title);
 
 		await page.waitForNetworkIdle();
 

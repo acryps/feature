@@ -26,23 +26,23 @@ export class ClickInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
+		const selector = project.generateSelector(this.tags);
 
-		const coordinates = await PageParser.getCoordinatesOfElement(page, htmlTags, this.elementContent);
+		const coordinates = await PageParser.getCoordinatesOfElement(page, selector, this.elementContent);
 		this.x = coordinates.x;
 		this.y = coordinates.y;
 
-		const viewport = await PageParser.getViewport(page, htmlTags);
+		const viewport = await PageParser.getViewport(page);
 		this.setPositionDescription(coordinates, viewport);
 
 		if (this.elementContent) {
 			this.clickableName = this.elementContent;
 		} else {
-			const content = await PageParser.findElementContent(page, htmlTags);
+			const content = await PageParser.findElementContent(page, selector);
 			this.clickableName = content;
 		}
 		
-		await PageParser.clickElement(page, htmlTags, this.elementContent);
+		await PageParser.clickElement(page, selector, this.elementContent);
 		
 		await page.waitForNetworkIdle();
 

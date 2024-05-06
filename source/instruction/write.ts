@@ -20,9 +20,9 @@ export class WriteInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
+		const selector = project.generateSelector(this.tags);
 
-		this.fieldName = await PageParser.fillInput(this.content, page, htmlTags);
+		this.fieldName = await PageParser.fillInput(this.content, page, selector);
 
 		await page.waitForNetworkIdle();
 

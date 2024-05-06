@@ -21,14 +21,15 @@ export class PresentInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
+		const selector = project.generateSelector(this.tags);
+		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector([valueTag]));
 
-		const count = await PageParser.countElements(page, htmlTags);
+		const count = await PageParser.countElements(page, selector);
 
 		if (count == 0) {
 			console.error(`[error] could not find area to present`);
 		} else {
-			this.elements = await PageParser.findElementsContent(page, htmlTags, this.valueTags);
+			this.elements = await PageParser.findElementsContent(page, selector, valueTagSelectors);
 		}
 
 		super.onSuccess(project);
