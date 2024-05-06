@@ -49,6 +49,7 @@ export class PageParser {
 
 		const placeholder = await page.$eval(selector, element => {
 			if (element instanceof HTMLInputElement) {
+				element.blur();
 				return element.placeholder;
 			}
 		});
