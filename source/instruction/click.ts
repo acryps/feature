@@ -13,7 +13,8 @@ export class ClickInstruction extends Instruction {
 	private vertical: string;
 
 	constructor(
-		private tags: string[]
+		private tags: string[],
+		private elementContent?: string
 	){
 		super();
 	}
@@ -27,17 +28,21 @@ export class ClickInstruction extends Instruction {
 	public async execute(project: Project, page: Page) {
 		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
 
-		const content = await PageParser.findElementContent(page, htmlTags);
-		this.clickableName = content;
-
-		const coordinates = await PageParser.getCoordinatesOfElement(page, htmlTags);
+		const coordinates = await PageParser.getCoordinatesOfElement(page, htmlTags, this.elementContent);
 		this.x = coordinates.x;
 		this.y = coordinates.y;
 
 		const viewport = await PageParser.getViewport(page, htmlTags);
 		this.setPositionDescription(coordinates, viewport);
 
-		await PageParser.clickElementByTags(page, htmlTags);
+		await PageParser.clickElement(page, htmlTags, this.elementContent);
+
+		if (this.elementContent) {
+			this.clickableName = this.elementContent;
+		} else {
+			const content = await PageParser.findElementContent(page, htmlTags);
+			this.clickableName = content;
+		}
 
 		await page.waitForNetworkIdle();
 

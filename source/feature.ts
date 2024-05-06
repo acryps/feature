@@ -24,8 +24,8 @@ export class Feature {
 		return this;
 	}
 
-	public click(tags: string[]): Feature {
-		this.instructions.push(new ClickInstruction(tags));
+	public click(tags: string[], elementContent?: string): Feature {
+		this.instructions.push(new ClickInstruction(tags, elementContent));
 
 		return this;
 	}

@@ -45,65 +45,72 @@ export class PageParser {
 		return inputPlaceholder;
 	}
 
-	static async getCoordinatesOfElement(page: Page, htmlTags: string[]): Promise<{x: number, y: number}> {
-		await this.checkIfSingleElement(page, htmlTags);
+	static async getCoordinatesOfElement(page: Page, htmlTags: string[], elementContent?: string): Promise<{x: number, y: number}> {
+		await this.checkIfSingleElement(page, htmlTags, elementContent);
 
 		let coordinates: {x: number, y: number};
 		
-		coordinates = await page.$$eval(htmlTags.join(' '), elements => {
+		coordinates = await page.$$eval(htmlTags.join(' '), (elements, content) => {
+			// filter according to text content
+			if (content) {
+				elements = elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase());
+			}
+
 			for (let element of elements) {
+
 				const boundingBox = element.getBoundingClientRect();
 
 				return {x: boundingBox.x, y: boundingBox.y}
 			}
-		});
+		}, elementContent);
 
 		return coordinates;
 	}
 
-	static async countElements(page: Page, htmlTags: string[], content?: string) {
+	static async countElements(page: Page, htmlTags: string[], elementContent?: string) {
 		return await page.$$eval(htmlTags.join(' '), (elements, content) => {
 			if (content) {
 				return elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase()).length;
 			} else {
 				return elements.length;
 			}
-		}, content);
+		}, elementContent);
 	}
 
 	static async getViewport(page: Page, htmlTag: string[]): Promise<{width: number, height: number}> {
 		return await page.viewport();
 	}
 
-	static async clickElementByTags(page: Page, htmlTags: string[]) {
-		await this.checkIfSingleElement(page, htmlTags);
-		await page.click(htmlTags.join(' '));
-	}
-
-	static async clickElementByContent(page: Page, htmlTags: string[], content: string) {
-		await this.checkIfSingleElement(page, htmlTags, content);
+	static async clickElement(page: Page, htmlTags: string[], elementContent?: string) {
+		await this.checkIfSingleElement(page, htmlTags, elementContent);
 		
 		const successful = await page.evaluate((htmlTags, content) => {
-			const element = [...document.querySelectorAll(htmlTags.join(' '))].find(element => element.textContent.toLowerCase() === content.toLowerCase());
+			let elements = [...document.querySelectorAll(htmlTags.join(' '))];
+
+			if (content) {
+				elements = elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase());
+			}
 			
-			if (element instanceof HTMLElement) {
-				element.click();
-				return true;
+			for (let element of elements) {
+				if (element instanceof HTMLElement) {
+					element.click();
+					return true;
+				}
 			}
 
 			return false;
-		}, htmlTags, content);
+		}, htmlTags, elementContent);
 
 		return successful;
 	}
 
-	static async checkIfSingleElement(page: Page, htmlTags: string[], content?: string): Promise<void> {
-		const elements = await this.countElements(page, htmlTags, content);
+	static async checkIfSingleElement(page: Page, htmlTags: string[], elementContent?: string): Promise<void> {
+		const elements = await this.countElements(page, htmlTags, elementContent);
 
 		if (elements > 1) {
-			console.warn(`[warning] several elements match '${htmlTags.join(' ')}'! Currently, the first one is used.`);
+			console.warn(`[warning] several elements match '${htmlTags.join(' ')}${elementContent ? ` "${elementContent}"` : ''}'! Currently, the first one is used.`);
 		} else if (elements == 0) {
-			console.warn(`[warning] no elements match '${htmlTags.join(' ')}'!`);
+			console.warn(`[warning] no elements match '${htmlTags.join(' ')}${elementContent ? ` "${elementContent}"` : ''}'!`);
 		}
 	}
 }

@@ -24,7 +24,7 @@ export class NavigationInstruction extends Instruction {
 		const htmlTags = this.tags.map(tag => project.htmlTag(tag));
 		this.sourceUrl = await page.url();
 
-		const successful = await PageParser.clickElementByContent(page, htmlTags, this.title);
+		const successful = await PageParser.clickElement(page, htmlTags, this.title);
 
 		await page.waitForNetworkIdle();
 
