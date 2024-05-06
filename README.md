@@ -7,7 +7,8 @@ const browserManager = new BrowserManager();
 await browserManager.launch();
 
 const project = new Project('https://assembly.acryps.com');
-project.htmlTag = (name: string) => {return `${name}`};
+// add project specific prefixes (and postfixes)
+project.addPrefix('ui-');
 
 const productName = 'ecM1-Series | Elementarum PTFE Lined Butterfly Valve';
 const productRoute = '/configure/yckiuj/0'
@@ -17,32 +18,30 @@ const feature = new Feature(`Configure '${productName}'`, 'Example configuration
 // define a feature
 feature.prepare(productName, productRoute)
 	// configure product:
-	.click(['ui-options', 'ui-option', 'ui-name'], '1"')
-	.click(['ui-options', 'ui-option', 'ui-name'], 'Duplex')
-	.click(['ui-options', 'ui-option', 'ui-name'], 'UHMPE')
-	.click(['ui-options', 'ui-option', 'ui-name'], 'EPDM')
-	.click(['ui-options', 'ui-option', 'ui-name'], 'Ductile Iron 5.3103')
+	.click(['options', 'option', 'name'], '1"')
+	.click(['options', 'option', 'name'], 'Duplex')
+	.click(['options', 'option', 'name'], 'UHMPE')
+	.click(['options', 'option', 'name'], 'EPDM')
+	.click(['options', 'option', 'name'], 'Ductile Iron 5.3103')
 
 	// save product
-	.click(['ui-configurator ui-action[ui-save]'])
+	.click(['configurator', 'actions', 'save'])
 
 	// enter product configuration
-	.write(['ui-dialog', 'input[placeholder="Name"]'], 'My Configuration')
-	.click(['ui-dialog', 'ui-action[ui-save]'])
+	.write(['dialog', 'input'], 'My Configuration')
+	.click(['dialog', 'actions', 'save'])
 
 	// navigate to home
-	.navigate(['ui-navigation', 'ui-page-links', 'a'], 'home')
+	.navigate(['navigation', 'page-links', 'href'], 'home')
 
 	// present saved configurations
-	.present(['ui-saved-assemblies-section', 'ui-assembly'], ['ui-name', 'ui-product-code']);
+	.present(['saved-assemblies-section', 'assembly'], ['name', 'product-code']);
 
 // execute the feature
 await feature.execute(project, await browserManager.getPage());
 
 // generate feature guide
 const guide = feature.generateGuide();
-
-console.log(guide);
 
 await browserManager.close();
 ```
@@ -58,6 +57,6 @@ generates:
 7. Clicked 'Save As...' on the 'upper right'.
 8. Write 'My Configuration' into the 'Name' field.
 9. Clicked 'Add to my Assemblies' on the 'lower left'.
-10. Go to 'home' 'https://assembly.acryps.com/' from 'https://assembly.acryps.com/configure/1i4skm/0'.
-11. Find elements 'My Configuration Elementarum ecM1-Series | PTFE Lined Butterfly Valve ecM1B-1----DUEI?X?5????F010??'.
+10. Go to 'home' 'https://assembly.acryps.com/' from 'https://assembly.acryps.com/configure/degaep/0'.
+11. Find elements 'My Configuration, Elementarum ecM1-Series | PTFE Lined Butterfly Valve, ecM1B-1----DUEI?X?5????F010??'.
 ```
