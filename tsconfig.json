@@ -3,6 +3,6 @@
 		"outDir": "built",
 		"module": "CommonJS",
 		"moduleResolution": "node",
-		"target": "es6"
+		"target": "es2022"
 	}
 }
