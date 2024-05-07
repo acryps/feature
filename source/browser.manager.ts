@@ -15,7 +15,15 @@ export class BrowserManager {
 
 	async launch() {
 		for (let index = 0; index < this.size; index++) {
-			this.browsers.push(await launch());
+			this.browsers.push(await launch({
+				headless: false,
+				slowMo: 5,
+				args: [`--window-size=1500, 900`],
+				defaultViewport: {
+					width:1500,
+					height:900
+				  }
+			}));
 		}
 	}
 
