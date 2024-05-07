@@ -9,6 +9,7 @@ export async function assemblyFeature() {
 	const project = new Project('https://assembly.acryps.com');
 	// add project specific prefixes (and postfixes)
 	project.addPrefix('ui-');
+	project.addKeyword('!', 'dialog');
 
 	const productName = 'ecM1-Series | Elementarum PTFE Lined Butterfly Valve';
 	const productRoute = '/configure/yckiuj/0'
@@ -36,8 +37,8 @@ export async function assemblyFeature() {
 		.click('configurator actions save')
 
 		// enter product configuration
-		.write('dialog input', 'My Configuration 1')
-		.click('dialog actions save')
+		.write('! input', 'My Configuration 1')
+		.click('! actions save')
 
 		// navigate to home
 		.navigate('navigation page-links href', 'home')
@@ -45,27 +46,27 @@ export async function assemblyFeature() {
 		// present saved configurations
 		.present('saved-assemblies-section assembly', ['name', 'product-code']);
 
-	feature.click('product create')
-			// configure product:
-			.click('options option name', 'Duplex')
-			.click('options option name', 'Ductile Iron 5.3103')
-			.click('options option name', 'Square 45°')
-			.click('options option name', 'Yellow Green')
-			.click('options option name', 'EN 12944-5, C2M >120µm')
-			.click('options option name', 'Bare Shaft')
+	// feature.click('product create')
+	// 		// configure product:
+	// 		.click('options option name', 'Duplex')
+	// 		.click('options option name', 'Ductile Iron 5.3103')
+	// 		.click('options option name', 'Square 45°')
+	// 		.click('options option name', 'Yellow Green')
+	// 		.click('options option name', 'EN 12944-5, C2M >120µm')
+	// 		.click('options option name', 'Bare Shaft')
 		
-			// save product
-			.click('configurator actions save')
+	// 		// save product
+	// 		.click('configurator actions save')
 	
-			// enter product configuration
-			.write('dialog input', 'My Configuration 2')
-			.click('dialog actions save')
+	// 		// enter product configuration
+	// 		.write('! input', 'My Configuration 2')
+	// 		.click('! actions save')
 	
-			// navigate to home
-			.navigate('navigation page-links href', 'home')
+	// 		// navigate to home
+	// 		.navigate('navigation page-links href', 'home')
 	
-			// present saved configurations
-			.present('saved-assemblies-section assembly', ['name', 'product-code']);
+	// 		// present saved configurations
+	// 		.present('saved-assemblies-section assembly', ['name', 'product-code']);
 
 	// execute the feature
 	await feature.execute(project, await browserManager.getPage());
