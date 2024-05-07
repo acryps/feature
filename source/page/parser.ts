@@ -80,13 +80,15 @@ export class PageParser {
 	}
 
 	static async countElements(page: Page, selector: string, elementContent?: string) {
-		return await page.$$eval(selector, (elements, content) => {
+		const count = await page.$$eval(selector, (elements, content) => {
 			if (content) {
 				return elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase()).length;
 			} else {
 				return elements.length;
 			}
 		}, elementContent);
+
+		return count;
 	}
 
 	static async getViewport(page: Page): Promise<{width: number, height: number}> {
@@ -120,9 +122,9 @@ export class PageParser {
 		const elements = await this.countElements(page, selector, elementContent);
 
 		if (elements > 1) {
-			console.warn(`[warning] several elements match '${selector}${elementContent ? ` "${elementContent}"` : ''}'! Currently, the first one is used.`);
+			console.warn(`[warning] several elements match '${selector.substring(0, 100)}${elementContent ? ` "${elementContent}"` : ''}'! Currently, the first one is used.`);
 		} else if (elements == 0) {
-			console.warn(`[warning] no elements match '${selector}${elementContent ? ` "${elementContent}"` : ''}'!`);
+			console.warn(`[warning] no elements match '${selector.substring(0, 100)}${elementContent ? ` "${elementContent}"` : ''}'!`);
 		}
 	}
 }

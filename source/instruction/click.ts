@@ -13,7 +13,7 @@ export class ClickInstruction extends Instruction {
 	private vertical: string;
 
 	constructor(
-		private tags: string[],
+		private locator: string,
 		private elementContent?: string
 	){
 		super();
@@ -26,7 +26,7 @@ export class ClickInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const selector = project.generateSelector(this.tags);
+		const selector = project.generateSelector(this.locator);
 
 		const coordinates = await PageParser.getCoordinatesOfElement(page, selector, this.elementContent);
 		this.x = coordinates.x;

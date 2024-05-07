@@ -5,10 +5,10 @@ import { PageParser } from "../page/parser";
 
 export class PresentInstruction extends Instruction {
 	private areaName: string;
-	private elements: string[]
+	private elements: string[] = [];
 
 	constructor(
-		private tags: string[],
+		private locator: string,
 		private valueTags?: string[]
 	){
 		super();
@@ -21,8 +21,8 @@ export class PresentInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const selector = project.generateSelector(this.tags);
-		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector([valueTag]));
+		const selector = project.generateSelector(this.locator);
+		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
 
 		const count = await PageParser.countElements(page, selector);
 

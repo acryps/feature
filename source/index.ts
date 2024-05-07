@@ -18,55 +18,54 @@ export async function assemblyFeature() {
 	// define a feature
 	feature.prepare(productName, productRoute)
 		// configure product:
-		.click(['options', 'option', 'name'], '1"')
-		.click(['options', 'option', 'name'], 'Duplex')
-		.click(['options', 'option', 'name'], 'UHMPE')
-		.click(['options', 'option', 'name'], 'EPDM')
-		.click(['options', 'option', 'name'], 'Ductile Iron 5.3103')
-		.click(['options', 'option', 'name'], 'Wafer')
-		.click(['options', 'option', 'name'], 'Class 150')
-		.click(['options', 'option', 'name'], 'Square 45°')
-		.click(['options', 'option', 'name'], 'Yellow Green')
-		.click(['options', 'option', 'name'], 'EN 12944-5, C2M >120µm')
-		.click(['options', 'option', 'name'], 'Add Earth Cable')
-		.click(['options', 'option', 'name'], '3.1 EN 10204, P10, P11, P12')
-		.click(['options', 'option', 'name'], 'Bare Shaft')
+		.click('options option name', '1"')
+		.click('options option name', 'Duplex')
+		.click('options option name', 'UHMPE')
+		.click('options option name', 'EPDM')
+		.click('options option name', 'Ductile Iron 5.3103')
+		.click('options option name', 'Wafer')
+		.click('options option name', 'Class 150')
+		.click('options option name', 'Square 45°')
+		.click('options option name', 'Yellow Green')
+		.click('options option name', 'EN 12944-5, C2M >120µm')
+		.click('options option name', 'Add Earth Cable')
+		.click('options option name', '3.1 EN 10204, P10, P11, P12')
+		.click('options option name', 'Bare Shaft')
 	
 		// save product
-		.click(['configurator', 'actions', 'save'])
+		.click('configurator actions save')
 
 		// enter product configuration
-		.write(['dialog', 'input'], 'My Configuration 1')
-		.click(['dialog', 'actions', 'save'])
+		.write('dialog input', 'My Configuration 1')
+		.click('dialog actions save')
 
 		// navigate to home
-		.navigate(['navigation', 'page-links', 'href'], 'home')
+		.navigate('navigation page-links href', 'home')
 
 		// present saved configurations
-		.present(['saved-assemblies-section', 'assembly'], ['name', 'product-code']);
+		.present('saved-assemblies-section assembly', ['name', 'product-code']);
 
-	feature.click(['product', 'create'])
+	feature.click('product create')
 			// configure product:
-			.click(['options', 'option', 'name'], '1"')
-			.click(['options', 'option', 'name'], 'Duplex')
-			.click(['options', 'option', 'name'], 'Ductile Iron 5.3103')
-			.click(['options', 'option', 'name'], 'Square 45°')
-			.click(['options', 'option', 'name'], 'Yellow Green')
-			.click(['options', 'option', 'name'], 'EN 12944-5, C2M >120µm')
-			.click(['options', 'option', 'name'], 'Bare Shaft')
+			.click('options option name', 'Duplex')
+			.click('options option name', 'Ductile Iron 5.3103')
+			.click('options option name', 'Square 45°')
+			.click('options option name', 'Yellow Green')
+			.click('options option name', 'EN 12944-5, C2M >120µm')
+			.click('options option name', 'Bare Shaft')
 		
 			// save product
-			.click(['configurator', 'actions', 'save'])
+			.click('configurator actions save')
 	
 			// enter product configuration
-			.write(['dialog', 'input'], 'My Configuration 2')
-			.click(['dialog', 'actions', 'save'])
+			.write('dialog input', 'My Configuration 2')
+			.click('dialog actions save')
 	
 			// navigate to home
-			.navigate(['navigation', 'page-links', 'href'], 'home')
+			.navigate('navigation page-links href', 'home')
 	
 			// present saved configurations
-			.present(['saved-assemblies-section', 'assembly'], ['name', 'product-code']);
+			.present('saved-assemblies-section assembly', ['name', 'product-code']);
 
 	// execute the feature
 	await feature.execute(project, await browserManager.getPage());
@@ -88,8 +87,8 @@ export async function wikiFeature() {
 	
 	const feature = new Feature('test-name', 'test-description');
 	feature.prepare('google suche', '/')
-		.write(['input#searchInput'], 'NodeJS')
-		.click(['button.pure-button.pure-button-primary-progressive'])
+		.write('input#searchInput', 'NodeJS')
+		.click('button.pure-button.pure-button-primary-progressive')
 
 	await feature.execute(project, await browserManager.getPage());
 

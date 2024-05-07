@@ -7,7 +7,7 @@ export class WriteInstruction extends Instruction {
 	private fieldName: string;
 
 	constructor(
-		private tags: string[],
+		private locator: string,
 		private content: string
 	){
 		super();
@@ -20,7 +20,7 @@ export class WriteInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const selector = project.generateSelector(this.tags);
+		const selector = project.generateSelector(this.locator);
 
 		this.fieldName = await PageParser.fillInput(this.content, page, selector);
 

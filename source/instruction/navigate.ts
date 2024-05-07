@@ -8,7 +8,7 @@ export class NavigationInstruction extends Instruction {
 	private sourceUrl: string;	// location information
 
 	constructor(
-		private tags: string[],
+		private locator: string,
 		private title: string,
 	){
 		super();
@@ -21,7 +21,7 @@ export class NavigationInstruction extends Instruction {
 	}
 
 	public async execute(project: Project, page: Page) {
-		const selector = project.generateSelector(this.tags);
+		const selector = project.generateSelector(this.locator);
 		
 		this.sourceUrl = await page.url();
 
@@ -32,7 +32,7 @@ export class NavigationInstruction extends Instruction {
 		if (successful) {
 			this.targetUrl = await page.url();
 		} else {
-			throw new Error(`[error] navigation on '${this.tags.join(' ')}' '${this.title}' was unsuccessful!`);
+			throw new Error(`[error] navigation on '${this.locator.substring(0, 100)}' '${this.title}' was unsuccessful!`);
 		}
 
 		super.onSuccess(project);

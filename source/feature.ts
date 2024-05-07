@@ -24,14 +24,14 @@ export class Feature {
 		return this;
 	}
 
-	public click(tags: string[], elementContent?: string): Feature {
-		this.instructions.push(new ClickInstruction(tags, elementContent));
+	public click(locator: string, elementContent?: string): Feature {
+		this.instructions.push(new ClickInstruction(locator, elementContent));
 
 		return this;
 	}
 
-	public navigate(tags: string[], title: string): Feature {
-		this.instructions.push(new NavigationInstruction(tags, title));
+	public navigate(locator: string, title: string): Feature {
+		this.instructions.push(new NavigationInstruction(locator, title));
 
 		return this;
 	}
@@ -42,14 +42,14 @@ export class Feature {
 		return this;
 	}
 
-	public write(tags: string[], content: string): Feature {
-		this.instructions.push(new WriteInstruction(tags, content));
+	public write(locator: string, content: string): Feature {
+		this.instructions.push(new WriteInstruction(locator, content));
 
 		return this;
 	}
 
-	public present(tags: string[], valueTags?: string[]): Feature {
-		this.instructions.push(new PresentInstruction(tags, valueTags));
+	public present(locator: string, valueTags?: string[]): Feature {
+		this.instructions.push(new PresentInstruction(locator, valueTags));
 
 		return this;
 	}

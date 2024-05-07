@@ -20,7 +20,9 @@ export class Project {
 		this.postfixes.push(postfix);
 	}
 
-	public generateSelector(locators: string[]) {
+	public generateSelector(locator: string) {
+		const locators = locator.split(' ');
+
 		const current = locators.shift();
 		return this.selector(current, locators, '');
 	}
