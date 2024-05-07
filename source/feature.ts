@@ -56,8 +56,8 @@ export class Feature {
 
 	public async execute(project: Project, page: Page) {
 		try {
-			for (let instruction of this.instructions) {
-				await instruction.execute(project, page);
+			for (let [index, instruction] of this.instructions.entries()) {
+				await instruction.execute(project, page, index);
 			}
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);

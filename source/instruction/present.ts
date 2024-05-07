@@ -20,7 +20,7 @@ export class PresentInstruction extends Instruction {
 		return `Find elements ${this.elements.map(element => `'${element}'`).join(', ')}.`;
 	}
 
-	public async execute(project: Project, page: Page) {
+	public async execute(project: Project, page: Page, index: number) {
 		const selector = project.generateSelector(this.locator);
 		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
 
@@ -31,6 +31,10 @@ export class PresentInstruction extends Instruction {
 		} else {
 			this.elements = await PageParser.findElementsContent(page, selector, valueTagSelectors);
 		}
+
+		await page.screenshot({
+			path: `${index}_present.jpg`
+		});
 
 		super.onSuccess(project);
 

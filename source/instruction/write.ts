@@ -19,12 +19,17 @@ export class WriteInstruction extends Instruction {
 		return `Write '${this.content}' into the '${this.fieldName}' field.`;
 	}
 
-	public async execute(project: Project, page: Page) {
+	public async execute(project: Project, page: Page, index: number) {
 		const selector = project.generateSelector(this.locator);
 
 		this.fieldName = await PageParser.fillInput(this.content, page, selector);
 
 		await page.waitForNetworkIdle();
+
+		await PageParser.highlightElement(page, selector);
+		await page.screenshot({
+			path: `${index}_write.jpg`
+		});
 
 		super.onSuccess(project);
 

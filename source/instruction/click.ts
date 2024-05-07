@@ -25,7 +25,7 @@ export class ClickInstruction extends Instruction {
 		return `Clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'.`;
 	}
 
-	public async execute(project: Project, page: Page) {
+	public async execute(project: Project, page: Page, index: number) {
 		const selector = project.generateSelector(this.locator);
 
 		const coordinates = await PageParser.getCoordinatesOfElement(page, selector, this.elementContent);
@@ -41,6 +41,11 @@ export class ClickInstruction extends Instruction {
 			const content = await PageParser.findElementContent(page, selector);
 			this.clickableName = content;
 		}
+
+		await PageParser.highlightElement(page, selector, this.elementContent);
+		await page.screenshot({
+			path: `${index}_click.jpg`
+		});
 		
 		await PageParser.clickElement(page, selector, this.elementContent);
 		

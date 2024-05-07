@@ -18,7 +18,7 @@ export class RedirectInstruction extends Instruction {
 		return `Redirect to '${this.url}'.`;
 	}
 
-	public async execute(project: Project, page: Page) {
+	public async execute(project: Project, page: Page, index: number) {
 		const response = await page.goto(`${this.url}`, {
 			waitUntil: 'networkidle0',
 		});

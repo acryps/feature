@@ -20,10 +20,14 @@ export class NavigationInstruction extends Instruction {
 		return `Go to '${this.title}' '${this.targetUrl}' from '${this.sourceUrl}'.`;
 	}
 
-	public async execute(project: Project, page: Page) {
+	public async execute(project: Project, page: Page, index: number) {
 		const selector = project.generateSelector(this.locator);
 		
 		this.sourceUrl = await page.url();
+
+		await page.screenshot({
+			path: `${index}_navigate.jpg`
+		});
 
 		const successful = await PageParser.clickElement(page, selector, this.title);
 

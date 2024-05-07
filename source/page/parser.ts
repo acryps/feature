@@ -118,6 +118,29 @@ export class PageParser {
 		return successful;
 	}
 
+	static async highlightElement(page: Page, selector: string, elementContent?: string) {
+		await this.checkIfSingleElement(page, selector, elementContent);
+		
+		const successful = await page.evaluate((selector, content) => {
+			let elements = [...document.querySelectorAll(selector)];
+
+			if (content) {
+				elements = elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase());
+			}
+			
+			for (let element of elements) {
+				if (element instanceof HTMLElement) {
+					element.style.border = '5px solid red';
+					return true;
+				}
+			}
+
+			return false;
+		}, selector, elementContent);
+
+		return successful;
+	}
+
 	static async checkIfSingleElement(page: Page, selector: string, elementContent?: string): Promise<void> {
 		const elements = await this.countElements(page, selector, elementContent);
 
