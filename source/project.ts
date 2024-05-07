@@ -4,6 +4,8 @@ export class Project {
 	private prefixes: string[] = [''];
 	private postfixes: string[] = [''];
 
+	private keywords: { [id: string]: string; } = {}
+
 	constructor(
 		public baseUrl
 	) {}
@@ -20,8 +22,24 @@ export class Project {
 		this.postfixes.push(postfix);
 	}
 
-	public generateSelector(locator: string) {
-		const locators = locator.split(' ');
+	public addKeyword(key: string, locator: string) {
+		if (this.keywords[key]) {
+			console.warn(`[warning] overwriting existing keyword pair {'${key}' : '${this.keywords[key]}'} with {'${key}' : '${locator}'}!`);
+		}
+
+		this.keywords[key] = locator;
+	}
+
+	public generateSelector(locatorString: string) {
+		let locators = [];
+
+		for (let locator of locatorString.split(' ')) {
+			if (this.keywords[locator]) {
+				locators.push(this.keywords[locator]);
+			} else {
+				locators.push(locator);
+			}
+		}
 
 		const current = locators.shift();
 		return this.selector(current, locators, '');
