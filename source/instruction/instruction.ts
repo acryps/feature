@@ -1,5 +1,6 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
+import * as filestream from 'fs';
 
 export abstract class Instruction {
 	public executed: boolean = false;
@@ -22,5 +23,25 @@ export abstract class Instruction {
 	public onSuccess(project: Project) {
 		this.project = project;
 		this.executed = true;
+	}
+
+	public async saveImageAndMetadata(page: Page, basePath: string, filename: string, highlight: DOMRect[]) {
+		await page.screenshot({
+			path: `${basePath}${filename}.jpg`
+		});
+
+		if (highlight) {
+			const metadata = this.createMetadata(highlight, null);
+			filestream.writeFileSync(`${basePath}${filename}.json`, metadata, 'utf-8');
+		}
+	}
+
+	private createMetadata(highlight?: DOMRect[], ignore?: DOMRect[]) {
+		const data = {
+			highlight: highlight,
+			ignore: []
+		};
+
+		return JSON.stringify(data);
 	}
 }

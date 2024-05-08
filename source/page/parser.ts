@@ -57,26 +57,39 @@ export class PageParser {
 		return placeholder;
 	}
 
-	static async getCoordinatesOfElement(page: Page, selector: string, elementContent?: string): Promise<{x: number, y: number}> {
+	static async getBoundingRectangle(page: Page, selector: string, elementContent: string, clickable: boolean): Promise<DOMRect> {
 		await this.checkIfSingleElement(page, selector, elementContent);
-
-		let coordinates: {x: number, y: number};
 		
-		coordinates = await page.$$eval(selector, (elements, content) => {
+		const boundingRectangle = await page.$$eval(selector, (elements, content) => {
 			// filter according to text content
 			if (content) {
 				elements = elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase());
 			}
 
 			for (let element of elements) {
+				const rectangle: DOMRect = element.getBoundingClientRect();
 
-				const boundingBox = element.getBoundingClientRect();
-
-				return {x: boundingBox.x, y: boundingBox.y}
+				return JSON.stringify(rectangle);
 			}
 		}, elementContent);
 
-		return coordinates;
+		return JSON.parse(boundingRectangle) as DOMRect;
+	}
+
+	static async getBoundingRectangles(page: Page, selector: string,): Promise<DOMRect[]> {
+		const boundingRectangles = await page.$$eval(selector, (elements) => {
+			const rectangles: string[] = [];
+
+			for (let element of elements) {
+				const rectangle: DOMRect = element.getBoundingClientRect();
+
+				rectangles.push(JSON.stringify(rectangle));
+			}
+
+			return rectangles;
+		});
+
+		return boundingRectangles.map(rectangle => JSON.parse(rectangle) as DOMRect);
 	}
 
 	static async countElements(page: Page, selector: string, elementContent?: string) {

@@ -4,8 +4,8 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 
 export class PresentInstruction extends Instruction {
-	private areaName: string;
 	private elements: string[] = [];
+	private rectangles?: DOMRect[];
 
 	constructor(
 		private locator: string,
@@ -30,11 +30,10 @@ export class PresentInstruction extends Instruction {
 			console.error(`[error] could not find area to present`);
 		} else {
 			this.elements = await PageParser.findElementsContent(page, selector, valueTagSelectors);
+			this.rectangles = await PageParser.getBoundingRectangles(page, selector);
 		}
 
-		await page.screenshot({
-			path: `${basePath}${index}_present.jpg`
-		});
+		await super.saveImageAndMetadata(page, basePath, `${index}_present`, this.rectangles);
 
 		super.onSuccess(project);
 

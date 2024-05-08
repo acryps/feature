@@ -6,15 +6,14 @@ import { PageParser } from "../page/parser";
 export class ClickInstruction extends Instruction {
 	private clickableName: string;
 
-	private x: number;
-	private y: number;
+	private rectangle?: DOMRect;
 
 	private horizontal: string;
 	private vertical: string;
 
 	constructor(
 		private locator: string,
-		private elementContent?: string
+		private elementContent?: string,
 	){
 		super();
 	}
@@ -28,12 +27,13 @@ export class ClickInstruction extends Instruction {
 	public async execute(project: Project, page: Page, basePath: string, index: number) {
 		const selector = project.generateSelector(this.locator);
 
-		const coordinates = await PageParser.getCoordinatesOfElement(page, selector, this.elementContent);
-		this.x = coordinates.x;
-		this.y = coordinates.y;
 
-		const viewport = await PageParser.getViewport(page);
-		this.setPositionDescription(coordinates, viewport);
+		this.rectangle = await PageParser.getBoundingRectangle(page, selector, this.elementContent, true);
+
+		if (this.rectangle) {
+			const viewport = await PageParser.getViewport(page);
+			this.setPosition(this.rectangle, viewport);
+		}
 
 		if (this.elementContent) {
 			this.clickableName = this.elementContent;
@@ -42,13 +42,10 @@ export class ClickInstruction extends Instruction {
 			this.clickableName = content;
 		}
 
-		await PageParser.highlightElement(page, selector, this.elementContent);
-		await page.screenshot({
-			path: `${basePath}${index}_click.jpg`
-		});
-		
+		await super.saveImageAndMetadata(page, basePath, `${index}_click`, [this.rectangle]);
+
 		await PageParser.clickElement(page, selector, this.elementContent);
-		
+
 		await page.waitForNetworkIdle();
 
 		console.log(`[info] clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'`);
@@ -56,14 +53,14 @@ export class ClickInstruction extends Instruction {
 		super.onSuccess(project);
 	}
 
-	private setPositionDescription(coordinates: {x: number, y: number}, viewport: {width: number, height: number}) {
-		if (coordinates.x > viewport.width / 2) {
+	private setPosition(rectangle: DOMRect, viewport: {width: number, height: number}) {
+		if (rectangle.x > viewport.width / 2) {
 			this.horizontal = 'right';
 		} else {
 			this.horizontal = 'left';
 		}
 
-		if (coordinates.y > viewport.height / 2) {
+		if (rectangle.y > viewport.height / 2) {
 			this.vertical = 'lower';
 		} else {
 			this.vertical = 'upper';

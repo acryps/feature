@@ -7,6 +7,8 @@ export class NavigationInstruction extends Instruction {
 	private targetUrl: string;	// title of next page
 	private sourceUrl: string;	// location information
 
+	private rectangle?: DOMRect;
+
 	constructor(
 		private locator: string,
 		private title: string,
@@ -25,9 +27,9 @@ export class NavigationInstruction extends Instruction {
 		
 		this.sourceUrl = await page.url();
 
-		await page.screenshot({
-			path: `${basePath}${index}_navigate.jpg`
-		});
+		this.rectangle = await PageParser.getBoundingRectangle(page, selector, null, true);
+		
+		await super.saveImageAndMetadata(page, basePath, `${index}_navigate`, [this.rectangle]);
 
 		const successful = await PageParser.clickElement(page, selector, this.title);
 

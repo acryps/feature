@@ -5,6 +5,7 @@ import { PageParser } from "../page/parser";
 
 export class WriteInstruction extends Instruction {
 	private fieldName: string;
+	private rectangle?: DOMRect;
 
 	constructor(
 		private locator: string,
@@ -26,10 +27,9 @@ export class WriteInstruction extends Instruction {
 
 		await page.waitForNetworkIdle();
 
-		await PageParser.highlightElement(page, selector);
-		await page.screenshot({
-			path: `${basePath}${index}_write.jpg`
-		});
+		this.rectangle = await PageParser.getBoundingRectangle(page, selector, null, false);
+		
+		await super.saveImageAndMetadata(page, basePath, `${index}_write`, [this.rectangle]);
 
 		super.onSuccess(project);
 
