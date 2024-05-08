@@ -9,7 +9,7 @@ export abstract class Instruction {
 		throw new Error("Method not implemented.")
 	}
 	
-	public async execute(project: Project, page: Page, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number) {
 		throw new Error("Method not implemented.");
 	}
 

@@ -7,6 +7,7 @@ import { PresentInstruction } from "./instruction/present";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
+import * as filestream from 'fs';
 
 export class Feature {
 	private instructions: Instruction[];
@@ -56,8 +57,10 @@ export class Feature {
 
 	public async execute(project: Project, page: Page) {
 		try {
+			const basePath = this.initializeMediaStorage(project);
+
 			for (let [index, instruction] of this.instructions.entries()) {
-				await instruction.execute(project, page, index);
+				await instruction.execute(project, page, basePath, index);
 			}
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
@@ -77,4 +80,14 @@ export class Feature {
 
 		return steps.join('\n');
 	}
+
+	private initializeMediaStorage(project: Project) {
+		const path = `${process.env.MEDIA_BASEPATH}/${project.name}/${this.name}/`;
+
+		if (!filestream.existsSync(path)){
+			filestream.mkdirSync(path, { recursive: true });
+		}
+
+		return path;
+	} 
 }

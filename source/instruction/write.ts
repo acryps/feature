@@ -19,7 +19,7 @@ export class WriteInstruction extends Instruction {
 		return `Write '${this.content}' into the '${this.fieldName}' field.`;
 	}
 
-	public async execute(project: Project, page: Page, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number) {
 		const selector = project.generateSelector(this.locator);
 
 		this.fieldName = await PageParser.fillInput(this.content, page, selector);
@@ -28,7 +28,7 @@ export class WriteInstruction extends Instruction {
 
 		await PageParser.highlightElement(page, selector);
 		await page.screenshot({
-			path: `${index}_write.jpg`
+			path: `${basePath}${index}_write.jpg`
 		});
 
 		super.onSuccess(project);

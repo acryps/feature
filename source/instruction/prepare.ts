@@ -17,13 +17,13 @@ export class PrepareInstruction extends Instruction {
 		return `Configure product '${this.name}' at '${this.project?.baseUrl}${this.route}'.`;
 	}
 
-	public async execute(project: Project, page: Page, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number) {
 		const response = await page.goto(`${project.baseUrl}${this.route}`, {
 			waitUntil: 'networkidle0',
 		});
 
 		await page.screenshot({
-			path: `${index}_prepare.jpg`
+			path: `${basePath}${index}_prepare.jpg`
 		});
 
 		if (+response.status >= 400) {

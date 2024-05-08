@@ -7,7 +7,8 @@ export class Project {
 	private keywords: { [id: string]: string; } = {}
 
 	constructor(
-		public baseUrl
+		public name: string,
+		public baseUrl: string
 	) {}
 
 	public customStep<T extends Instruction>(instructionType: T, customToString: (instance: T) => string) {
