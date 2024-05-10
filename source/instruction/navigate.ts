@@ -25,16 +25,14 @@ export class NavigationInstruction extends Instruction {
 	public async execute(project: Project, page: Page, basePath: string, index: number) {
 		const selector = project.generateSelector(this.locator);
 		
-		this.sourceUrl = await page.url();
-
 		const id = await PageParser.findSingle(page, selector, this.title);
-
+		
+		this.sourceUrl = await page.url();
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
 		
 		await super.saveImageAndMetadata(page, basePath, `${index}_navigate`, [this.rectangle]);
 
 		await page.mouse.click(this.rectangle.x, this.rectangle.y);
-
 		await page.waitForNetworkIdle();
 
 		super.onSuccess(project);

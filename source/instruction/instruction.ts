@@ -32,6 +32,7 @@ export abstract class Instruction {
 
 		if (highlight) {
 			const metadata = this.createMetadata(highlight, null);
+			
 			filestream.writeFileSync(`${basePath}${filename}.json`, metadata, 'utf-8');
 		}
 	}
@@ -39,7 +40,7 @@ export abstract class Instruction {
 	private createMetadata(highlight?: DOMRect[], ignore?: DOMRect[]) {
 		const data = {
 			highlight: highlight,
-			ignore: []
+			ignore: ignore
 		};
 
 		return JSON.stringify(data);

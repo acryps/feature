@@ -14,14 +14,15 @@ export class PageParser {
 			for (let element of elements) {
 				window[id] = element;
 
-				return {id: id, elements: elements.length};
+				// return first element:
+				return {id: id, elements: elements.length};	
 			}
 
 			return {id: id, elements: elements.length};
 		}, selector, elementContent, id);
 
 		if (response.elements > 1) {
-			console.warn(`[warning] several elements match '${selector.split(',')[0]}${elementContent ? ` "${elementContent}"` : ''}'! Currently, the first one is used.`);
+			console.warn(`[warning] several elements match '${selector.split(',')[0]}${elementContent ? ` "${elementContent}"` : ''}'! The first one is used.`);
 		} else if (response.elements == 0) {
 			throw new Error(`[error] no elements match '${selector.split(',')[0]}${elementContent ? ` "${elementContent}"` : ''}'!`);
 		}
@@ -52,7 +53,6 @@ export class PageParser {
 			for (let element of elements) {
 				const id = generateId();
 				window[id] = element;
-				
 				ids.push(id);
 			}
 
@@ -80,7 +80,7 @@ export class PageParser {
 
 	static async getBoundingRectangles(page: Page, ids: string[]): Promise<DOMRect[]> {
 		const rectangles = await page.evaluate((ids) => {
-			const rectangles = [];
+			const rectangles: string[] = [];
 
 			for (let id of ids) {
 				const element = window[id];
@@ -110,7 +110,6 @@ export class PageParser {
 
 			if (element instanceof HTMLInputElement) {
 				element.value = content;
-
 				element.blur();
 
 				return element.placeholder;
@@ -129,14 +128,14 @@ export class PageParser {
 			const elementsContent: string[] = [];
 
 			for (let id of ids) {
-				const element = window[id];
+				const element: Element = window[id];
 				const elementValues: string[] = [];
 
 				for (let valueSelector of valueSelectors) {
-					const values = element.querySelectorAll(valueSelector);
+					const valueElements = element.querySelectorAll(valueSelector);
 
-					for (let value of values) {
-						elementValues.push(value.textContent);
+					for (let valueElement of valueElements) {
+						elementValues.push(valueElement.textContent);
 					}
 				}
 
