@@ -27,19 +27,15 @@ export class NavigationInstruction extends Instruction {
 		
 		this.sourceUrl = await page.url();
 
-		this.rectangle = await PageParser.getBoundingRectangle(page, selector, null, true);
+		const id = await PageParser.findSingle(page, selector, this.title);
+
+		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
 		
 		await super.saveImageAndMetadata(page, basePath, `${index}_navigate`, [this.rectangle]);
 
-		const successful = await PageParser.clickElement(page, selector, this.title);
+		await page.mouse.click(this.rectangle.x, this.rectangle.y);
 
 		await page.waitForNetworkIdle();
-
-		if (successful) {
-			this.targetUrl = await page.url();
-		} else {
-			throw new Error(`[error] navigation on '${this.locator.substring(0, 100)}' '${this.title}' was unsuccessful!`);
-		}
 
 		super.onSuccess(project);
 

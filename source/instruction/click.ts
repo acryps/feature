@@ -27,24 +27,25 @@ export class ClickInstruction extends Instruction {
 	public async execute(project: Project, page: Page, basePath: string, index: number) {
 		const selector = project.generateSelector(this.locator);
 
-
-		this.rectangle = await PageParser.getBoundingRectangle(page, selector, this.elementContent, true);
-
-		if (this.rectangle) {
-			const viewport = await PageParser.getViewport(page);
-			this.setPosition(this.rectangle, viewport);
-		}
+		const id = await PageParser.findSingle(page, selector, this.elementContent);
 
 		if (this.elementContent) {
 			this.clickableName = this.elementContent;
 		} else {
-			const content = await PageParser.findElementContent(page, selector);
+			const content = await PageParser.getElementContent(page, id);
 			this.clickableName = content;
+		}
+
+		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
+
+		if (this.rectangle) {
+			const viewport = await page.viewport();
+			this.setPosition(this.rectangle, viewport);
 		}
 
 		await super.saveImageAndMetadata(page, basePath, `${index}_click`, [this.rectangle]);
 
-		await PageParser.clickElement(page, selector, this.elementContent);
+		await page.mouse.click(this.rectangle.x, this.rectangle.y);
 
 		await page.waitForNetworkIdle();
 

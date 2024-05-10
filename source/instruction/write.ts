@@ -23,11 +23,13 @@ export class WriteInstruction extends Instruction {
 	public async execute(project: Project, page: Page, basePath: string, index: number) {
 		const selector = project.generateSelector(this.locator);
 
-		this.fieldName = await PageParser.fillInput(this.content, page, selector);
+		const id = await PageParser.findSingle(page, selector);
+
+		this.fieldName = await PageParser.inputContent(page, id, this.content);
 
 		await page.waitForNetworkIdle();
 
-		this.rectangle = await PageParser.getBoundingRectangle(page, selector, null, false);
+		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
 		
 		await super.saveImageAndMetadata(page, basePath, `${index}_write`, [this.rectangle]);
 
