@@ -45,11 +45,13 @@ export class ClickInstruction extends Instruction {
 
 		await super.saveImageAndMetadata(page, basePath, `${index}_click`, [this.rectangle]);
 
-		await page.mouse.click(this.rectangle.x, this.rectangle.y);
+		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
+
+		await page.mouse.click(center.x, center.y);
 
 		await page.waitForNetworkIdle();
 
-		console.log(`[info] clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'`);
+		console.log(`[info] clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}' at (${center.x}, ${center.y})`);
 
 		super.onSuccess(project);
 	}
