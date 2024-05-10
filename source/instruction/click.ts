@@ -21,7 +21,7 @@ export class ClickInstruction extends Instruction {
 	public step(instruction: ClickInstruction): string {
 		super.checkState();
 
-		return `Clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'.`;
+		return `Click on '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'.`;
 	}
 
 	public async execute(project: Project, page: Page, basePath: string, index: number) {
@@ -33,7 +33,7 @@ export class ClickInstruction extends Instruction {
 			this.clickableName = this.elementContent;
 		} else {
 			const content = await PageParser.getElementContent(page, id);
-			this.clickableName = content;
+			this.clickableName = content ? content : this.locator;
 		}
 
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
