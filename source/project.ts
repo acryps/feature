@@ -1,11 +1,6 @@
 import { Instruction } from "./instruction/instruction";
 
 export class Project {
-	private prefixes: string[] = [''];
-	private postfixes: string[] = [''];
-
-	private keywords: { [id: string]: string; } = {}
-
 	constructor(
 		public name: string,
 		public baseUrl: string
@@ -15,34 +10,19 @@ export class Project {
 		instructionType.step = customToString;
 	}
 
-	public addPrefix(prefix: string) {
-		this.prefixes.push(prefix);
-	}
-
-	public addPostfix(postfix: string) {
-		this.postfixes.push(postfix);
-	}
-
-	public addKeyword(key: string, locator: string) {
-		if (this.keywords[key]) {
-			console.warn(`[warning] overwriting existing keyword pair {'${key}' : '${this.keywords[key]}'} with {'${key}' : '${locator}'}!`);
+	public wrapSelector(selector: string): string[] {
+		if (selector == '!') {
+			return ['ui-dialog'];
 		}
 
-		this.keywords[key] = locator;
+		return [`${selector}`, `ui-${selector}`, `.ui-${selector}`, `[ui-${selector}]`, `.${selector}`, `[${selector}]`];
 	}
 
 	public generateSelector(locatorString: string) {
-		let locators = [];
-
-		for (let locator of locatorString.split(' ')) {
-			if (this.keywords[locator]) {
-				locators.push(this.keywords[locator]);
-			} else {
-				locators.push(locator);
-			}
-		}
+		let locators: string[] = locatorString.split(' ');
 
 		const current = locators.shift();
+
 		return this.selector(current, locators, '');
 	}
 
@@ -50,7 +30,7 @@ export class Project {
 		let selectors: string[] = [];
 
 		if (current) {
-			const selectorVariations = this.selectorVariations(current);
+			const selectorVariations = this.wrapSelector(current);
 
 			for (let variation of selectorVariations) {
 				const nextLocators = [...locators];
@@ -63,19 +43,5 @@ export class Project {
 		}
 
 		return selectors.join(', ');
-	}
-
-	private selectorVariations(name: string) {
-		const variations = [];
-
-		for (let prefix of this.prefixes) {
-			for (let postfix of this.postfixes) {
-				variations.push(`${prefix}${name}${postfix}`);
-				variations.push(`.${prefix}${name}${postfix}`);
-				variations.push(`[${prefix}${name}${postfix}]`);
-			}
-		}
-
-		return variations;
 	}
 }
