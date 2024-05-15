@@ -26,6 +26,15 @@ export class WriteInstruction extends Instruction {
 		const id = await PageParser.findSingle(page, selector);
 
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
+
+		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
+
+		if (recorder) {
+			await recorder.simulateCursorMovement(center.x, center.y);
+		}
+
+		await page.mouse.click(center.x, center.y);
+
 		this.fieldName = await PageParser.inputContent(page, id, this.content);
 
 		await page.waitForNetworkIdle();
