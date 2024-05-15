@@ -7,7 +7,6 @@ import { PresentInstruction } from "./instruction/present";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
-import * as filestream from 'fs';
 import { Recorder } from "./video/recorder";
 
 export class Feature {
@@ -57,43 +56,41 @@ export class Feature {
 	}
 
 	public async execute(project: Project, page: Page) {
+		const steps: {
+			guide: string[];
+			screenshots: {
+				image: Buffer;
+				highlight: DOMRect[];
+				ignore: DOMRect[];
+			}[];
+		}[] = [];
+
+		let video;
+		
+		const recorder = new Recorder(page, `${__dirname}/../video`, 'video.mp4');
+		recorder.start();
+		
 		try {
-			const recorder = new Recorder(page, `${__dirname}/../video`, 'video.mp4');
-			recorder.start();
 
-			const basePath = this.initializeMediaStorage(project);
-
-			for (let [index, instruction] of this.instructions.entries()) {
-				await instruction.execute(project, page, basePath, index, recorder);
+			for (let instruction of this.instructions) {
+				const instructionResult = await instruction.execute(project, page, recorder);
+				steps.push(instructionResult);
 			}
 
-			recorder.stop();
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
-
+			
 			if (error instanceof Error) {
 				console.error(`[error] ${error.stack}`);
 			}
 		}
+		
+		recorder.stop();
+		video = recorder.composeVideo();
+
+		return {
+			steps: steps,
+			video: video
+		};
 	}
-
-	public generateGuide(): string {
-		const steps: string[] = [];
-
-		for (let [index, instruction] of this.instructions.entries()) {
-			steps.push(`${index + 1}. ${instruction.step(instruction)}`);
-		}
-
-		return steps.join('\n');
-	}
-
-	private initializeMediaStorage(project: Project) {
-		const path = `${process.env.MEDIA_BASEPATH}/${project.name}/${this.name}/`;
-
-		if (!filestream.existsSync(path)){
-			filestream.mkdirSync(path, { recursive: true });
-		}
-
-		return path;
-	} 
 }

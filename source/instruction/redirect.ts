@@ -13,13 +13,7 @@ export class RedirectInstruction extends Instruction {
 		super();
 	}
 
-	public step(instruction: RedirectInstruction): string {
-		super.checkState();
-
-		return `Redirect to '${this.url}'.`;
-	}
-
-	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, recorder?: Recorder) {
 		const response = await page.goto(`${this.url}`, {
 			waitUntil: 'networkidle0',
 		});
@@ -28,8 +22,14 @@ export class RedirectInstruction extends Instruction {
 			throw new Error(`[error] failed to load page '${this.url}'`);
 		}
 
-		super.onSuccess(project);
+		const step = `redirect to '${this.url}'`;
+		this.guide.push(step);
 
-		console.log(`[info] redirected to '${this.url}'`);
+		console.log(`[info] ${step}`);
+
+		return {
+			screenshots: this.screenshots,
+			guide: this.guide
+		};
 	}
 }

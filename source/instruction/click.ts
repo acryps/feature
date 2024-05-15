@@ -19,13 +19,7 @@ export class ClickInstruction extends Instruction {
 		super();
 	}
 
-	public step(instruction: ClickInstruction): string {
-		super.checkState();
-
-		return `Click on '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'.`;
-	}
-
-	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, recorder?: Recorder) {
 		const selector = project.generateSelector(this.locator);
 
 		const id = await PageParser.findSingle(page, selector, this.elementContent);
@@ -44,7 +38,7 @@ export class ClickInstruction extends Instruction {
 			this.setPosition(this.rectangle, viewport);
 		}
 
-		await super.saveImageAndMetadata(page, basePath, `${index}_click`, [this.rectangle]);
+		await super.screenshot(page, [this.rectangle]);
 
 		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
 
@@ -56,9 +50,15 @@ export class ClickInstruction extends Instruction {
 
 		await page.waitForNetworkIdle();
 
-		console.log(`[info] clicked '${this.clickableName}' on the '${this.vertical} ${this.horizontal}' at (${center.x}, ${center.y})`);
+		const step = `click '${this.clickableName}' on the ${this.vertical} ${this.horizontal} at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
+		this.guide.push(step);
 
-		super.onSuccess(project);
+		console.log(`[info] ${step}`);
+
+		return {
+			screenshots: this.screenshots,
+			guide: this.guide
+		};
 	}
 
 	private setPosition(rectangle: DOMRect, viewport: {width: number, height: number}) {

@@ -15,13 +15,7 @@ export class WriteInstruction extends Instruction {
 		super();
 	}
 
-	public step(instruction: WriteInstruction): string {
-		super.checkState();
-
-		return `Write '${this.content}' into the '${this.fieldName}' field.`;
-	}
-
-	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, recorder?: Recorder) {
 		const selector = project.generateSelector(this.locator);
 		const id = await PageParser.findSingle(page, selector);
 
@@ -39,10 +33,16 @@ export class WriteInstruction extends Instruction {
 
 		await page.waitForNetworkIdle();
 
-		await super.saveImageAndMetadata(page, basePath, `${index}_write`, [this.rectangle]);
+		await super.screenshot(page, [this.rectangle]);
 
-		super.onSuccess(project);
+		const step = `write '${this.content}' in '${this.fieldName}' field`;
+		this.guide.push(step);
 
-		console.log(`[info] wrote '${this.content}' in '${this.fieldName}' field`)
+		console.log(`[info] ${step}`);
+
+		return {
+			screenshots: this.screenshots,
+			guide: this.guide
+		};
 	}
 }

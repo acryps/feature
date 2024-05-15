@@ -17,13 +17,7 @@ export class NavigationInstruction extends Instruction {
 		super();
 	}
 
-	public step(instruction: NavigationInstruction): string {
-		super.checkState();
-
-		return `Go to '${this.title}' '${this.targetUrl}' from '${this.sourceUrl}'.`;
-	}
-
-	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, recorder?: Recorder) {
 		const selector = project.generateSelector(this.locator);
 		
 		const id = await PageParser.findSingle(page, selector, this.title);
@@ -31,7 +25,7 @@ export class NavigationInstruction extends Instruction {
 		this.sourceUrl = await page.url();
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
 		
-		await super.saveImageAndMetadata(page, basePath, `${index}_navigate`, [this.rectangle]);
+		await super.screenshot(page, [this.rectangle]);
 
 		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
 
@@ -42,8 +36,14 @@ export class NavigationInstruction extends Instruction {
 		await page.mouse.click(this.rectangle.x, this.rectangle.y);
 		await page.waitForNetworkIdle();
 
-		super.onSuccess(project);
+		const step = `navigate to '${this.title}' '${this.targetUrl}' from '${this.sourceUrl}'`;
+		this.guide.push(step);
 
-		console.log(`[info] navigated to '${this.title}' '${this.targetUrl}' from '${this.sourceUrl}'`);
+		console.log(`[info] ${step}`);
+
+		return {
+			screenshots: this.screenshots,
+			guide: this.guide
+		};
 	}
 }

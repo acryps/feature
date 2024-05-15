@@ -6,10 +6,7 @@ export async function assemblyFeature() {
 	const browserManager = new BrowserManager();
 	await browserManager.launch();
 	
-	const project = new Project('https://assembly.acryps.com');
-	// add project specific prefixes (and postfixes)
-	project.addPrefix('ui-');
-	project.addKeyword('!', 'dialog');
+	const project = new Project('assembly', 'https://assembly.acryps.com');
 
 	const productName = 'ecM1-Series | Elementarum PTFE Lined Butterfly Valve';
 	const productRoute = '/configure/yckiuj/0'
@@ -23,15 +20,6 @@ export async function assemblyFeature() {
 		.click('options option name', 'Duplex')
 		.click('options option name', 'UHMPE')
 		.click('options option name', 'EPDM')
-		.click('options option name', 'Ductile Iron 5.3103')
-		.click('options option name', 'Wafer')
-		.click('options option name', 'Class 150')
-		.click('options option name', 'Square 45°')
-		.click('options option name', 'Yellow Green')
-		.click('options option name', 'EN 12944-5, C2M >120µm')
-		.click('options option name', 'Add Earth Cable')
-		.click('options option name', '3.1 EN 10204, P10, P11, P12')
-		.click('options option name', 'Bare Shaft')
 	
 		// save product
 		.click('configurator actions save')
@@ -44,44 +32,81 @@ export async function assemblyFeature() {
 		.navigate('navigation page-links href', 'home')
 
 		// present saved configurations
+		.present('saved-assemblies-section assembly', ['name', 'product-code'])
+
+		.click('product create')
+		// // configure product:
+		// .click('slot header name', 'Size')
+		.click('options option name', '24"')
+
+		// .click('slot header name', 'Disc')
+		.click('options option name', 'Duplex')
+
+		.click('slot header name', 'Body')
+		.click('options option name', 'Ductile Iron 5.3103')
+
+		.click('slot header name', 'Actuator')
+		.click('options option name', 'Bare Shaft')
+	
+		// save product
+		.click('configurator actions save')
+
+		// enter product configuration
+		.write('! input', 'My Configuration 2')
+		.click('! actions save')
+
+		// navigate to home
+		.navigate('navigation page-links href', 'home')
+
+		// present saved configurations
 		.present('saved-assemblies-section assembly', ['name', 'product-code']);
 
-	// feature.click('product create')
-	// 		// configure product:
-	// 		.click('options option name', 'Duplex')
-	// 		.click('options option name', 'Ductile Iron 5.3103')
-	// 		.click('options option name', 'Square 45°')
-	// 		.click('options option name', 'Yellow Green')
-	// 		.click('options option name', 'EN 12944-5, C2M >120µm')
-	// 		.click('options option name', 'Bare Shaft')
-		
-	// 		// save product
-	// 		.click('configurator actions save')
+	// execute the feature
+	const result = await feature.execute(project, await browserManager.getPage());
+	console.log(result);
+
+	await browserManager.close();
+}
+
+export async function ringbakerFeature() {
+	const browserManager = new BrowserManager();
+	await browserManager.launch();
 	
-	// 		// enter product configuration
-	// 		.write('! input', 'My Configuration 2')
-	// 		.click('! actions save')
+	const project = new Project('ringbaker', 'https://ringbaker.com');
 	
-	// 		// navigate to home
-	// 		.navigate('navigation page-links href', 'home')
-	
-	// 		// present saved configurations
-	// 		.present('saved-assemblies-section assembly', ['name', 'product-code']);
+	const feature = new Feature(`Configure a ring'`, 'Example configuration of a ring.');
+
+	// define a feature
+	feature.prepare('Ringabaker Ring', '')
+		// configure product:
+		.click('banner button')
+		.click('pack pack-title', 'Silver 925')
+		.click('modifier title', 'Material and base')
+		.click('option title', '14K Gold')
+		.click('section option title', 'Rose Gold')
+		.click('toolbar button', 'Apply')
+
+		.click('add-modifier')
+		.click('modifier-preview')
+		.click('popup-controller button', 'Select Symbol')
+		.click('decoration-images decoration-image img')
+		.click('presets predicted')
+		.click('presets predicted action')
+		.click('presets predicted action')
+		.click('toolbar button', 'Apply')
+
+		.click('toolbar button', 'Continue')
+		.click('toolbar button', 'Add Ring To Cart')
+		.click('preview-image action like')
 
 	// execute the feature
-	await feature.execute(project, await browserManager.getPage());
-
-	// generate feature guide
-	const guide = feature.generateGuide();
-	console.log();
-	console.log(guide);
+	const result = await feature.execute(project, await browserManager.getPage());
 
 	await browserManager.close();
 }
 
 export async function wikiFeature() {
-	const project = new Project('https://www.wikipedia.org/');
-	project.addPrefix('ui-');
+	const project = new Project('wikipedia', 'https://www.wikipedia.org/');
 
 	const browserManager = new BrowserManager();
 	await browserManager.launch();
@@ -91,10 +116,7 @@ export async function wikiFeature() {
 		.write('input#searchInput', 'NodeJS')
 		.click('button.pure-button.pure-button-primary-progressive')
 
-	await feature.execute(project, await browserManager.getPage());
-
-	console.log();
-	console.log(feature.generateGuide());
+	const result = await feature.execute(project, await browserManager.getPage());
 
 	await browserManager.close();
 }

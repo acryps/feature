@@ -6,10 +6,6 @@ export class Project {
 		public baseUrl: string
 	) {}
 
-	public customStep<T extends Instruction>(instructionType: T, customToString: (instance: T) => string) {
-		instructionType.step = customToString;
-	}
-
 	public wrapSelector(selector: string): string[] {
 		if (selector == '!') {
 			return ['ui-dialog'];

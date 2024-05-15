@@ -15,13 +15,7 @@ export class PresentInstruction extends Instruction {
 		super();
 	}
 
-	public step(instruction: PresentInstruction): string {
-		super.checkState();
-
-		return `Find elements ${this.elementsContent.map(element => `'${element}'`).join(', ')}.`;
-	}
-
-	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, recorder?: Recorder) {
 		const selector = project.generateSelector(this.locator);
 		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
 
@@ -34,10 +28,16 @@ export class PresentInstruction extends Instruction {
 			this.rectangles = await PageParser.getBoundingRectangles(page, ids);
 		}
 
-		await super.saveImageAndMetadata(page, basePath, `${index}_present`, this.rectangles);
+		await super.screenshot(page, this.rectangles);
 
-		super.onSuccess(project);
+		const step = `find elements ${this.elementsContent.map(element => `'${element}'`).join(', ')}`;
+		this.guide.push(step);
 
-		console.log(`[info] find elements '${this.elementsContent.join(', ')}'`);
+		console.log(`[info] ${step}`);
+
+		return {
+			screenshots: this.screenshots,
+			guide: this.guide
+		};
 	}
 }

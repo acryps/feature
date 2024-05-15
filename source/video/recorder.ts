@@ -4,8 +4,8 @@ import * as Jimp from 'jimp'
 export class Recorder {
     public cursor = {x: 0, y: 0};
 
-    private stepInterval = 1000 / 60;
-    private movementTime = 3 * 1000;
+    private stepTimeout = 1000 / 60;
+    private movementDuration = 3 * 1000;
 
     private screenshotTimeout = 1000 / 1;
 
@@ -39,7 +39,7 @@ export class Recorder {
         const deltaX = x - this.cursor.x;
         const deltaY = y - this.cursor.y;
 
-        const steps = this.movementTime / this.stepInterval;
+        const steps = this.movementDuration / this.stepTimeout;
 
         const stepSizeX = deltaX / steps;
         const stepSizeY = deltaY / steps;
@@ -49,11 +49,14 @@ export class Recorder {
                 this.cursor.x += stepSizeX;
                 this.cursor.y += stepSizeY;
 
-                console.log(`x: ${this.cursor.x}, y: ${this.cursor.y}`);
-            
                 done();
-            }, this.stepInterval));
+            }, this.stepTimeout));
         }
+    }
+
+    public composeVideo() {
+        // todo: create video using frames
+        return;
     }
 
     private async addCursor(buffer: Buffer,  x: number, y: number) {
@@ -65,7 +68,7 @@ export class Recorder {
 
     private async saveFrame(frame: Jimp) {
         const savePath = `${this.path}/frame_${this.frames}.${frame.getExtension()}`;
-        console.log(`saved frame 'frame_${this.frames}.${frame.getExtension()}'`);
+        console.log(`[info] saved frame 'frame_${this.frames}.${frame.getExtension()}'`);
         await frame.writeAsync(savePath);
     }
 
