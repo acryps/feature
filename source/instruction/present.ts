@@ -2,6 +2,7 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
+import { Recorder } from "../video/recorder";
 
 export class PresentInstruction extends Instruction {
 	private elementsContent: string[] = [];
@@ -20,7 +21,7 @@ export class PresentInstruction extends Instruction {
 		return `Find elements ${this.elementsContent.map(element => `'${element}'`).join(', ')}.`;
 	}
 
-	public async execute(project: Project, page: Page, basePath: string, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
 		const selector = project.generateSelector(this.locator);
 		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
 

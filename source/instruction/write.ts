@@ -2,6 +2,7 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
+import { Recorder } from "../video/recorder";
 
 export class WriteInstruction extends Instruction {
 	private fieldName: string;
@@ -20,7 +21,7 @@ export class WriteInstruction extends Instruction {
 		return `Write '${this.content}' into the '${this.fieldName}' field.`;
 	}
 
-	public async execute(project: Project, page: Page, basePath: string, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
 		const selector = project.generateSelector(this.locator);
 		const id = await PageParser.findSingle(page, selector);
 

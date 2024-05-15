@@ -2,6 +2,7 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
+import { Recorder } from "../video/recorder";
 
 export class ClickInstruction extends Instruction {
 	private clickableName: string;
@@ -24,7 +25,7 @@ export class ClickInstruction extends Instruction {
 		return `Click on '${this.clickableName}' on the '${this.vertical} ${this.horizontal}'.`;
 	}
 
-	public async execute(project: Project, page: Page, basePath: string, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
 		const selector = project.generateSelector(this.locator);
 
 		const id = await PageParser.findSingle(page, selector, this.elementContent);
@@ -46,6 +47,10 @@ export class ClickInstruction extends Instruction {
 		await super.saveImageAndMetadata(page, basePath, `${index}_click`, [this.rectangle]);
 
 		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
+
+		if (recorder) {
+			await recorder.simulateCursorMovement(center.x, center.y);
+		}
 
 		await page.mouse.click(center.x, center.y);
 

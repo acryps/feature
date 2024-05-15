@@ -1,5 +1,6 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
+import { Recorder } from "../video/recorder";
 import { Instruction } from "./instruction";
 
 export class RedirectInstruction extends Instruction {
@@ -18,7 +19,7 @@ export class RedirectInstruction extends Instruction {
 		return `Redirect to '${this.url}'.`;
 	}
 
-	public async execute(project: Project, page: Page, basePath: string, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
 		const response = await page.goto(`${this.url}`, {
 			waitUntil: 'networkidle0',
 		});

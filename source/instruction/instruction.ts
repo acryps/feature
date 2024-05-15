@@ -1,5 +1,6 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
+import { Recorder } from "../video/recorder";
 import * as filestream from 'fs';
 
 export abstract class Instruction {
@@ -10,7 +11,7 @@ export abstract class Instruction {
 		throw new Error("Method not implemented.")
 	}
 	
-	public async execute(project: Project, page: Page, basePath: string, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
 		throw new Error("Method not implemented.");
 	}
 

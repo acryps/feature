@@ -8,6 +8,7 @@ import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
 import * as filestream from 'fs';
+import { Recorder } from "./video/recorder";
 
 export class Feature {
 	private instructions: Instruction[];
@@ -57,11 +58,16 @@ export class Feature {
 
 	public async execute(project: Project, page: Page) {
 		try {
+			const recorder = new Recorder(page, `${__dirname}/../video`, 'video.mp4');
+			recorder.start();
+
 			const basePath = this.initializeMediaStorage(project);
 
 			for (let [index, instruction] of this.instructions.entries()) {
-				await instruction.execute(project, page, basePath, index);
+				await instruction.execute(project, page, basePath, index, recorder);
 			}
+
+			recorder.stop();
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
 

@@ -1,6 +1,7 @@
 import { Page } from "puppeteer";
 import { PageParser } from "../page/parser";
 import { Project } from "../project";
+import { Recorder } from "../video/recorder";
 import { Instruction } from "./instruction";
 
 export class PrepareInstruction extends Instruction {
@@ -17,7 +18,7 @@ export class PrepareInstruction extends Instruction {
 		return `Configure product '${this.name}' at '${this.project?.baseUrl}${this.route}'.`;
 	}
 
-	public async execute(project: Project, page: Page, basePath: string, index: number) {
+	public async execute(project: Project, page: Page, basePath: string, index: number, recorder?: Recorder) {
 		const response = await page.goto(`${project.baseUrl}${this.route}`, {
 			waitUntil: 'networkidle0',
 		});
