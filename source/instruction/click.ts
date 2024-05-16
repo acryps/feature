@@ -19,7 +19,9 @@ export class ClickInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder) {
+		super.initializeExecution(configuration);
+
 		const selector = project.generateSelector(this.locator);
 
 		const id = await PageParser.findSingle(page, selector, this.elementContent);
@@ -55,10 +57,7 @@ export class ClickInstruction extends Instruction {
 
 		console.log(`[info] ${step}`);
 
-		return {
-			screenshots: this.screenshots,
-			guide: this.guide
-		};
+		return super.finishExecution();
 	}
 
 	private setPosition(rectangle: DOMRect, viewport: {width: number, height: number}) {

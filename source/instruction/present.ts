@@ -15,7 +15,9 @@ export class PresentInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder) {
+		super.initializeExecution(configuration);
+
 		const selector = project.generateSelector(this.locator);
 		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
 
@@ -35,9 +37,6 @@ export class PresentInstruction extends Instruction {
 
 		console.log(`[info] ${step}`);
 
-		return {
-			screenshots: this.screenshots,
-			guide: this.guide
-		};
+		return super.finishExecution();
 	}
 }

@@ -9,8 +9,11 @@ export abstract class Instruction {
 		highlight: DOMRect[], 
 		ignore: DOMRect[]
 	}[] = [];
+
+	public generateGuide: boolean;
+	public generateScreenshots: boolean;
 	
-	public async execute(project: Project, page: Page, recorder?: Recorder): Promise<{
+	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder): Promise<{
 		guide: string[];
 		screenshots: {
 			image: Buffer;
@@ -21,13 +24,32 @@ export abstract class Instruction {
 		throw new Error("Method not implemented.");
 	}
 
-	public async screenshot(page: Page, highlight: DOMRect[]) {
-		const imageBuffer = await page.screenshot();
+	public initializeExecution(configuration: {guide: boolean, screenshots: boolean}) {
+		this.generateGuide = configuration.guide;
+		this.generateScreenshots = configuration.screenshots;
+	}
 
-		this.screenshots.push({
-			image: imageBuffer,
-			highlight: highlight,
-			ignore: []
-		});
+	public finishExecution() {
+		const result = {
+			screenshots: this.screenshots,
+			guide: this.generateGuide ? this.guide : []
+		};
+
+		this.generateGuide = null;
+		this.generateScreenshots = null;
+
+		return result;
+	}
+
+	public async screenshot(page: Page, highlight: DOMRect[]) {
+		if (this.generateScreenshots) {
+			const imageBuffer = await page.screenshot();
+	
+			this.screenshots.push({
+				image: imageBuffer,
+				highlight: highlight,
+				ignore: []
+			});
+		}
 	}
 }

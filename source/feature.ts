@@ -55,7 +55,7 @@ export class Feature {
 		return this;
 	}
 
-	public async execute(project: Project, page: Page) {
+	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean, video: boolean}) {
 		const steps: {
 			guide: string[];
 			screenshots: {
@@ -65,12 +65,16 @@ export class Feature {
 			}[];
 		}[] = [];
 
-		const recorder = new Recorder(page, `${__dirname}/../video`, 'video.mp4');
-		recorder.start();
-		
+		let recorder;
+
+		if (configuration.video) {
+			recorder = new Recorder(page, `${__dirname}/../video`, 'video.mp4');
+			recorder.start();
+		}
+
 		try {
 			for (let instruction of this.instructions) {
-				steps.push(await instruction.execute(project, page, recorder));
+				steps.push(await instruction.execute(project, page, {guide: configuration.guide, screenshots: configuration.screenshots}, recorder));
 			}
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
@@ -80,8 +84,8 @@ export class Feature {
 			}
 		}
 		
-		recorder.stop();
-		const video = recorder.composeVideo();
+		recorder?.stop();
+		const video = recorder?.composeVideo();
 
 		return {
 			steps: steps,

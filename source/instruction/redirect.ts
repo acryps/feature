@@ -13,7 +13,9 @@ export class RedirectInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder) {
+		super.initializeExecution(configuration);
+
 		const response = await page.goto(`${this.url}`, {
 			waitUntil: 'networkidle0',
 		});
@@ -27,9 +29,6 @@ export class RedirectInstruction extends Instruction {
 
 		console.log(`[info] ${step}`);
 
-		return {
-			screenshots: this.screenshots,
-			guide: this.guide
-		};
+		return super.finishExecution();
 	}
 }
