@@ -2,7 +2,7 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
-import { Recorder } from "../video/recorder";
+import { Mouse } from "../video/mouse";
 
 export class WriteInstruction extends Instruction {
 	private fieldName: string;
@@ -15,7 +15,7 @@ export class WriteInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}) {
 		super.initializeExecution(configuration);
 
 		const selector = project.generateSelector(this.locator);
@@ -24,12 +24,7 @@ export class WriteInstruction extends Instruction {
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
 
 		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
-
-		if (recorder) {
-			await recorder.simulateCursorMovement(center.x, center.y);
-		}
-
-		await page.mouse.click(center.x, center.y);
+		await mouse.click(center.x, center.y);
 
 		this.fieldName = await PageParser.inputContent(page, id, this.content);
 

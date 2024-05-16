@@ -1,7 +1,6 @@
 import { Page } from "puppeteer";
-import { PageParser } from "../page/parser";
 import { Project } from "../project";
-import { Recorder } from "../video/recorder";
+import { Mouse } from "../video/mouse";
 import { Instruction } from "./instruction";
 
 export class PrepareInstruction extends Instruction {
@@ -12,7 +11,7 @@ export class PrepareInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}) {
 		super.initializeExecution(configuration);
 
 		const response = await page.goto(`${project.baseUrl}${this.route}`, {

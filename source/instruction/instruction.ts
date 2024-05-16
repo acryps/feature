@@ -1,5 +1,6 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
+import { Mouse } from "../video/mouse";
 import { Recorder } from "../video/recorder";
 
 export abstract class Instruction {
@@ -13,7 +14,7 @@ export abstract class Instruction {
 	public generateGuide: boolean;
 	public generateScreenshots: boolean;
 	
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder): Promise<{
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}): Promise<{
 		guide: string[];
 		screenshots: {
 			image: Buffer;

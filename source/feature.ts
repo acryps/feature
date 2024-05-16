@@ -8,6 +8,7 @@ import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
 import { Recorder } from "./video/recorder";
+import { Mouse } from "./video/mouse";
 
 export class Feature {
 	private instructions: Instruction[];
@@ -65,16 +66,18 @@ export class Feature {
 			}[];
 		}[] = [];
 
+		const mouse = new Mouse(page, configuration.video);
+		
 		let recorder;
 
 		if (configuration.video) {
-			recorder = new Recorder(page, `${__dirname}/../video`, 'video.mp4');
+			recorder = new Recorder(page, mouse, `${__dirname}/../video`, 'video.mp4');
 			recorder.start();
 		}
 
 		try {
 			for (let instruction of this.instructions) {
-				steps.push(await instruction.execute(project, page, {guide: configuration.guide, screenshots: configuration.screenshots}, recorder));
+				steps.push(await instruction.execute(project, page, mouse, {guide: configuration.guide, screenshots: configuration.screenshots}));
 			}
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);

@@ -2,7 +2,7 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
-import { Recorder } from "../video/recorder";
+import { Mouse } from "../video/mouse";
 
 export class ClickInstruction extends Instruction {
 	private clickableName: string;
@@ -19,11 +19,10 @@ export class ClickInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}, recorder?: Recorder) {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}) {
 		super.initializeExecution(configuration);
 
 		const selector = project.generateSelector(this.locator);
-
 		const id = await PageParser.findSingle(page, selector, this.elementContent);
 
 		if (this.elementContent) {
@@ -43,14 +42,7 @@ export class ClickInstruction extends Instruction {
 		await super.screenshot(page, [this.rectangle]);
 
 		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
-
-		if (recorder) {
-			await recorder.simulateCursorMovement(center.x, center.y);
-		}
-
-		await page.mouse.click(center.x, center.y);
-
-		await page.waitForNetworkIdle();
+		await mouse.click(center.x, center.y);
 
 		const step = `click '${this.clickableName}' on the ${this.vertical} ${this.horizontal} at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
 		this.guide.push(step);
