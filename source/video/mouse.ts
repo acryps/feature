@@ -1,5 +1,4 @@
 import { Page } from "puppeteer";
-import { Recorder } from "./recorder";
 
 export class Mouse {
     public x = 0;
@@ -7,6 +6,8 @@ export class Mouse {
 
     private stepTimeout = 1000 / 60;
     private movementDuration = 3 * 1000;
+
+    private clickTimeout = 1000 / 5;
 
     constructor(
         private page: Page,
@@ -16,6 +17,8 @@ export class Mouse {
     public async click(x: number, y: number) {
         if (this.recording) {
 			await this.simulateCursorMovement(x, y);
+
+            await new Promise<void>(done => setTimeout(() => done(), this.clickTimeout));
 		}
 
         await this.page.mouse.click(x, y);
@@ -36,7 +39,7 @@ export class Mouse {
                 this.x += stepSizeX;
                 this.y += stepSizeY;
 
-                await this.page.mouse.move(x, y);
+                await this.page.mouse.move(this.x, this.y);
 
                 done();
             }, this.stepTimeout));
