@@ -41,7 +41,7 @@ export class Recorder {
         await this.loadCursor();
         const image = await Jimp.read(buffer);
 
-        return image.composite(this.cursorImage, x, y);
+        return image.composite(this.cursorImage, x - (this.cursorImage.bitmap.width / 2), y - (this.cursorImage.bitmap.height / 2));
     }
 
     private async saveFrame(frame: Jimp) {

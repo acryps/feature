@@ -7,7 +7,7 @@ export class Mouse {
     private stepTimeout = 1000 / 60;
     private movementDuration = 3 * 1000;
 
-    private clickTimeout = 1000 / 5;
+    private clickTimeout = 1000 / 10;
 
     constructor(
         private page: Page,
