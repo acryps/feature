@@ -65,18 +65,13 @@ export class Feature {
 			}[];
 		}[] = [];
 
-		let video;
-		
 		const recorder = new Recorder(page, `${__dirname}/../video`, 'video.mp4');
 		recorder.start();
 		
 		try {
-
 			for (let instruction of this.instructions) {
-				const instructionResult = await instruction.execute(project, page, recorder);
-				steps.push(instructionResult);
+				steps.push(await instruction.execute(project, page, recorder));
 			}
-
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
 			
@@ -86,7 +81,7 @@ export class Feature {
 		}
 		
 		recorder.stop();
-		video = recorder.composeVideo();
+		const video = recorder.composeVideo();
 
 		return {
 			steps: steps,
