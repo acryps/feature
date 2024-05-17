@@ -1,9 +1,13 @@
 import { Page } from "puppeteer";
 import { Mouse } from "./mouse";
+import * as ffmpeg from 'fluent-ffmpeg';
+import * as ffmpegStatic from 'ffmpeg-static';
+import * as filestream from 'fs';
 import * as Jimp from 'jimp'
 
 export class Recorder {
-    private screenshotTimeout = 1000 / 1;
+    private fps = 1;
+    private screenshotTimeout = 1000 / this.fps;
 
     private invervalId;
     private frames = 0;
@@ -33,8 +37,33 @@ export class Recorder {
     }
 
     public composeVideo() {
-        // todo: create video using frames
-        return;
+        ffmpeg.setFfmpegPath(ffmpegStatic);
+        const command = ffmpeg();
+        
+        filestream.readdir(`${this.path}/`, (error, files) => {
+            files.sort((a, b) => +a.split('.')[0] - +b.split('.')[0]);
+
+            for (let file of files) {
+                command.input(`${this.path}/${file}`)
+            }
+
+            command.on('start', (commandLine) => {
+                    console.log(`[info] spawned ffmpeg with command: ${commandLine}`);
+                })
+                .on('error', (err, stdout, stderr) => {
+                    console.error('[error] failed to compose video:', err.message);
+                    console.error(err)
+                })
+                .on('end', () => {
+                    console.log('[info] successfully composed video');
+                })
+                .inputFPS(this.fps)
+                .outputOptions('-vf', `fps=${this.fps}`)
+                .outputOptions('-c:v', 'libx264')
+                .outputFormat('mp4')
+                .output(`./${this.name}.mp4`)
+                .run();
+        });
     }
 
     private async addCursor(buffer: Buffer,  x: number, y: number) {
@@ -45,8 +74,10 @@ export class Recorder {
     }
 
     private async saveFrame(frame: Jimp) {
-        const savePath = `${this.path}/frame_${this.frames}.${frame.getExtension()}`;
-        console.log(`[info] saved frame 'frame_${this.frames}.${frame.getExtension()}'`);
+        const savePath = `${this.path}/${this.frames}.${frame.getExtension()}`;
+
+        console.log(`[info] saved frame '${this.frames}.${frame.getExtension()}'`);
+
         await frame.writeAsync(savePath);
     }
 

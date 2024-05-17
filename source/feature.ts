@@ -71,7 +71,7 @@ export class Feature {
 		let recorder;
 
 		if (configuration.video) {
-			recorder = new Recorder(page, mouse, `${__dirname}/../video`, 'video.mp4');
+			recorder = new Recorder(page, mouse, `${__dirname}/../video`, 'video_sample');
 			recorder.start();
 		}
 
