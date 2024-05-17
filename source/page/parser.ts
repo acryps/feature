@@ -1,4 +1,5 @@
 import { Page } from "puppeteer";
+import { Mouse } from '../video/mouse';
 
 export class PageParser {
 	static async findSingle(page: Page, selector: string, elementContent?: string): Promise<string> {
@@ -14,7 +15,7 @@ export class PageParser {
 			for (let element of elements) {
 				window[id] = element;
 
-				// return first element:
+				// return first element
 				return {id: id, elements: elements.length};	
 			}
 
@@ -148,7 +149,7 @@ export class PageParser {
 		return elementsContent;
 	}
 
-	static async visibleBoundingRectangle(page: Page, id: string): Promise<DOMRect> {
+	static async visibleBoundingRectangle(page: Page, mouse: Mouse, id: string): Promise<DOMRect> {
 		const viewport = await page.viewport();
 		const rectangle = await this.getBoundingRectangle(page, id);
 
@@ -158,20 +159,39 @@ export class PageParser {
 			&& (rectangle.y + rectangle.height) <= viewport.height;
 
 		if (!visible) {
-			await page.evaluate((id) => {
-				const element: HTMLElement = window[id];
-
-				element.scrollIntoView({
-					block: 'center',
-					inline: 'center',
-					// behavior: 'smooth' // todo: for video
-				});
-			}, id);
+			await mouse.scrollIntoView(page, id);
 
 			return await this.getBoundingRectangle(page, id);
 		}
 
 		return rectangle;
+	}
+
+	// set timer to wait for changes on the page
+	public static async waitForUpdates(page: Page) {
+		// wait for no changes on the page
+		await new Promise<void>((done, reject) => {
+			// timeout
+			const timer = setTimeout(() => reject(), 30 * 1000);
+			
+			// wait for initial load
+			setTimeout(() => {
+				let content: string;
+				
+				const waiter = setInterval(async () => {
+					const updated = await page.evaluate(() => document.body.innerHTML);
+					
+					if (updated == content) {
+						clearTimeout(timer);
+						clearInterval(waiter);
+						
+						done();
+					} else {
+						content = updated;
+					}
+				}, 250);
+			}, 100);
+		});
 	}
 
 	private static generateId(): string {

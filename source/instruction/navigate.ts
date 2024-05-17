@@ -26,7 +26,7 @@ export class NavigationInstruction extends Instruction {
 		const id = await PageParser.findSingle(page, selector, this.title);
 		
 		this.sourceUrl = await page.url();
-		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
+		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
 		
 		await super.screenshot(page, [this.rectangle]);
 

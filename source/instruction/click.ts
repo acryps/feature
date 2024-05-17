@@ -32,7 +32,7 @@ export class ClickInstruction extends Instruction {
 			this.clickableName = content ? content : this.locator;
 		}
 
-		this.rectangle = await PageParser.visibleBoundingRectangle(page, id);
+		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
 
 		if (this.rectangle) {
 			const viewport = await page.viewport();

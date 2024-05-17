@@ -1,4 +1,5 @@
 import { Page } from "puppeteer";
+import { PageParser } from "../page/parser";
 
 export class Mouse {
     public x = 0;
@@ -43,6 +44,24 @@ export class Mouse {
 
                 done();
             }, this.stepTimeout));
+        }
+    }
+
+    public async scrollIntoView(page: Page, id: string) {
+        const behavior: ScrollBehavior = this.recording ? 'smooth' : 'auto';
+
+        await page.evaluate((id, behavior) => {
+            const element: HTMLElement = window[id];
+
+            element.scrollIntoView({
+                block: 'center',
+                inline: 'center',
+                behavior: behavior
+            });
+        }, id, behavior);
+
+        if (this.recording) {
+            await PageParser.waitForUpdates(page);
         }
     }
 }
