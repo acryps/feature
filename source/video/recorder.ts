@@ -6,7 +6,7 @@ import * as filestream from 'fs';
 import * as Jimp from 'jimp'
 
 export class Recorder {
-    private fps = 1;
+    private fps = 2;
     private screenshotTimeout = 1000 / this.fps;
 
     private invervalId;
@@ -83,7 +83,7 @@ export class Recorder {
 
     private async loadCursor() {
         if (!this.cursorImage) {
-            this.cursorImage = await Jimp.read(`${__dirname}/../../assets/cursor.png`);
+            this.cursorImage = await (await Jimp.read(`${__dirname}/../../assets/cursor.png`)).resize(60, 60);
         }
     }
 }
