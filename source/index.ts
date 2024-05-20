@@ -37,7 +37,7 @@ export async function assemblyFeature() {
 		.click('product create')
 		// // configure product:
 		// .click('slot header name', 'Size')
-		.click('options option name', '24"')
+		.click('options option name', 'DN 600')
 
 		// .click('slot header name', 'Disc')
 		.click('options option name', 'Duplex')
@@ -127,6 +127,6 @@ export async function wikiFeature() {
 	await browserManager.close();
 }
 
-assemblyFeature().then(() => {
+ringbakerFeature().then(() => {
 	console.log('feature done');
 });

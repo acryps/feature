@@ -88,7 +88,7 @@ export class Feature {
 		}
 		
 		recorder?.stop();
-		const video = recorder?.composeVideo();
+		const video = await recorder?.composeVideo();
 
 		return {
 			steps: steps,

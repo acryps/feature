@@ -28,7 +28,7 @@ export class WriteInstruction extends Instruction {
 
 		this.fieldName = await PageParser.inputContent(page, id, this.content);
 
-		await page.waitForNetworkIdle();
+		await PageParser.waitForUpdates(page);
 
 		await super.screenshot(page, [this.rectangle]);
 
