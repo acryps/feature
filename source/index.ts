@@ -62,8 +62,14 @@ export async function assemblyFeature() {
 		.present('saved-assemblies-section assembly', ['name', 'product-code']);
 
 	// execute the feature
-	const result = await feature.execute(project, await browserManager.getPage());
+	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
+
 	console.log(result);
+	console.log(result.steps)
+
+	for (let step of result.steps) {
+		console.log(step.screenshots[0]);
+	}
 
 	await browserManager.close();
 }
@@ -100,7 +106,7 @@ export async function ringbakerFeature() {
 		.click('preview-image action like')
 
 	// execute the feature
-	const result = await feature.execute(project, await browserManager.getPage());
+	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
 
 	await browserManager.close();
 }
@@ -116,7 +122,7 @@ export async function wikiFeature() {
 		.write('input#searchInput', 'NodeJS')
 		.click('button.pure-button.pure-button-primary-progressive')
 
-	const result = await feature.execute(project, await browserManager.getPage());
+	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
 
 	await browserManager.close();
 }
