@@ -2,7 +2,6 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
-import { Recorder } from "../video/recorder";
 import { Mouse } from "../video/mouse";
 
 export class NavigationInstruction extends Instruction {

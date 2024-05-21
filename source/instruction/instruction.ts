@@ -1,7 +1,6 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Mouse } from "../video/mouse";
-import { Recorder } from "../video/recorder";
 
 export abstract class Instruction {
 	public guide: string[] = [];
