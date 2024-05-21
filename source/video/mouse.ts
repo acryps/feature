@@ -23,11 +23,10 @@ export class Mouse {
 		if (this.recording) {
 			await this.simulateCursorMovement(x, y);
 
-			await new Promise<void>(done => setTimeout(done, this.waitTimeout));
+			await new Promise<void>(done => setTimeout(done, 2 * this.waitTimeout));
 		}
 
 		await this.page.mouse.click(x, y);
-		// await this.page.waitForNetworkIdle();
 		await PageParser.waitForUpdates(this.page);
 	}
 
