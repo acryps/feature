@@ -9,7 +9,7 @@ export class Recorder {
 	private screenshotTimeout = 1000 / this.fps;
 
 	private interval: NodeJS.Timeout;
-	private frames = 0;
+	private frameCount = 0;
 	
 	private cursorImage: Jimp;
 	
@@ -20,25 +20,27 @@ export class Recorder {
 		private name: string,
 	) {}
 
-	public async start() {
-		try {
-			this.interval = setInterval(async () => {
+	public start() {
+		this.interval = setInterval(async () => {
+			try {
 				const buffer = await this.page.screenshot();
-				const frame = await this.addCursor(buffer, this.mouse.x, this.mouse.y); 
+				const frame = await this.addCursor(buffer, this.mouse.x, this.mouse.y);
 	
-				this.saveFrame(frame);
-				this.frames++;
-			}, this.screenshotTimeout);
-		} catch(error) {
-			console.log(`[error] failed to record frame: '${error}'`);
-		}
+				if (this.interval) {
+					this.saveFrame(frame);
+					this.frameCount++;
+				}
+			} catch (error) {
+				console.log(`[error] '${error}'`);
+			}
+		}, this.screenshotTimeout);
 	}
 
-	public stop() {
+	public async stop() {
 		clearInterval(this.interval);
+		
 		this.interval = null;
-
-		this.frames = 0;
+		this.frameCount = 0;
 	}
 
 	public async composeVideo() {
@@ -47,15 +49,15 @@ export class Recorder {
 
 		await new Promise<void>(done => {
 			ffmpegCommand.on('start', (command) => {
-				console.log(`[info] spawned ffmpeg command: '${command}'`);
+				console.log(`[info] spawned ffmpeg command '${command}'`);
 			})
 			.addInput(`${this.path}/%d.png`)
 			.inputOptions(`-framerate ${this.fps}`)
 			.outputOptions('-pix_fmt yuv420p')
 			.output(`./${this.name}.mp4`)
-			.on('error', (err, stdout, stderr) => {
-				console.error('[error] failed to compose video:', err.message);
-				console.error(err)
+			.on('error', (error) => {
+				console.error(`[error] failed to compose video '${error.message}'`);
+				console.error(error)
 			})
 			.on('end', () => {
 				console.log('[info] successfully composed video');
@@ -73,9 +75,9 @@ export class Recorder {
 	}
 
 	private async saveFrame(frame: Jimp) {
-		const savePath = `${this.path}/${this.frames}.${frame.getExtension()}`;
+		const savePath = `${this.path}/${this.frameCount}.${frame.getExtension()}`;
 
-		console.log(`[info] saved frame '${this.frames}.${frame.getExtension()}'`);
+		console.log(`[info] saved frame '${this.frameCount}.${frame.getExtension()}'`);
 
 		await frame.writeAsync(savePath);
 	}
