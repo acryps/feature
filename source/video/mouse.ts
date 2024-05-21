@@ -27,7 +27,7 @@ export class Mouse {
 		}
 
 		await this.page.mouse.click(x, y);
-		await PageParser.waitForUpdates(this.page);
+		await this.page.waitForNetworkIdle();
 	}
 
 	public async simulateCursorMovement(x: number, y: number) {
