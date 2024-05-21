@@ -1,4 +1,4 @@
-import { Page } from "puppeteer";
+import { Page, ScreenRecorder } from "puppeteer";
 import { ClickInstruction } from "./instruction/click";
 import { Instruction } from "./instruction/instruction";
 import { NavigationInstruction } from "./instruction/navigate";
@@ -7,7 +7,6 @@ import { PresentInstruction } from "./instruction/present";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
-import { Recorder } from "./video/recorder";
 import { Mouse } from "./video/mouse";
 
 export class Feature {
@@ -67,12 +66,11 @@ export class Feature {
 		}[] = [];
 
 		const mouse = new Mouse(page, configuration.video);
-		
-		let recorder;
 
+		let recorder: ScreenRecorder;
+		
 		if (configuration.video) {
-			recorder = new Recorder(page, mouse, `${__dirname}/../video`, 'video_sample');
-			recorder.start();
+			recorder = await page.screencast({path: 'video.webm'});
 		}
 
 		try {
@@ -86,13 +84,14 @@ export class Feature {
 				console.error(`[error] ${error.stack}`);
 			}
 		}
-		
-		recorder?.stop();
-		const video = await recorder?.composeVideo();
+
+		await recorder?.stop();
+
+		const motion = mouse.motion;
 
 		return {
-			steps: steps,
-			video: video
+			motion: motion,
+			steps: steps
 		};
 	}
 }

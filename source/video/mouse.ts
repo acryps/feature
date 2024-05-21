@@ -5,21 +5,31 @@ export class Mouse {
 	public x = 0;
 	public y = 0;
 
-	private stepTimeout = 1000 / 60;
+	public motion: {time: number, x: number, y: number}[] = [];
 
-	private movementStep = 100;
-	private stepMovementDuration = 100;
-
-	private maxMovementDuration = 300;
+	private start: Date;
 
 	private waitTimeout = 1000;
+
+	private stepTimeout = 1000 / 60;
+	private movementStep = 100;
+	private stepMovementDuration = 100;
+	private maxMovementDuration = 300;
 
 	constructor(
 		private page: Page,
 		private recording: boolean
-	) {}
+	) {
+		if (recording) {
+			this.start = new Date();
+
+			this.addMotionCoordinate();
+		}
+	}
 
 	public async click(x: number, y: number) {
+		this.addMotionCoordinate();
+
 		if (this.recording) {
 			await this.simulateCursorMovement(x, y);
 
@@ -27,6 +37,9 @@ export class Mouse {
 		}
 
 		await this.page.mouse.click(x, y);
+
+		this.addMotionCoordinate();
+
 		await this.page.waitForNetworkIdle();
 	}
 
@@ -41,8 +54,6 @@ export class Mouse {
 
 		const stepSizeX = deltaX / steps;
 		const stepSizeY = deltaY / steps;
-
-		console.log(`[info] distance '${distance}', duration '${movementDuration}', steps '${steps}'`);
 
 		for (let step = 0; step < steps; step++) {
 			await new Promise<void>(done => setTimeout(async () => {
@@ -75,6 +86,15 @@ export class Mouse {
 
 		if (this.recording) {
 			await PageParser.waitForUpdates(page);
+		}
+	}
+
+	private addMotionCoordinate() {
+		if (this.recording) {
+			const now = new Date();
+			const time = now.getTime() - this.start.getTime();
+
+			this.motion.push({time: time, x: this.x, y: this.y});
 		}
 	}
 }
