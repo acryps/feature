@@ -63,8 +63,8 @@ export class Feature {
 		const mouse = new Mouse(page, configuration.video);
 
 		let recorder: ScreenRecorder;
-		let path = '.'
-		let name = 'video';
+		let path = process.env.MEDIA_PATH;
+		let name = process.env.MEDIA_VIDEO_NAME;
 		
 		if (configuration.video) {
 			recorder = await page.screencast({path: `${path}/${name}.webm`});
