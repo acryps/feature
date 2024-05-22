@@ -9,12 +9,10 @@ export async function assemblyFeature() {
 	const project = new Project('assembly', 'https://assembly.acryps.com');
 
 	const productName = 'ecM1-Series | Elementarum PTFE Lined Butterfly Valve';
-	const productRoute = '/configure/yckiuj/0'
-	
 	const feature = new Feature(`Configure '${productName}'`, 'Example configuration of a product.');
 
 	// define a feature
-	feature.prepare(productName, productRoute)
+	feature.redirect(`https://assembly.acryps.com/configure/yckiuj/0`)
 		// configure product:
 		.click('options option name', '1"')
 		.click('options option name', 'Duplex')
@@ -35,11 +33,11 @@ export async function assemblyFeature() {
 		.present('saved-assemblies-section assembly', ['name', 'product-code'])
 
 		.click('product create')
-		// // configure product:
-		// .click('slot header name', 'Size')
-		.click('options option name', 'DN 600')
 
-		// .click('slot header name', 'Disc')
+		// configure product:
+		.click('slot header name', 'Size')
+
+		.click('slot header name', 'Disc')
 		.click('options option name', 'Duplex')
 
 		.click('slot header name', 'Body')
@@ -64,12 +62,7 @@ export async function assemblyFeature() {
 	// execute the feature
 	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
 
-	console.log(result);
-	console.log(result.steps)
-
-	for (let step of result.steps) {
-		console.log(step.screenshots[0]);
-	}
+	await result.save(`${__dirname}/..`, 'assembly');
 
 	await browserManager.close();
 }
@@ -84,6 +77,7 @@ export async function ringbakerFeature() {
 
 	// define a feature
 	feature.prepare('Ringabaker Ring', '')
+
 		// configure product:
 		.click('banner button')
 		.click('pack pack-title', 'Silver 925')
@@ -101,6 +95,7 @@ export async function ringbakerFeature() {
 		.click('presets predicted action')
 		.click('toolbar button', 'Apply')
 
+		// checkout
 		.click('toolbar button', 'Continue')
 		.click('toolbar button', 'Add Ring To Cart')
 		.click('preview-image action like')
@@ -108,21 +103,7 @@ export async function ringbakerFeature() {
 	// execute the feature
 	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
 
-	await browserManager.close();
-}
-
-export async function wikiFeature() {
-	const project = new Project('wikipedia', 'https://www.wikipedia.org/');
-
-	const browserManager = new BrowserManager();
-	await browserManager.launch();
-	
-	const feature = new Feature('test-name', 'test-description');
-	feature.prepare('google suche', '/')
-		.write('input#searchInput', 'NodeJS')
-		.click('button.pure-button.pure-button-primary-progressive')
-
-	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
+	await result.save(`${__dirname}/..`, 'ringbaker');
 
 	await browserManager.close();
 }
