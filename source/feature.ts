@@ -8,6 +8,8 @@ import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
 import { Mouse } from "./video/mouse";
+import { Step } from "./execution/step";
+import { ExecutionResult } from "./execution/result";
 
 export class Feature {
 	private instructions: Instruction[];
@@ -55,22 +57,17 @@ export class Feature {
 		return this;
 	}
 
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean, video: boolean}) {
-		const steps: {
-			guide: string[];
-			screenshots: {
-				image: Buffer;
-				highlight: DOMRect[];
-				ignore: DOMRect[];
-			}[];
-		}[] = [];
+	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean, video: boolean}): Promise<ExecutionResult> {
+		const steps: Step[] = [];
 
 		const mouse = new Mouse(page, configuration.video);
 
 		let recorder: ScreenRecorder;
+		let path = '.'
+		let name = 'video';
 		
 		if (configuration.video) {
-			recorder = await page.screencast({path: 'video.webm'});
+			recorder = await page.screencast({path: `${path}/${name}.webm`});
 		}
 
 		try {
@@ -89,9 +86,6 @@ export class Feature {
 
 		const motion = mouse.motion;
 
-		return {
-			motion: motion,
-			steps: steps
-		};
+		return new ExecutionResult(`${path}/${name}.webm`, motion, steps);
 	}
 }

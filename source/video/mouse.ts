@@ -1,13 +1,13 @@
 import { Page } from "puppeteer";
 import { PageParser } from "../page/parser";
+import { MotionPoint } from "./motion-point";
 
 export class Mouse {
 	public x = 0;
 	public y = 0;
 
-	public motion: {time: number, x: number, y: number}[] = [];
-
 	private start: Date;
+	public motion: MotionPoint[] = [];
 
 	private waitTimeout = 1000;
 
