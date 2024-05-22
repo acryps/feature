@@ -1,4 +1,5 @@
 import { BrowserManager } from "./browser.manager";
+import { ExecutionResult } from "./execution/result";
 import { Feature } from "./feature";
 import { Project } from "./project";
 
@@ -62,7 +63,10 @@ export async function assemblyFeature() {
 	// execute the feature
 	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
 
-	await result.save(`${__dirname}/..`, 'assembly');
+	await result.save('assembly');
+
+	const loaded = new ExecutionResult();
+	loaded.load(`assembly`);
 
 	await browserManager.close();
 }
@@ -103,7 +107,10 @@ export async function ringbakerFeature() {
 	// execute the feature
 	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
 
-	await result.save(`${__dirname}/..`, 'ringbaker');
+	await result.save('ringbaker');
+
+	const loaded = new ExecutionResult();
+	loaded.load(`ringbaker`);
 
 	await browserManager.close();
 }
