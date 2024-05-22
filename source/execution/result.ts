@@ -4,20 +4,76 @@ import { FeatureMetadata } from "./metadata";
 import * as filesystem from 'fs';
 
 export class ExecutionResult {
+	private metadataFileName = 'feature.json';
+	private stepsFolderName = 'steps';
+
+	private fileExtension = {
+		image: '.png',
+		video: '.webm'
+	};
+
 	constructor(
 		public videoSource?: string,
 		public motion?: MotionPoint[],
 		public steps?: Step[],
 	) {}
 	
-	public load(path: string) {
-		// todo: load an execution result
+	public load(name: string) {
+		try {
+			this.steps = [];
+			
+			let basePath = `${process.env.MEDIA_PATH}/${name}`;
+
+			if (!filesystem.existsSync(basePath)) {
+				throw new Error(`feature does not exist at '${basePath}'!`);
+			}
+
+			let videoSource = `${basePath}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
+			let metadataSource = `${basePath}/${this.metadataFileName}`;
+	
+			if (filesystem.existsSync(videoSource)) {
+				this.videoSource = videoSource;
+			} else {
+				console.warn(`[warn] video source '${videoSource}' does not exist`);
+			}
+
+			if (filesystem.existsSync(metadataSource)) {
+				let metadata = JSON.parse(filesystem.readFileSync(metadataSource, 'utf8')) as FeatureMetadata;
+	
+				this.motion = metadata.motion;
+	
+				for (let [stepIndex, stepMetadata] of metadata.steps.entries()) {
+					const stepPath = `${basePath}/${this.stepsFolderName}/${stepIndex}`;
+	
+					let step = new Step();
+					step.guide = stepMetadata.guide;
+					step.screenshots = [];
+	
+					for (let [screenshotIndex, screenshotMetadata] of stepMetadata.screenshots.entries()) {
+						const screenshotPath = `${stepPath}/${screenshotIndex}${this.fileExtension.image}`;
+
+						if (filesystem.existsSync(screenshotPath)) {
+							const image = filesystem.readFileSync(screenshotPath);
+							step.screenshots.push({image: image, highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore});
+						} else {
+							console.warn(`[warn] could not find '${screenshotPath}'`);
+						}
+					}
+	
+					this.steps.push(step);
+				}
+			} else {
+				console.warn(`[warn] metadata '${metadataSource}' does not exist`);
+			}
+		} catch (error) {
+			console.error(`[error] failed to load feature '${name}': '${error}'`);
+		}
 	}
 
-	public async save(path: string, name: string) {
+	public async save(name: string) {
 		try {
-			const basePath = `${path}/${name}`;
-			const stepsPath = `${basePath}/steps`;
+			const basePath = `${process.env.MEDIA_PATH}/${name}`;
+			const stepsPath = `${basePath}/${this.stepsFolderName}`;
 	
 			console.log(`[info] saving feature '${name}' into '${basePath}'`);
 	
@@ -47,21 +103,13 @@ export class ExecutionResult {
 				for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
 					screenshotsMetadata.push({highlight: screenshot.highlight, ignore: screenshot.ignore});
 	
-					filesystem.writeFile(`${stepsPath}/${stepIndex}/${screenshotIndex}.png`, screenshot.image, (error) => {
-						if (error) {
-							console.error(`[error] failed to save screenshot '${error.message}'`);
-						}
-					});
+					await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
 				}
 	
 				metadata.steps.push({guide: step.guide, screenshots: screenshotsMetadata});
 			}
 	
-			filesystem.writeFile(`${basePath}/feature.json`, JSON.stringify(metadata), (error) => {
-				if (error) {
-					console.error(`[error] failed to save feature metadata '${error.message}'`);
-				}
-			});
+			filesystem.writeFileSync(`${basePath}/${this.metadataFileName}`, JSON.stringify(metadata));
 		} catch (error) {
 			console.error(`[error] failed to save execution result for feature '${name}'; '${error}'`);
 		}

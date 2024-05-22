@@ -10,6 +10,7 @@ import { RedirectInstruction } from "./instruction/redirect";
 import { Mouse } from "./video/mouse";
 import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
+import * as filesystem from 'fs';
 
 export class Feature {
 	private instructions: Instruction[];
@@ -65,6 +66,10 @@ export class Feature {
 		let recorder: ScreenRecorder;
 		let path = process.env.MEDIA_PATH;
 		let name = process.env.MEDIA_VIDEO_NAME;
+
+		if (!filesystem.existsSync(path)) {
+			filesystem.mkdirSync(path, {recursive: true});
+		}
 		
 		if (configuration.video) {
 			recorder = await page.screencast({path: `${path}/${name}.webm`});

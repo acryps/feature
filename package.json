@@ -8,7 +8,12 @@
 		"start": "npm run build && environment node built/index.js"
 	},
 	"environment": {
-		"media_basepath": "media base path"
+		"media": {
+			"path": "media path",
+			"video" : {
+				"name": "video name"
+			}
+		}
 	},
 	"devDependencies": {
 		"@acryps/environment": "^2.7.2",
