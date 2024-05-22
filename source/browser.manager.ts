@@ -4,11 +4,6 @@ import { Browser, launch } from "puppeteer";
 export class BrowserManager {
 	private browsers: Browser[] = [];
 	private rotationIndex = 0;
-	private viewportConfiguration = {
-		big: { width: 1920, height: 1080 },
-		medium: { width: 1280, height: 720 },
-		small: { width: 1024, height: 786 }
-	};
 
 	constructor(
 		private size: number = Math.ceil(Math.max(1, cpus().length) / 4)
@@ -21,8 +16,7 @@ export class BrowserManager {
 	async launch() {
 		for (let index = 0; index < this.size; index++) {
 			this.browsers.push(await launch({
-				headless: false,
-				defaultViewport: this.viewportConfiguration.small
+				headless: false
 			}));
 		}
 	}
@@ -32,9 +26,9 @@ export class BrowserManager {
 		this.browsers = [];
 	}
 
-	async getPage() {
+	async getPage(width: number, heigth: number) {
 		const page = await this.browsers[this.rotationIndex].newPage();
-		await page.setViewport(this.viewportConfiguration.small);
+		await page.setViewport({ width: width, height: heigth});
 
 		if (this.rotationIndex + 1 == this.browsers.length) {
 			this.rotationIndex = 0;

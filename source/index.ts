@@ -61,7 +61,7 @@ export async function assemblyFeature() {
 		.present('saved-assemblies-section assembly', ['name', 'product-code']);
 
 	// execute the feature
-	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
+	const result = await feature.execute(project, await browserManager.getPage(1280, 720), {guide: true, screenshots: true, video: true});
 
 	await result.save('assembly');
 
@@ -105,12 +105,12 @@ export async function ringbakerFeature() {
 		.click('preview-image action like')
 
 	// execute the feature
-	const result = await feature.execute(project, await browserManager.getPage(), {guide: true, screenshots: true, video: true});
+	const result = await feature.execute(project, await browserManager.getPage(1280, 720), {guide: true, screenshots: false, video: true});
 
-	await result.save('ringbaker');
+	await result.save('ringbaker-2');
 
 	const loaded = new ExecutionResult();
-	loaded.load(`ringbaker`);
+	loaded.load(`ringbaker-2`);
 
 	await browserManager.close();
 }
