@@ -1,38 +1,35 @@
-import { Instruction } from "./instruction/instruction";
-
 export class Project {
 	constructor(
 		public name: string,
-		public baseUrl: string
+		public url: string
 	) {}
 
-	public wrapSelector(selector: string): string[] {
-		if (selector == '!') {
+	public wrap(locatorPart: string): string[] {
+		if (locatorPart === '!') {
 			return ['ui-dialog'];
 		}
 
-		return [`${selector}`, `ui-${selector}`, `.ui-${selector}`, `[ui-${selector}]`, `.${selector}`, `[${selector}]`];
+		return [`${locatorPart}`, `ui-${locatorPart}`, `.ui-${locatorPart}`, `[ui-${locatorPart}]`, `.${locatorPart}`, `[${locatorPart}]`];
 	}
 
-	public generateSelector(locatorString: string) {
-		let locators: string[] = locatorString.split(' ');
+	public generateSelector(locator: string) {
+		const locatorParts = locator.split(' ');
+		const locatorPart = locatorParts.shift();
 
-		const current = locators.shift();
-
-		return this.selector(current, locators, '');
+		return this.selector(locatorPart, locatorParts, '');
 	}
 
-	private selector(current: string, locators: string[], selector: string) {
-		let selectors: string[] = [];
+	private selector(locatorPart: string, locatorParts: string[], selector: string): string {
+		const selectors: string[] = [];
 
-		if (current) {
-			const selectorVariations = this.wrapSelector(current);
+		if (locatorPart) {
+			const selectorVariations = this.wrap(locatorPart);
 
-			for (let variation of selectorVariations) {
-				const nextLocators = [...locators];
-				const nextLocator = nextLocators.shift();
+			for (let selectorVariation of selectorVariations) {
+				const remainingLocatorParts = [...locatorParts];
+				const nextLocatorPart = remainingLocatorParts.shift();
 
-				selectors.push(this.selector(nextLocator, nextLocators, [selector, variation].join(' ')));
+				selectors.push(this.selector(nextLocatorPart, remainingLocatorParts, [selector, selectorVariation].join(' ')));
 			}
 		} else {
 			return selector;
