@@ -1,8 +1,10 @@
 export class Step {
 	public guide: string[];
-	public screenshots: {
-		image: Buffer;
-		highlight: DOMRect[];
-		ignore: DOMRect[];
-	}[];
+	public screenshots: AnnotatedImage[];
+}
+
+export class AnnotatedImage {
+	public image: Buffer;
+	public highlight: DOMRect[];
+	public ignore: DOMRect[];
 }

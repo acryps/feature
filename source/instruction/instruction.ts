@@ -1,25 +1,18 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Mouse } from "../video/mouse";
+import { AnnotatedImage } from "../execution/step";
 
 export abstract class Instruction {
 	public guide: string[] = [];
-	public screenshots: {
-		image: Buffer, 
-		highlight: DOMRect[], 
-		ignore: DOMRect[]
-	}[] = [];
+	public screenshots: AnnotatedImage[] = [];
 
 	public generateGuide: boolean;
 	public generateScreenshots: boolean;
 	
 	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}): Promise<{
 		guide: string[];
-		screenshots: {
-			image: Buffer;
-			highlight: DOMRect[];
-			ignore: DOMRect[];
-		}[];
+		screenshots: AnnotatedImage[];
 	}> {
 		throw new Error("Method not implemented.");
 	}
@@ -29,7 +22,7 @@ export abstract class Instruction {
 		this.generateScreenshots = configuration.screenshots;
 	}
 
-	public finishExecution() {
+	public finishExecution(): {guide: string[], screenshots: AnnotatedImage[]} {
 		const result = {
 			screenshots: this.screenshots,
 			guide: this.generateGuide ? this.guide : []

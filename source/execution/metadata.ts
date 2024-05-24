@@ -7,8 +7,10 @@ export class FeatureMetadata {
 
 export class StepMetadata {
 	public guide: string[];
-	public screenshots: {
-		highlight: DOMRect[];
-		ignore: DOMRect[];
-	}[];
+	public screenshots: ImageMetadata[];
+}
+
+export class ImageMetadata {
+	public highlight: DOMRect[];
+	public ignore: DOMRect[];
 }
