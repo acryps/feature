@@ -111,11 +111,6 @@ export class Feature {
 
 		this.executionResult.motion = motion;
 		this.executionResult.videoSource = `${path}/${name}.webm`;
-
-		return {
-			videoSource: `${path}/${name}.webm`,
-			motion: motion,
-		};
 	}
 
 	public getExecutionResult() {
