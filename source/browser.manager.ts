@@ -26,9 +26,9 @@ export class BrowserManager {
 		this.browsers = [];
 	}
 
-	async getPage(width: number, heigth: number) {
+	async getPage(width: number, height: number) {
 		const page = await this.browsers[this.rotationIndex].newPage();
-		await page.setViewport({ width: width, height: heigth});
+		await page.setViewport({ width: width, height: height});
 
 		if (this.rotationIndex + 1 == this.browsers.length) {
 			this.rotationIndex = 0;
