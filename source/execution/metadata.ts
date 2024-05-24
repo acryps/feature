@@ -2,15 +2,15 @@ import { MotionPoint } from "../video/motion-point";
 
 export class FeatureMetadata {
 	public motion: MotionPoint[];
-	public steps: StepMetadata[];
+	public steps: StepAnnotations[];
 }
 
-export class StepMetadata {
+export class StepAnnotations {
 	public guide: string[];
-	public screenshots: ImageMetadata[];
+	public screenshots: ImageAnnotations[];
 }
 
-export class ImageMetadata {
+export class ImageAnnotations {
 	public highlight: DOMRect[];
 	public ignore: DOMRect[];
 }

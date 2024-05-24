@@ -1,6 +1,6 @@
 import { Step } from "./step";
 import { MotionPoint } from "../video/motion-point";
-import { FeatureMetadata } from "./metadata";
+import { FeatureMetadata, ImageAnnotations } from "./metadata";
 import * as filesystem from 'fs';
 
 export class ExecutionResult {
@@ -54,7 +54,9 @@ export class ExecutionResult {
 
 						if (filesystem.existsSync(screenshotPath)) {
 							const image = filesystem.readFileSync(screenshotPath);
-							step.screenshots.push({image: image, highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore});
+							const annotations: ImageAnnotations = {highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore};
+
+							step.screenshots.push({image: image, annotations});
 						} else {
 							console.warn(`[warn] could not find '${screenshotPath}'`);
 						}
@@ -101,7 +103,7 @@ export class ExecutionResult {
 				let screenshotsMetadata: { highlight: DOMRect[], ignore: DOMRect[]}[] = [];
 	
 				for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
-					screenshotsMetadata.push({highlight: screenshot.highlight, ignore: screenshot.ignore});
+					screenshotsMetadata.push({highlight: screenshot.annotations.highlight, ignore: screenshot.annotations.ignore});
 	
 					await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
 				}

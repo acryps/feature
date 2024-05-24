@@ -1,7 +1,8 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Mouse } from "../video/mouse";
-import { AnnotatedImage } from "../execution/step";
+import { ImageAnnotations } from "../execution/metadata";
+import { AnnotatedImage } from "../execution/image";
 
 export abstract class Instruction {
 	public guide: string[] = [];
@@ -24,8 +25,8 @@ export abstract class Instruction {
 
 	public finishExecution(): {guide: string[], screenshots: AnnotatedImage[]} {
 		const result = {
+			guide: this.generateGuide ? this.guide : [],
 			screenshots: this.screenshots,
-			guide: this.generateGuide ? this.guide : []
 		};
 
 		this.generateGuide = null;
@@ -37,11 +38,11 @@ export abstract class Instruction {
 	public async screenshot(page: Page, highlight: DOMRect[]) {
 		if (this.generateScreenshots) {
 			const imageBuffer = await page.screenshot();
+			const annotations: ImageAnnotations = {highlight: highlight, ignore: []}
 	
 			this.screenshots.push({
 				image: imageBuffer,
-				highlight: highlight,
-				ignore: []
+				annotations: annotations
 			});
 		}
 	}
