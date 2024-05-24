@@ -70,14 +70,10 @@ export class Feature {
 
 		try {
 			for (let instruction of this.instructions) {
-				steps.push(await instruction.execute(project, page, mouse, {guide: configuration.guide, screenshots: configuration.screenshots}));
+				steps.push(await instruction.execute(project, page, mouse, configuration));
 			}
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
-			
-			if (error instanceof Error) {
-				console.error(`[error] ${error.stack}`);
-			}
 		}
 
 		this.executionResult.steps = steps;
@@ -102,22 +98,16 @@ export class Feature {
 			}
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
-			
-			if (error instanceof Error) {
-				console.error(`[error] ${error.stack}`);
-			}
 		}
 
 		await recorder?.stop();
 
-		const motion = mouse.motion;
-
-		this.executionResult.motion = motion;
+		this.executionResult.motion = mouse.motion;
 		this.executionResult.videoSource = `${path}/${name}.webm`;
 
 		return {
 			videoSource: `${path}/${name}.webm`,
-			motion: motion
+			motion: mouse.motion
 		}
 	}
 
