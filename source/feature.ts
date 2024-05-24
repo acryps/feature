@@ -14,12 +14,14 @@ import * as filesystem from 'fs';
 
 export class Feature {
 	private instructions: Instruction[];
+	private executionResult: ExecutionResult;
 
 	constructor (
 		public name: string,
 		public description: string,
 	) {
 		this.instructions = [];
+		this.executionResult = new ExecutionResult();
 	}
 
 	public prepare(name: string, route: string): Feature {
@@ -58,22 +60,9 @@ export class Feature {
 		return this;
 	}
 
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean, video: boolean}): Promise<ExecutionResult> {
+	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}) {
 		const steps: Step[] = [];
-
-		const mouse = new Mouse(page, configuration.video);
-
-		let recorder: ScreenRecorder;
-		let path = process.env.MEDIA_PATH;
-		let name = process.env.MEDIA_VIDEO_NAME;
-
-		if (!filesystem.existsSync(path)) {
-			filesystem.mkdirSync(path, {recursive: true});
-		}
-		
-		if (configuration.video) {
-			recorder = await page.screencast({path: `${path}/${name}.webm`});
-		}
+		const mouse = new Mouse(page, false);
 
 		try {
 			for (let instruction of this.instructions) {
@@ -87,10 +76,49 @@ export class Feature {
 			}
 		}
 
+		this.executionResult.steps = steps;
+
+		return steps;
+	}
+
+	public async generateVideo(project: Project, page: Page) {
+		const mouse = new Mouse(page, true);
+
+		let path = process.env.MEDIA_PATH;
+		let name = process.env.MEDIA_VIDEO_NAME;
+
+		if (!filesystem.existsSync(path)) {
+			filesystem.mkdirSync(path, {recursive: true});
+		}
+		
+		const recorder: ScreenRecorder = await page.screencast({path: `${path}/${name}.webm`});
+
+		try {
+			for (let instruction of this.instructions) {
+				await instruction.execute(project, page, mouse, {guide: false, screenshots: false});
+			}
+		} catch (error) {
+			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
+			
+			if (error instanceof Error) {
+				console.error(`[error] ${error.stack}`);
+			}
+		}
+
 		await recorder?.stop();
 
 		const motion = mouse.motion;
 
-		return new ExecutionResult(`${path}/${name}.webm`, motion, steps);
+		this.executionResult.motion = motion;
+		this.executionResult.videoSource = `${path}/${name}.webm`;
+
+		return {
+			videoSource: `${path}/${name}.webm`,
+			motion: motion,
+		};
+	}
+
+	public getExecutionResult() {
+		return this.executionResult;
 	}
 }

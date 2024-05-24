@@ -6,8 +6,8 @@ export class FeatureMetadata {
 }
 
 export class StepAnnotations {
-	public guide: string[];
-	public screenshots: ImageAnnotations[];
+	public guide?: string[];
+	public screenshots?: ImageAnnotations[];
 }
 
 export class ImageAnnotations {

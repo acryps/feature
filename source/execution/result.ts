@@ -47,18 +47,21 @@ export class ExecutionResult {
 	
 					let step = new Step();
 					step.guide = stepMetadata.guide;
-					step.screenshots = [];
+
+					if (stepMetadata.screenshots) {
+						step.screenshots = [];
+		
+						for (let [screenshotIndex, screenshotMetadata] of stepMetadata.screenshots.entries()) {
+							const screenshotPath = `${stepPath}/${screenshotIndex}${this.fileExtension.image}`;
 	
-					for (let [screenshotIndex, screenshotMetadata] of stepMetadata.screenshots.entries()) {
-						const screenshotPath = `${stepPath}/${screenshotIndex}${this.fileExtension.image}`;
-
-						if (filesystem.existsSync(screenshotPath)) {
-							const image = filesystem.readFileSync(screenshotPath);
-							const annotations: ImageAnnotations = {highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore};
-
-							step.screenshots.push({image: image, annotations});
-						} else {
-							console.warn(`[warn] could not find '${screenshotPath}'`);
+							if (filesystem.existsSync(screenshotPath)) {
+								const image = filesystem.readFileSync(screenshotPath);
+								const annotations: ImageAnnotations = {highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore};
+	
+								step.screenshots.push({image: image, annotations});
+							} else {
+								console.warn(`[warn] could not find '${screenshotPath}'`);
+							}
 						}
 					}
 	
@@ -79,8 +82,8 @@ export class ExecutionResult {
 	
 			console.log(`[info] saving feature '${name}' into '${basePath}'`);
 	
-			if (!filesystem.existsSync(`${stepsPath}/`)) {
-				filesystem.mkdirSync(`${stepsPath}/`, { recursive: true });
+			if (!filesystem.existsSync(`${basePath}/`)) {
+				filesystem.mkdirSync(`${basePath}/`, { recursive: true });
 			}
 	
 			const videoName = this.videoSource.split('/').at(-1);
@@ -96,19 +99,24 @@ export class ExecutionResult {
 			metadata.steps = [];
 	
 			for (let [stepIndex, step] of this.steps.entries()) {
-				if (!filesystem.existsSync(`${stepsPath}/${stepIndex}`)) {
-					filesystem.mkdirSync(`${stepsPath}/${stepIndex}`);
-				}
-	
 				let screenshotsMetadata: { highlight: DOMRect[], ignore: DOMRect[]}[] = [];
-	
-				for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
-					screenshotsMetadata.push({highlight: screenshot.annotations.highlight, ignore: screenshot.annotations.ignore});
-	
-					await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
+
+				if (step.screenshots) {
+					if (!filesystem.existsSync(`${stepsPath}/${stepIndex}`)) {
+						filesystem.mkdirSync(`${stepsPath}/${stepIndex}`, { recursive: true });
+					}
+
+					for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
+						screenshotsMetadata.push({highlight: screenshot.annotations.highlight, ignore: screenshot.annotations.ignore});
+		
+						await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
+					}
 				}
 	
-				metadata.steps.push({guide: step.guide, screenshots: screenshotsMetadata});
+				metadata.steps.push({
+					...(step.guide ? {guide: step.guide} : {}),
+					...(step.screenshots ? {screenshots: screenshotsMetadata} : {})
+				});
 			}
 	
 			filesystem.writeFileSync(`${basePath}/${this.metadataFileName}`, JSON.stringify(metadata));

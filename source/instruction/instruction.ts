@@ -3,6 +3,7 @@ import { Project } from "../project";
 import { Mouse } from "../video/mouse";
 import { ImageAnnotations } from "../execution/metadata";
 import { AnnotatedImage } from "../execution/image";
+import { Step } from "../execution/step";
 
 export abstract class Instruction {
 	public guide: string[] = [];
@@ -11,10 +12,7 @@ export abstract class Instruction {
 	public generateGuide: boolean;
 	public generateScreenshots: boolean;
 	
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}): Promise<{
-		guide: string[];
-		screenshots: AnnotatedImage[];
-	}> {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}): Promise<Step> {
 		throw new Error("Method not implemented.");
 	}
 
@@ -23,14 +21,16 @@ export abstract class Instruction {
 		this.generateScreenshots = configuration.screenshots;
 	}
 
-	public finishExecution(): {guide: string[], screenshots: AnnotatedImage[]} {
+	public finishExecution(): Step {
 		const result = {
-			guide: this.generateGuide ? this.guide : [],
-			screenshots: this.screenshots,
+			...(this.generateGuide ? { guide: this.guide } : {}),
+			...(this.generateScreenshots ? { screenshots: this.screenshots } : {}),
 		};
 
 		this.generateGuide = null;
 		this.generateScreenshots = null;
+		this.guide = [];
+		this.screenshots = [];
 
 		return result;
 	}
