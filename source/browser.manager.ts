@@ -29,15 +29,19 @@ export class BrowserManager {
 	}
 
 	public static async getPage(resolution: Resolution) {
-		const page = await this.browsers[this.rotationIndex].newPage();
-		await page.setViewport({ width: resolution.width, height: resolution.height});
-
-		if (this.rotationIndex + 1 == this.browsers.length) {
-			this.rotationIndex = 0;
+		if (this.running()) {
+			const page = await this.browsers[this.rotationIndex].newPage();
+			await page.setViewport({ width: resolution.width, height: resolution.height});
+	
+			if (this.rotationIndex + 1 == this.browsers.length) {
+				this.rotationIndex = 0;
+			} else {
+				this.rotationIndex++;
+			}
+	
+			return page;
 		} else {
-			this.rotationIndex++;
+			throw new Error(`attempted to gather page without launching the browser manager`);
 		}
-
-		return page;
 	}
 }
