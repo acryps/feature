@@ -2,6 +2,7 @@ import { Step } from "./step";
 import { MotionPoint } from "../video/motion-point";
 import { FeatureMetadata, ImageAnnotations } from "./metadata";
 import * as filesystem from 'fs';
+import * as Jimp from 'jimp';
 
 export class ExecutionResult {
 	private metadataFileName = 'feature.json';
@@ -89,10 +90,12 @@ export class ExecutionResult {
 				filesystem.mkdirSync(`${basePath}/`, { recursive: true });
 			}
 			
-			const videoName = this.videoSource.split('/').at(-1);
-
-			await filesystem.renameSync(this.videoSource, `${basePath}/${videoName}`);
-			this.videoSource = `${basePath}/${videoName}`;
+			if (this.videoSource) {
+				const videoName = this.videoSource.split('/').at(-1);
+	
+				await filesystem.renameSync(this.videoSource, `${basePath}/${videoName}`);
+				this.videoSource = `${basePath}/${videoName}`;
+			}
 	
 			let metadata: FeatureMetadata = new FeatureMetadata();
 			metadata.motion = this.motion;
@@ -128,7 +131,32 @@ export class ExecutionResult {
 		}
 	}
 
-	public imageCompare(result: ExecutionResult) {
-		// todo: compare each image in the execution steps to each other
+	public async imageCompare(result: ExecutionResult) {
+		const differences: {step: number, screenshot: number, difference: Buffer}[] = [];
+		
+		if (this.steps.length != result.steps.length) {
+			throw new Error(`cannot compare execution results with different amount of steps`);
+		}
+
+		for (let [stepIndex, step] of this.steps.entries()) {
+			if (step.screenshots.length != result.steps[stepIndex].screenshots.length) {
+				throw new Error(`step '${stepIndex}' contains different amounts of screenshots`);
+			}
+
+			for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
+				const image1 = await Jimp.read(screenshot.image);
+				const image2 = await Jimp.read(result.steps[stepIndex].screenshots[screenshotIndex].image);
+
+				const difference = Jimp.diff(image1, image2);
+
+				console.log(difference)
+
+				if (difference.percent > 0) {
+					differences.push({step: stepIndex, screenshot: screenshotIndex, difference: difference.image.bitmap.data})
+				}
+			}
+		}
+
+		return differences;
 	}
 }
