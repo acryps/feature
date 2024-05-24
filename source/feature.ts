@@ -85,13 +85,10 @@ export class Feature {
 		return steps;
 	}
 
-	public async generateVideo(project: Project, resolution: Resolution) {
+	public async generateVideo(project: Project, resolution: Resolution, path: string, name: string) {
 		const page = await BrowserManager.getPage(resolution);
 		
 		const mouse = new Mouse(page, true);
-
-		let path = process.env.MEDIA_PATH;
-		let name = process.env.MEDIA_VIDEO_NAME;
 
 		if (!filesystem.existsSync(path)) {
 			filesystem.mkdirSync(path, {recursive: true});
@@ -117,6 +114,11 @@ export class Feature {
 
 		this.executionResult.motion = motion;
 		this.executionResult.videoSource = `${path}/${name}.webm`;
+
+		return {
+			videoSource: `${path}/${name}.webm`,
+			motion: motion
+		}
 	}
 
 	public getExecutionResult() {
