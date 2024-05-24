@@ -1,34 +1,36 @@
 import { cpus } from "os";
 import { Browser, launch } from "puppeteer";
+import { Resolution } from "./resolution";
 
 export class BrowserManager {
-	private browsers: Browser[] = [];
-	private rotationIndex = 0;
+	private static browsers: Browser[] = [];
+	private static rotationIndex = 0;
+	private static size = Math.ceil(Math.max(1, cpus().length) / 4);
 
-	constructor(
-		private size: number = Math.ceil(Math.max(1, cpus().length) / 4)
-	) {}
+	public static setSize(size: number) {
+		this.size = size;
+	}
 
-	get running(): boolean {
+	public static running(): boolean {
 		return this.browsers.length > 0;
 	}
 
-	async launch() {
+	public static async launch(headless: boolean) {
 		for (let index = 0; index < this.size; index++) {
 			this.browsers.push(await launch({
-				headless: false
+				headless: headless
 			}));
 		}
 	}
 
-	async close() {
+	public static async close() {
 		await this.browsers.map(async browser => await browser.close());
 		this.browsers = [];
 	}
 
-	async getPage(width: number, height: number) {
+	public static async getPage(resolution: Resolution) {
 		const page = await this.browsers[this.rotationIndex].newPage();
-		await page.setViewport({ width: width, height: height});
+		await page.setViewport({ width: resolution.width, height: resolution.height});
 
 		if (this.rotationIndex + 1 == this.browsers.length) {
 			this.rotationIndex = 0;

@@ -1,4 +1,4 @@
-import { Page, ScreenRecorder } from "puppeteer";
+import { ScreenRecorder } from "puppeteer";
 import { ClickInstruction } from "./instruction/click";
 import { Instruction } from "./instruction/instruction";
 import { NavigationInstruction } from "./instruction/navigate";
@@ -10,6 +10,8 @@ import { RedirectInstruction } from "./instruction/redirect";
 import { Mouse } from "./video/mouse";
 import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
+import { BrowserManager } from "./browser.manager";
+import { Resolution } from "./resolution";
 import * as filesystem from 'fs';
 
 export class Feature {
@@ -60,7 +62,9 @@ export class Feature {
 		return this;
 	}
 
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean}) {
+	public async execute(project: Project, resolution: Resolution, configuration: {guide: boolean, screenshots: boolean}) {
+		const page = await BrowserManager.getPage(resolution);
+
 		const steps: Step[] = [];
 		const mouse = new Mouse(page, false);
 
@@ -81,7 +85,9 @@ export class Feature {
 		return steps;
 	}
 
-	public async generateVideo(project: Project, page: Page) {
+	public async generateVideo(project: Project, resolution: Resolution) {
+		const page = await BrowserManager.getPage(resolution);
+		
 		const mouse = new Mouse(page, true);
 
 		let path = process.env.MEDIA_PATH;
