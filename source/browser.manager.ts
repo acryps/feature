@@ -25,12 +25,15 @@ export class BrowserManager {
 
 	public static async close() {
 		await this.browsers.map(async browser => await browser.close());
+		
 		this.browsers = [];
+		this.rotationIndex = 0;
 	}
 
 	public static async getPage(resolution: Resolution) {
 		if (this.running()) {
 			const page = await this.browsers[this.rotationIndex].newPage();
+
 			await page.setViewport({ width: resolution.width, height: resolution.height});
 	
 			if (this.rotationIndex + 1 == this.browsers.length) {
