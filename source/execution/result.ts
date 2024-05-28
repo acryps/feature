@@ -1,6 +1,7 @@
 import { Step } from "./step";
-import { MotionPoint } from "../video/motion-point";
-import { FeatureMetadata, ImageAnnotations } from "./metadata";
+import { MotionPoint } from "../mouse/motion.point";
+import { FeatureMetadata } from "./metadata";
+import { ImageAnnotations } from "./image";
 import * as filesystem from 'fs';
 import * as Jimp from 'jimp';
 
@@ -23,14 +24,14 @@ export class ExecutionResult {
 		try {
 			this.steps = [];
 
-			const basePath = `${process.env.MEDIA_PATH}/${name}`;
-			const videoSource = `${basePath}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
-			const metadataSource = `${basePath}/${this.metadataFileName}`;
+			const path = `${process.env.MEDIA_PATH}/${name}`;
+			const videoSource = `${path}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
+			const metadataSource = `${path}/${this.metadataFileName}`;
 
-			console.log(`[info] loading feature '${name}' from '${basePath}'`);
+			console.log(`[info] loading feature '${name}' from '${path}'`);
 
-			if (!filesystem.existsSync(basePath)) {
-				throw new Error(`feature does not exist at '${basePath}'!`);
+			if (!filesystem.existsSync(path)) {
+				throw new Error(`feature does not exist at '${path}'!`);
 			}
 
 			if (filesystem.existsSync(videoSource)) {
@@ -40,13 +41,13 @@ export class ExecutionResult {
 			}
 
 			if (filesystem.existsSync(metadataSource)) {
-				let metadata = JSON.parse(filesystem.readFileSync(metadataSource, 'utf8')) as FeatureMetadata;
+				const metadata = JSON.parse(filesystem.readFileSync(metadataSource, 'utf8')) as FeatureMetadata;
 	
 				this.motion = metadata.motion;
 
 				if (metadata.steps) {
 					for (let [stepIndex, stepMetadata] of metadata.steps?.entries()) {
-						const stepPath = `${basePath}/${this.stepsFolderName}/${stepIndex}`;
+						const stepPath = `${path}/${this.stepsFolderName}/${stepIndex}`;
 		
 						let step = new Step();
 						step.guide = stepMetadata.guide;
@@ -81,30 +82,30 @@ export class ExecutionResult {
 
 	public async save(name: string) {
 		try {
-			const basePath = `${process.env.MEDIA_PATH}/${name}`;
-			const stepsPath = `${basePath}/${this.stepsFolderName}`;
+			const path = `${process.env.MEDIA_PATH}/${name}`;
+			const stepsPath = `${path}/${this.stepsFolderName}`;
 			
-			console.log(`[info] saving feature '${name}' into '${basePath}'`);
+			console.log(`[info] saving feature '${name}' into '${path}'`);
 			
-			if (!filesystem.existsSync(`${basePath}/`)) {
-				filesystem.mkdirSync(`${basePath}/`, { recursive: true });
+			if (!filesystem.existsSync(`${path}/`)) {
+				filesystem.mkdirSync(`${path}/`, { recursive: true });
 			}
 			
 			if (this.videoSource) {
 				const videoName = this.videoSource.split('/').at(-1);
-	
-				await filesystem.renameSync(this.videoSource, `${basePath}/${videoName}`);
-				this.videoSource = `${basePath}/${videoName}`;
+
+				await filesystem.renameSync(this.videoSource, `${path}/${videoName}`);
+				this.videoSource = `${path}/${videoName}`;
 			}
 	
-			let metadata: FeatureMetadata = new FeatureMetadata();
+			const metadata: FeatureMetadata = new FeatureMetadata();
 			metadata.motion = this.motion;
 
 			if (this.steps) {
 				metadata.steps = [];
 		
 				for (let [stepIndex, step] of this.steps.entries()) {
-					let screenshotsMetadata: { highlight: DOMRect[], ignore: DOMRect[]}[] = [];
+					const screenshotsMetadata: {highlight: DOMRect[], ignore: DOMRect[]}[] = [];
 	
 					if (step.screenshots) {
 						if (!filesystem.existsSync(`${stepsPath}/${stepIndex}`)) {
@@ -125,7 +126,7 @@ export class ExecutionResult {
 				}
 			}
 	
-			filesystem.writeFileSync(`${basePath}/${this.metadataFileName}`, JSON.stringify(metadata));
+			filesystem.writeFileSync(`${path}/${this.metadataFileName}`, JSON.stringify(metadata));
 		} catch (error) {
 			console.error(`[error] failed to save execution result for feature '${name}'; '${error}'`);
 		}
@@ -148,8 +149,6 @@ export class ExecutionResult {
 				const image2 = await Jimp.read(result.steps[stepIndex].screenshots[screenshotIndex].image);
 
 				const difference = Jimp.diff(image1, image2);
-
-				console.log(difference)
 
 				if (difference.percent > 0) {
 					differences.push({step: stepIndex, screenshot: screenshotIndex, difference: difference.image.bitmap.data})

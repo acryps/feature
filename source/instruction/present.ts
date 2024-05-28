@@ -2,7 +2,8 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
-import { Mouse } from "../video/mouse";
+import { Mouse } from "../mouse/mouse";
+import { ExecutionConfiguration } from "../execution/configuration";
 
 export class PresentInstruction extends Instruction {
 	private elementsContent: string[] = [];
@@ -15,7 +16,7 @@ export class PresentInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}) {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
 		const selector = project.generateSelector(this.locator);

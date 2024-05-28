@@ -1,5 +1,5 @@
 import { Page } from "puppeteer";
-import { Mouse } from '../video/mouse';
+import { Mouse } from '../mouse/mouse';
 
 export class PageParser {
 	static async findSingle(page: Page, selector: string, elementContent?: string): Promise<string> {
@@ -15,7 +15,6 @@ export class PageParser {
 			for (let element of elements) {
 				window[id] = element;
 
-				// return first element
 				return {id: id, elements: elements.length};	
 			}
 

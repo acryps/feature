@@ -7,12 +7,13 @@ import { PresentInstruction } from "./instruction/present";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
-import { Mouse } from "./video/mouse";
+import { Mouse } from "./mouse/mouse";
 import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
-import { BrowserManager } from "./browser.manager";
-import { Resolution } from "./resolution";
+import { BrowserManager } from "./browser/manager";
+import { Resolution } from "./browser/resolution";
 import * as filesystem from 'fs';
+import { ExecutionConfiguration } from "./execution/configuration";
 
 export class Feature {
 	private instructions: Instruction[];
@@ -62,7 +63,7 @@ export class Feature {
 		return this;
 	}
 
-	public async execute(project: Project, resolution: Resolution, configuration: {guide: boolean, screenshots: boolean}) {
+	public async execute(project: Project, resolution: Resolution, configuration: ExecutionConfiguration) {
 		const page = await BrowserManager.getPage(resolution);
 
 		const steps: Step[] = [];

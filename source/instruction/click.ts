@@ -1,12 +1,12 @@
-import { Page } from "puppeteer";
+import { Page, Viewport } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
-import { Mouse } from "../video/mouse";
+import { Mouse } from "../mouse/mouse";
+import { ExecutionConfiguration } from "../execution/configuration";
 
 export class ClickInstruction extends Instruction {
-	private clickableName: string;
-
+	private name: string;
 	private rectangle?: DOMRect;
 
 	private horizontal: string;
@@ -19,17 +19,17 @@ export class ClickInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}) {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
 		const selector = project.generateSelector(this.locator);
 		const id = await PageParser.findSingle(page, selector, this.elementContent);
 
 		if (this.elementContent) {
-			this.clickableName = this.elementContent;
+			this.name = this.elementContent;
 		} else {
 			const content = await PageParser.getElementContent(page, id);
-			this.clickableName = content ? content : this.locator;
+			this.name = content ? content : this.locator;
 		}
 
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
@@ -44,7 +44,7 @@ export class ClickInstruction extends Instruction {
 		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
 		await mouse.click(center.x, center.y);
 
-		const step = `click '${this.clickableName}' on the ${this.vertical} ${this.horizontal} at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
+		const step = `click '${this.name}' on the ${this.vertical} ${this.horizontal} at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
 		this.guide.push(step);
 
 		console.log(`[info] ${step}`);
@@ -52,7 +52,7 @@ export class ClickInstruction extends Instruction {
 		return super.finishExecution();
 	}
 
-	private setPosition(rectangle: DOMRect, viewport: {width: number, height: number}) {
+	private setPosition(rectangle: DOMRect, viewport: Viewport) {
 		if (rectangle.x > viewport.width / 2) {
 			this.horizontal = 'right';
 		} else {

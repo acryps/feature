@@ -1,7 +1,8 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
-import { Mouse } from "../video/mouse";
+import { Mouse } from "../mouse/mouse";
 import { Instruction } from "./instruction";
+import { ExecutionConfiguration } from "../execution/configuration";
 
 export class PrepareInstruction extends Instruction {
 	constructor(
@@ -11,20 +12,20 @@ export class PrepareInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}) {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
-		const response = await page.goto(`${project.baseUrl}${this.route}`, {
+		const response = await page.goto(`${project.url}${this.route}`, {
 			waitUntil: 'networkidle0',
 		});
 
 		await super.screenshot(page, []);
 
 		if (+response.status >= 400) {
-			throw new Error(`[error] failed to load page '${project.baseUrl}${this.route}'`);
+			throw new Error(`[error] failed to load page '${project.url}${this.route}'`);
 		}
 
-		const step = `configure product '${this.name}' at '${project.baseUrl}${this.route}'`;
+		const step = `configure product '${this.name}' at '${project.url}${this.route}'`;
 		this.guide.push(step);
 
 		console.log(`[info] ${step}`);

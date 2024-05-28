@@ -41,7 +41,7 @@ export class BrowserManager {
 			} else {
 				this.rotationIndex++;
 			}
-	
+
 			return page;
 		} else {
 			throw new Error(`attempted to gather page without launching the browser manager`);
