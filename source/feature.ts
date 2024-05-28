@@ -1,4 +1,4 @@
-import { Page, ScreenRecorder } from "puppeteer";
+import { ScreenRecorder } from "puppeteer";
 import { ClickInstruction } from "./instruction/click";
 import { Instruction } from "./instruction/instruction";
 import { NavigationInstruction } from "./instruction/navigate";
@@ -7,19 +7,24 @@ import { PresentInstruction } from "./instruction/present";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
-import { Mouse } from "./video/mouse";
+import { Mouse } from "./mouse/mouse";
 import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
+import { BrowserManager } from "./browser/manager";
+import { Resolution } from "./browser/resolution";
 import * as filesystem from 'fs';
+import { ExecutionConfiguration } from "./execution/configuration";
 
 export class Feature {
 	private instructions: Instruction[];
+	private executionResult: ExecutionResult;
 
 	constructor (
 		public name: string,
 		public description: string,
 	) {
 		this.instructions = [];
+		this.executionResult = new ExecutionResult();
 	}
 
 	public prepare(name: string, route: string): Feature {
@@ -58,39 +63,56 @@ export class Feature {
 		return this;
 	}
 
-	public async execute(project: Project, page: Page, configuration: {guide: boolean, screenshots: boolean, video: boolean}): Promise<ExecutionResult> {
+	public async execute(project: Project, resolution: Resolution, configuration: ExecutionConfiguration) {
+		const page = await BrowserManager.getPage(resolution);
+
 		const steps: Step[] = [];
+		const mouse = new Mouse(page, false);
 
-		const mouse = new Mouse(page, configuration.video);
+		try {
+			for (let instruction of this.instructions) {
+				steps.push(await instruction.execute(project, page, mouse, configuration));
+			}
+		} catch (error) {
+			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
+		}
 
-		let recorder: ScreenRecorder;
-		let path = process.env.MEDIA_PATH;
-		let name = process.env.MEDIA_VIDEO_NAME;
+		this.executionResult.steps = steps;
+
+		return steps;
+	}
+
+	public async generateVideo(project: Project, resolution: Resolution, path: string, name: string) {
+		const page = await BrowserManager.getPage(resolution);
+		
+		const mouse = new Mouse(page, true);
 
 		if (!filesystem.existsSync(path)) {
 			filesystem.mkdirSync(path, {recursive: true});
 		}
 		
-		if (configuration.video) {
-			recorder = await page.screencast({path: `${path}/${name}.webm`});
-		}
+		const recorder: ScreenRecorder = await page.screencast({path: `${path}/${name}.webm`});
 
 		try {
 			for (let instruction of this.instructions) {
-				steps.push(await instruction.execute(project, page, mouse, {guide: configuration.guide, screenshots: configuration.screenshots}));
+				await instruction.execute(project, page, mouse, {guide: false, screenshots: false});
 			}
 		} catch (error) {
 			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
-			
-			if (error instanceof Error) {
-				console.error(`[error] ${error.stack}`);
-			}
 		}
 
 		await recorder?.stop();
 
-		const motion = mouse.motion;
+		this.executionResult.motion = mouse.motion;
+		this.executionResult.videoSource = `${path}/${name}.webm`;
 
-		return new ExecutionResult(`${path}/${name}.webm`, motion, steps);
+		return {
+			videoSource: `${path}/${name}.webm`,
+			motion: mouse.motion
+		}
+	}
+
+	public getExecutionResult() {
+		return this.executionResult;
 	}
 }

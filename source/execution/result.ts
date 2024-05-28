@@ -1,7 +1,9 @@
 import { Step } from "./step";
-import { MotionPoint } from "../video/motion-point";
+import { MotionPoint } from "../mouse/motion.point";
 import { FeatureMetadata } from "./metadata";
+import { ImageAnnotations } from "./image";
 import * as filesystem from 'fs';
+import * as Jimp from 'jimp';
 
 export class ExecutionResult {
 	private metadataFileName = 'feature.json';
@@ -21,16 +23,17 @@ export class ExecutionResult {
 	public load(name: string) {
 		try {
 			this.steps = [];
-			
-			let basePath = `${process.env.MEDIA_PATH}/${name}`;
 
-			if (!filesystem.existsSync(basePath)) {
-				throw new Error(`feature does not exist at '${basePath}'!`);
+			const path = `${process.env.MEDIA_PATH}/${name}`;
+			const videoSource = `${path}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
+			const metadataSource = `${path}/${this.metadataFileName}`;
+
+			console.log(`[info] loading feature '${name}' from '${path}'`);
+
+			if (!filesystem.existsSync(path)) {
+				throw new Error(`feature does not exist at '${path}'!`);
 			}
 
-			let videoSource = `${basePath}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
-			let metadataSource = `${basePath}/${this.metadataFileName}`;
-	
 			if (filesystem.existsSync(videoSource)) {
 				this.videoSource = videoSource;
 			} else {
@@ -38,29 +41,36 @@ export class ExecutionResult {
 			}
 
 			if (filesystem.existsSync(metadataSource)) {
-				let metadata = JSON.parse(filesystem.readFileSync(metadataSource, 'utf8')) as FeatureMetadata;
+				const metadata = JSON.parse(filesystem.readFileSync(metadataSource, 'utf8')) as FeatureMetadata;
 	
 				this.motion = metadata.motion;
-	
-				for (let [stepIndex, stepMetadata] of metadata.steps.entries()) {
-					const stepPath = `${basePath}/${this.stepsFolderName}/${stepIndex}`;
-	
-					let step = new Step();
-					step.guide = stepMetadata.guide;
-					step.screenshots = [];
-	
-					for (let [screenshotIndex, screenshotMetadata] of stepMetadata.screenshots.entries()) {
-						const screenshotPath = `${stepPath}/${screenshotIndex}${this.fileExtension.image}`;
 
-						if (filesystem.existsSync(screenshotPath)) {
-							const image = filesystem.readFileSync(screenshotPath);
-							step.screenshots.push({image: image, highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore});
-						} else {
-							console.warn(`[warn] could not find '${screenshotPath}'`);
-						}
-					}
+				if (metadata.steps) {
+					for (let [stepIndex, stepMetadata] of metadata.steps?.entries()) {
+						const stepPath = `${path}/${this.stepsFolderName}/${stepIndex}`;
+		
+						let step = new Step();
+						step.guide = stepMetadata.guide;
 	
-					this.steps.push(step);
+						if (stepMetadata.screenshots) {
+							step.screenshots = [];
+			
+							for (let [screenshotIndex, screenshotMetadata] of stepMetadata.screenshots.entries()) {
+								const screenshotPath = `${stepPath}/${screenshotIndex}${this.fileExtension.image}`;
+		
+								if (filesystem.existsSync(screenshotPath)) {
+									const image = filesystem.readFileSync(screenshotPath);
+									const annotations: ImageAnnotations = {highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore};
+		
+									step.screenshots.push({image: image, annotations: annotations});
+								} else {
+									console.warn(`[warn] could not find '${screenshotPath}'`);
+								}
+							}
+						}
+		
+						this.steps.push(step);
+					}
 				}
 			} else {
 				console.warn(`[warn] metadata '${metadataSource}' does not exist`);
@@ -72,50 +82,80 @@ export class ExecutionResult {
 
 	public async save(name: string) {
 		try {
-			const basePath = `${process.env.MEDIA_PATH}/${name}`;
-			const stepsPath = `${basePath}/${this.stepsFolderName}`;
-	
-			console.log(`[info] saving feature '${name}' into '${basePath}'`);
-	
-			if (!filesystem.existsSync(`${stepsPath}/`)) {
-				filesystem.mkdirSync(`${stepsPath}/`, { recursive: true });
+			const path = `${process.env.MEDIA_PATH}/${name}`;
+			const stepsPath = `${path}/${this.stepsFolderName}`;
+			
+			console.log(`[info] saving feature '${name}' into '${path}'`);
+			
+			if (!filesystem.existsSync(`${path}/`)) {
+				filesystem.mkdirSync(`${path}/`, { recursive: true });
+			}
+			
+			if (this.videoSource) {
+				const videoName = this.videoSource.split('/').at(-1);
+
+				await filesystem.renameSync(this.videoSource, `${path}/${videoName}`);
+				this.videoSource = `${path}/${videoName}`;
 			}
 	
-			const videoName = this.videoSource.split('/').at(-1);
-	
-			await filesystem.rename(this.videoSource, `${basePath}/${videoName}`, (error) => {
-				if (error) {
-					console.error(`[error] failed to move video: '${error.message}'`);
-				}
-			});
-	
-			let metadata: FeatureMetadata = new FeatureMetadata();
+			const metadata: FeatureMetadata = new FeatureMetadata();
 			metadata.motion = this.motion;
-			metadata.steps = [];
+
+			if (this.steps) {
+				metadata.steps = [];
+		
+				for (let [stepIndex, step] of this.steps.entries()) {
+					const screenshotsMetadata: {highlight: DOMRect[], ignore: DOMRect[]}[] = [];
 	
-			for (let [stepIndex, step] of this.steps.entries()) {
-				if (!filesystem.existsSync(`${stepsPath}/${stepIndex}`)) {
-					filesystem.mkdirSync(`${stepsPath}/${stepIndex}`);
+					if (step.screenshots) {
+						if (!filesystem.existsSync(`${stepsPath}/${stepIndex}`)) {
+							filesystem.mkdirSync(`${stepsPath}/${stepIndex}`, { recursive: true });
+						}
+	
+						for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
+							screenshotsMetadata.push({highlight: screenshot.annotations.highlight, ignore: screenshot.annotations.ignore});
+			
+							await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
+						}
+					}
+		
+					metadata.steps.push({
+						...(step.guide ? {guide: step.guide} : {}),
+						...(step.screenshots ? {screenshots: screenshotsMetadata} : {})
+					});
 				}
-	
-				let screenshotsMetadata: { highlight: DOMRect[], ignore: DOMRect[]}[] = [];
-	
-				for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
-					screenshotsMetadata.push({highlight: screenshot.highlight, ignore: screenshot.ignore});
-	
-					await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
-				}
-	
-				metadata.steps.push({guide: step.guide, screenshots: screenshotsMetadata});
 			}
 	
-			filesystem.writeFileSync(`${basePath}/${this.metadataFileName}`, JSON.stringify(metadata));
+			filesystem.writeFileSync(`${path}/${this.metadataFileName}`, JSON.stringify(metadata));
 		} catch (error) {
 			console.error(`[error] failed to save execution result for feature '${name}'; '${error}'`);
 		}
 	}
 
-	public imageCompare(result: ExecutionResult) {
-		// todo: compare each image in the execution steps to each other
+	public async imageCompare(result: ExecutionResult) {
+		const differences: {step: number, screenshot: number, difference: Buffer}[] = [];
+		
+		if (this.steps.length != result.steps.length) {
+			throw new Error(`cannot compare execution results with different amount of steps`);
+		}
+
+		for (let [stepIndex, step] of this.steps.entries()) {
+			if (step.screenshots.length != result.steps[stepIndex].screenshots.length) {
+				throw new Error(`step '${stepIndex}' contains different amounts of screenshots`);
+			}
+
+			for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
+				const image1 = await Jimp.read(screenshot.image);
+				const image2 = await Jimp.read(result.steps[stepIndex].screenshots[screenshotIndex].image);
+
+				const difference = Jimp.diff(image1, image2);
+
+				if (difference.percent > 0) {
+					differences.push({step: stepIndex, screenshot: screenshotIndex, difference: difference.image.bitmap.data})
+				}
+			}
+		}
+
+		return differences;
 	}
 }

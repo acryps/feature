@@ -1,20 +1,20 @@
 import { Page } from "puppeteer";
 import { PageParser } from "../page/parser";
-import { MotionPoint } from "./motion-point";
+import { MotionPoint } from "./motion.point";
 
 export class Mouse {
 	public x = 0;
 	public y = 0;
 
-	private start: Date;
 	public motion: MotionPoint[] = [];
-
+	
+	private start: Date;
 	private waitTimeout = 1000;
-
+	
 	private stepTimeout = 1000 / 60;
-	private movementStep = 100;
-	private stepMovementDuration = 100;
-	private maxMovementDuration = 300;
+	private steps = 100;
+	private stepDuration = 100;
+	private maxDuration = 300;
 
 	constructor(
 		private page: Page,
@@ -48,7 +48,7 @@ export class Mouse {
 		const deltaY = y - this.y;
 
 		const distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-		const movementDuration = Math.min((distance / this.movementStep) * this.stepMovementDuration, this.maxMovementDuration);
+		const movementDuration = Math.min((distance / this.steps) * this.stepDuration, this.maxDuration);
 
 		const steps = movementDuration / this.stepTimeout;
 

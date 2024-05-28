@@ -1,19 +1,17 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
-import { Mouse } from "../video/mouse";
+import { Mouse } from "../mouse/mouse";
 import { Instruction } from "./instruction";
+import { ExecutionConfiguration } from "../execution/configuration";
 
 export class RedirectInstruction extends Instruction {
-	private target: string;
-	private source: string;
-
 	constructor(
 		private url: string
 	){
 		super();
 	}
 
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: {guide: boolean, screenshots: boolean}) {
+	public async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
 		const response = await page.goto(`${this.url}`, {

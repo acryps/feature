@@ -1,8 +1,11 @@
+import { Image, ImageAnnotations } from "./image";
+
 export class Step {
-	public guide: string[];
-	public screenshots: {
-		image: Buffer;
-		highlight: DOMRect[];
-		ignore: DOMRect[];
-	}[];
+	public guide?: string[];
+	public screenshots?: Image[];
+}
+
+export class StepAnnotations {
+	public guide?: string[];
+	public screenshots?: ImageAnnotations[];
 }
