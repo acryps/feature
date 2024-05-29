@@ -3,10 +3,10 @@ import { PageParser } from "../page/parser";
 import { MotionPoint } from "./motion.point";
 
 export class Mouse {
-	public x = 0;
-	public y = 0;
+	x = 0;
+	y = 0;
 
-	public motion: MotionPoint[] = [];
+	motion: MotionPoint[] = [];
 	
 	private start: Date;
 	private waitTimeout = 1000;
@@ -27,7 +27,7 @@ export class Mouse {
 		}
 	}
 
-	public async click(x: number, y: number) {
+	async click(x: number, y: number) {
 		this.addMotionCoordinate();
 
 		if (this.recording) {
@@ -43,7 +43,7 @@ export class Mouse {
 		await this.page.waitForNetworkIdle();
 	}
 
-	public async simulateCursorMovement(x: number, y: number) {
+	async simulateCursorMovement(x: number, y: number) {
 		const deltaX = x - this.x;
 		const deltaY = y - this.y;
 
@@ -67,7 +67,7 @@ export class Mouse {
 		}
 	}
 
-	public async scrollIntoView(page: Page, id: string) {
+	async scrollIntoView(page: Page, id: string) {
 		const behavior: ScrollBehavior = this.recording ? 'smooth' : 'auto';
 
 		if (this.recording) {

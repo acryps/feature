@@ -163,7 +163,7 @@ export class PageParser {
 	}
 
 	// set timer to wait for changes on the page
-	public static async waitForUpdates(page: Page) {
+	static async waitForUpdates(page: Page) {
 		// wait for no changes on the page
 		await new Promise<void>((done, reject) => {
 			// timeout

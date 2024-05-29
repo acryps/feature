@@ -11,7 +11,7 @@ export class RedirectInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
+	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
 		const response = await page.goto(`${this.url}`, {

@@ -19,7 +19,7 @@ export class ClickInstruction extends Instruction {
 		super();
 	}
 
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
+	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
 		const selector = project.generateSelector(this.locator);

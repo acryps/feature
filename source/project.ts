@@ -16,7 +16,7 @@ export class Project {
 		return ignored;
 	}
 
-	public wrap(locatorPart: string): string[] {
+	wrap(locatorPart: string): string[] {
 		if (locatorPart === '!') {
 			return ['ui-dialog'];
 		}
@@ -24,13 +24,13 @@ export class Project {
 		return [`${locatorPart}`, `ui-${locatorPart}`, `.ui-${locatorPart}`, `[ui-${locatorPart}]`, `.${locatorPart}`, `[${locatorPart}]`];
 	}
 
-	public ignore(locator: string) {
+	ignore(locator: string) {
 		if (locator) {
 			this.ignoreLocators.add(locator);
 		}
 	}
 
-	public generateSelector(locator: string) {
+	generateSelector(locator: string) {
 		const locatorParts = locator.split(' ');
 		const locatorPart = locatorParts.shift();
 

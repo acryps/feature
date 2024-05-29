@@ -20,7 +20,7 @@ export class ExecutionResult {
 		public steps?: Step[],
 	) {}
 	
-	public load(name: string) {
+	load(name: string) {
 		try {
 			this.steps = [];
 
@@ -80,7 +80,7 @@ export class ExecutionResult {
 		}
 	}
 
-	public async save(name: string) {
+	async save(name: string) {
 		try {
 			const path = `${process.env.MEDIA_PATH}/${name}`;
 			const stepsPath = `${path}/${this.stepsFolderName}`;
@@ -132,7 +132,7 @@ export class ExecutionResult {
 		}
 	}
 
-	public async imageCompare(result: ExecutionResult) {
+	async imageCompare(result: ExecutionResult) {
 		const differences: {step: number, screenshot: number, difference: Buffer}[] = [];
 		
 		if (this.steps.length != result.steps.length) {

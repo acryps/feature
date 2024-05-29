@@ -7,22 +7,22 @@ import { ExecutionConfiguration } from "../execution/configuration";
 import { PageParser } from "../page/parser";
 
 export abstract class Instruction {
-	public guide: string[] = [];
-	public screenshots: Image[] = [];
+	guide: string[] = [];
+	screenshots: Image[] = [];
 
-	public generateGuide: boolean;
-	public generateScreenshots: boolean;
+	generateGuide: boolean;
+	generateScreenshots: boolean;
 	
-	public async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
+	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		throw new Error("Method not implemented.");
 	}
 
-	public initializeExecution(configuration: ExecutionConfiguration) {
+	initializeExecution(configuration: ExecutionConfiguration) {
 		this.generateGuide = configuration.guide;
 		this.generateScreenshots = configuration.screenshots;
 	}
 
-	public finishExecution(): Step {
+	finishExecution(): Step {
 		const result: Step = {
 			...(this.generateGuide ? { guide: this.guide } : {}),
 			...(this.generateScreenshots ? { screenshots: this.screenshots } : {}),
@@ -36,7 +36,7 @@ export abstract class Instruction {
 		return result;
 	}
 
-	public async screenshot(project: Project, page: Page, highlight: DOMRect[]) {
+	async screenshot(project: Project, page: Page, highlight: DOMRect[]) {
 		if (this.generateScreenshots) {
 			const imageBuffer = await page.screenshot();
 

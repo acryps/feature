@@ -27,43 +27,43 @@ export class Feature {
 		this.executionResult = new ExecutionResult();
 	}
 
-	public prepare(name: string, route: string): Feature {
+	prepare(name: string, route: string): Feature {
 		this.instructions.push(new PrepareInstruction(name, route));
 
 		return this;
 	}
 
-	public click(locator: string, elementContent?: string): Feature {
+	click(locator: string, elementContent?: string): Feature {
 		this.instructions.push(new ClickInstruction(locator, elementContent));
 
 		return this;
 	}
 
-	public navigate(locator: string, title: string): Feature {
+	navigate(locator: string, title: string): Feature {
 		this.instructions.push(new NavigationInstruction(locator, title));
 
 		return this;
 	}
 
-	public redirect(url: string): Feature {
+	redirect(url: string): Feature {
 		this.instructions.push(new RedirectInstruction(url));
 
 		return this;
 	}
 
-	public write(locator: string, content: string): Feature {
+	write(locator: string, content: string): Feature {
 		this.instructions.push(new WriteInstruction(locator, content));
 
 		return this;
 	}
 
-	public present(locator: string, valueTags?: string[]): Feature {
+	present(locator: string, valueTags?: string[]): Feature {
 		this.instructions.push(new PresentInstruction(locator, valueTags));
 
 		return this;
 	}
 
-	public async execute(project: Project, resolution: Resolution, configuration: ExecutionConfiguration) {
+	async execute(project: Project, resolution: Resolution, configuration: ExecutionConfiguration) {
 		const page = await BrowserManager.getPage(resolution);
 
 		const steps: Step[] = [];
@@ -82,7 +82,7 @@ export class Feature {
 		return steps;
 	}
 
-	public async generateVideo(project: Project, resolution: Resolution, path: string, name: string) {
+	async generateVideo(project: Project, resolution: Resolution, path: string, name: string) {
 		const page = await BrowserManager.getPage(resolution);
 		
 		const mouse = new Mouse(page, true);
@@ -112,7 +112,7 @@ export class Feature {
 		}
 	}
 
-	public getExecutionResult() {
+	getExecutionResult() {
 		return this.executionResult;
 	}
 }
