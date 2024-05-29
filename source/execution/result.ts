@@ -145,8 +145,16 @@ export class ExecutionResult {
 			}
 
 			for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
-				const image1 = await Jimp.read(screenshot.image);
-				const image2 = await Jimp.read(result.steps[stepIndex].screenshots[screenshotIndex].image);
+				let image1 = await Jimp.read(screenshot.image);
+				let image2 = await Jimp.read(result.steps[stepIndex].screenshots[screenshotIndex].image);
+
+				const ignored = [
+					...result.steps[stepIndex].screenshots[screenshotIndex].annotations.ignore,
+					...this.steps[stepIndex].screenshots[screenshotIndex].annotations.ignore
+				];
+
+				image1 = this.applyMasks(image1, ignored);
+				image2 = this.applyMasks(image2, ignored);
 
 				const difference = Jimp.diff(image1, image2);
 
@@ -157,5 +165,16 @@ export class ExecutionResult {
 		}
 
 		return differences;
+	}
+
+	private applyMasks(image: Jimp, rectangles: DOMRect[]): Jimp {
+		for (let rectangle of rectangles) {
+			if (rectangle.width > 0 && rectangle.height > 0) {
+				const mask = new Jimp(rectangle.width, rectangle.height, 0xffffffff);
+				image = image.composite(mask, rectangle.x, rectangle.y);
+			}
+		}
+
+		return image;
 	}
 }
