@@ -12,8 +12,9 @@ import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
 import { BrowserManager } from "./browser/manager";
 import { Resolution } from "./browser/resolution";
-import * as filesystem from 'fs';
 import { ExecutionConfiguration } from "./execution/configuration";
+import { Identifier } from "./utilities/identifier";
+import * as filesystem from 'fs';
 
 export class Feature {
 	private instructions: Instruction[];
@@ -82,10 +83,13 @@ export class Feature {
 		return steps;
 	}
 
-	async generateVideo(project: Project, resolution: Resolution, path: string, name: string) {
+	async generateVideo(project: Project, resolution: Resolution) {
 		const page = await BrowserManager.getPage(resolution);
 		
 		const mouse = new Mouse(page, true);
+
+		const path = process.env.MEDIA_PATH;
+		const name = Identifier.get();
 
 		if (!filesystem.existsSync(path)) {
 			filesystem.mkdirSync(path, {recursive: true});

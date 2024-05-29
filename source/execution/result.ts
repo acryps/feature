@@ -46,9 +46,9 @@ export class ExecutionResult {
 				this.motion = metadata.motion;
 
 				if (metadata.steps) {
-					for (let [stepIndex, stepMetadata] of metadata.steps?.entries()) {
+					for (let [stepIndex, stepMetadata] of metadata.steps.entries()) {
 						const stepPath = `${path}/${this.stepsFolderName}/${stepIndex}`;
-		
+
 						let step = new Step();
 						step.guide = stepMetadata.guide;
 	
@@ -92,7 +92,7 @@ export class ExecutionResult {
 			}
 			
 			if (this.videoSource) {
-				const videoName = this.videoSource.split('/').at(-1);
+				const videoName = `${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
 
 				await filesystem.renameSync(this.videoSource, `${path}/${videoName}`);
 				this.videoSource = `${path}/${videoName}`;
@@ -134,7 +134,7 @@ export class ExecutionResult {
 
 	async imageCompare(result: ExecutionResult) {
 		const differences: {step: number, screenshot: number, difference: Buffer}[] = [];
-		
+
 		if (this.steps.length != result.steps.length) {
 			throw new Error(`cannot compare execution results with different amount of steps`);
 		}
