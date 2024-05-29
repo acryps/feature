@@ -104,13 +104,19 @@ export class PageParser {
 	static async inputContent(page: Page, id: string, content: string): Promise<string> {
 		const placeholder = await page.evaluate((id, content) => {
 			const element = window[id];
+			let placeholder = '';
 
 			if (element instanceof HTMLInputElement) {
 				element.value = content;
-				element.blur();
-
-				return element.placeholder;
+				placeholder = element.placeholder;
+			} else {
+				element.textContent = content;
+				placeholder = element.localName;
 			}
+
+			element.blur();
+			
+			return placeholder;
 		}, id, content);
 
 		if (!placeholder) {
