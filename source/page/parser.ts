@@ -1,9 +1,10 @@
 import { Page } from "puppeteer";
 import { Mouse } from '../mouse/mouse';
+import { Identifier } from "../utilities/identifier";
 
 export class PageParser {
 	static async findSingle(page: Page, selector: string, elementContent?: string): Promise<string> {
-		const id = this.generateId();
+		const id = Identifier.get();
 
 		const response = await page.evaluate((selector, content, id) => {
 			let elements = [...document.querySelectorAll(selector)];
@@ -187,15 +188,5 @@ export class PageParser {
 				}, 250);
 			}, 100);
 		});
-	}
-
-	private static generateId(): string {
-		let id = '';
-		
-		for (let index = 0; index < 64; index++) {
-			id += Math.random().toString(16)[3];
-		}
-		
-		return id;
 	}
 }
