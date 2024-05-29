@@ -39,7 +39,7 @@ export class ClickInstruction extends Instruction {
 			this.setPosition(this.rectangle, viewport);
 		}
 
-		await super.screenshot(page, [this.rectangle]);
+		await super.screenshot(project, page, [this.rectangle]);
 
 		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
 		await mouse.click(center.x, center.y);

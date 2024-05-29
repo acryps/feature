@@ -31,7 +31,7 @@ export class WriteInstruction extends Instruction {
 
 		await PageParser.waitForUpdates(page);
 
-		await super.screenshot(page, [this.rectangle]);
+		await super.screenshot(project, page, [this.rectangle]);
 
 		const step = `write '${this.content}' in '${this.fieldName}' field`;
 		this.guide.push(step);

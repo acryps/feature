@@ -31,7 +31,7 @@ export class PresentInstruction extends Instruction {
 			this.rectangles = await PageParser.getBoundingRectangles(page, ids);
 		}
 
-		await super.screenshot(page, this.rectangles);
+		await super.screenshot(project, page, this.rectangles);
 
 		const step = `find elements ${this.elementsContent.map(element => `'${element}'`).join(', ')}`;
 		this.guide.push(step);

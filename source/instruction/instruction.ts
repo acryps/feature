@@ -4,6 +4,7 @@ import { Mouse } from "../mouse/mouse";
 import { Image, ImageAnnotations } from "../execution/image";
 import { Step } from "../execution/step";
 import { ExecutionConfiguration } from "../execution/configuration";
+import { PageParser } from "../page/parser";
 
 export abstract class Instruction {
 	public guide: string[] = [];
@@ -35,12 +36,19 @@ export abstract class Instruction {
 		return result;
 	}
 
-	public async screenshot(page: Page, highlight: DOMRect[]) {
+	public async screenshot(project: Project, page: Page, highlight: DOMRect[]) {
 		if (this.generateScreenshots) {
 			const imageBuffer = await page.screenshot();
 
-			// todo: add ignore rectangles
-			const annotations: ImageAnnotations = {highlight: highlight, ignore: []}
+			const ignoredIds: string[] = [];
+
+			for (let ignoreSelector of project.ignoreSelectors) {
+				ignoredIds.push(...await PageParser.findMultiple(page, ignoreSelector));
+			}
+			
+			const ignore = await PageParser.getBoundingRectangles(page, ignoredIds);
+
+			const annotations: ImageAnnotations = {highlight: highlight, ignore: ignore}
 	
 			this.screenshots.push({
 				image: imageBuffer,

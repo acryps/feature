@@ -19,7 +19,7 @@ export class PrepareInstruction extends Instruction {
 			waitUntil: 'networkidle0',
 		});
 
-		await super.screenshot(page, []);
+		await super.screenshot(project, page, []);
 
 		if (+response.status >= 400) {
 			throw new Error(`[error] failed to load page '${project.url}${this.route}'`);

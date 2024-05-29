@@ -22,9 +22,9 @@ export class PageParser {
 		}, selector, elementContent, id);
 
 		if (response.elements > 1) {
-			console.warn(`[warning] several elements match '${selector.split(',')[0]}${elementContent ? ` "${elementContent}"` : ''}'! The first one is used.`);
+			console.warn(`[warning] several elements match '${selector.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'! The first one is used.`);
 		} else if (response.elements == 0) {
-			throw new Error(`[error] no elements match '${selector.split(',')[0]}${elementContent ? ` "${elementContent}"` : ''}'!`);
+			console.warn(`[warning] no elements match '${selector.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'!`);
 		}
 
 		return response.id;
@@ -58,10 +58,6 @@ export class PageParser {
 
 			return ids;
 		}, selector, elementContent);
-
-		if (ids.length == 0) {
-			throw new Error(`[error] no elements match '${selector.split(',')[0]}${elementContent ? ` "${elementContent}"` : ''}'!`);
-		}
 
 		return ids;
 	}
