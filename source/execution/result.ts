@@ -2,14 +2,15 @@ import { Step } from "./step";
 import { MotionPoint } from "../mouse/motion.point";
 import { FeatureMetadata } from "./metadata";
 import { ImageAnnotations } from "./image";
+import { Difference } from "./difference";
 import * as filesystem from 'fs';
 import * as Jimp from 'jimp';
 
 export class ExecutionResult {
-	private metadataFileName = 'feature.json';
-	private stepsFolderName = 'steps';
+	private readonly metadataFileName = 'feature.json';
+	private readonly stepsFolderName = 'steps';
 
-	private fileExtension = {
+	private readonly fileExtension = {
 		image: '.png',
 		video: '.webm'
 	};
@@ -60,9 +61,9 @@ export class ExecutionResult {
 		
 								if (filesystem.existsSync(screenshotPath)) {
 									const image = filesystem.readFileSync(screenshotPath);
-									const annotations: ImageAnnotations = {highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore};
+									const annotations: ImageAnnotations = { highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore };
 		
-									step.screenshots.push({image: image, annotations: annotations});
+									step.screenshots.push({ image: image, annotations: annotations });
 								} else {
 									console.warn(`[warn] could not find '${screenshotPath}'`);
 								}
@@ -105,7 +106,7 @@ export class ExecutionResult {
 				metadata.steps = [];
 		
 				for (let [stepIndex, step] of this.steps.entries()) {
-					const screenshotsMetadata: {highlight: DOMRect[], ignore: DOMRect[]}[] = [];
+					const screenshotsMetadata: ImageAnnotations[] = [];
 	
 					if (step.screenshots) {
 						if (!filesystem.existsSync(`${stepsPath}/${stepIndex}`)) {
@@ -113,15 +114,15 @@ export class ExecutionResult {
 						}
 	
 						for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
-							screenshotsMetadata.push({highlight: screenshot.annotations.highlight, ignore: screenshot.annotations.ignore});
+							screenshotsMetadata.push({ highlight: screenshot.annotations.highlight, ignore: screenshot.annotations.ignore });
 			
 							await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
 						}
 					}
 		
 					metadata.steps.push({
-						...(step.guide ? {guide: step.guide} : {}),
-						...(step.screenshots ? {screenshots: screenshotsMetadata} : {})
+						...(step.guide ? { guide: step.guide } : {}),
+						...(step.screenshots ? { screenshots: screenshotsMetadata } : {})
 					});
 				}
 			}
@@ -132,8 +133,8 @@ export class ExecutionResult {
 		}
 	}
 
-	async imageCompare(result: ExecutionResult) {
-		const differences: {step: number, screenshot: number, difference: Buffer}[] = [];
+	async imageCompare(result: ExecutionResult): Promise<Difference[]> {
+		const differences: Difference[] = [];
 
 		if (this.steps.length != result.steps.length) {
 			throw new Error(`cannot compare execution results with different amount of steps`);
@@ -159,7 +160,7 @@ export class ExecutionResult {
 				const difference = Jimp.diff(image1, image2);
 
 				if (difference.percent > 0) {
-					differences.push({step: stepIndex, screenshot: screenshotIndex, difference: difference.image.bitmap.data})
+					differences.push({ step: stepIndex, screenshot: screenshotIndex, difference: difference.image.bitmap.data })
 				}
 			}
 		}

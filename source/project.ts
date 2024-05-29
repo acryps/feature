@@ -1,16 +1,18 @@
 export class Project {
-	private ignoreLocators: Set<string> = new Set();
+	private ignoredLocators: Set<string>;
 
 	constructor(
 		public name: string,
 		public url: string
-	) {}
+	) {
+		this.ignoredLocators = new Set();
+	}
 
-	get ignoreSelectors(): string[] {
-		const ignored = [];
+	get ignoredSelectors(): string[] {
+		const ignored: string[] = [];
 
-		for (let ignoreLocator of this.ignoreLocators) {
-			ignored.push(this.generateSelector(ignoreLocator));
+		for (let ignoredLocator of this.ignoredLocators) {
+			ignored.push(this.generateSelector(ignoredLocator));
 		}
 
 		return ignored;
@@ -26,11 +28,11 @@ export class Project {
 
 	ignore(locator: string) {
 		if (locator) {
-			this.ignoreLocators.add(locator);
+			this.ignoredLocators.add(locator);
 		}
 	}
 
-	generateSelector(locator: string) {
+	generateSelector(locator: string): string {
 		const locatorParts = locator.split(' ');
 		const locatorPart = locatorParts.shift();
 

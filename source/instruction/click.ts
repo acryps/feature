@@ -41,7 +41,7 @@ export class ClickInstruction extends Instruction {
 
 		await super.screenshot(project, page, [this.rectangle]);
 
-		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
+		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await mouse.click(center.x, center.y);
 
 		const step = `click '${this.name}' on the ${this.vertical} ${this.horizontal} at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;

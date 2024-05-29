@@ -6,7 +6,7 @@ import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
 
 export class PresentInstruction extends Instruction {
-	private elementsContent: string[] = [];
+	private elementsContent: string[];
 	private rectangles?: DOMRect[];
 
 	constructor(

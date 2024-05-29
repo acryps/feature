@@ -20,7 +20,6 @@ export class NavigationInstruction extends Instruction {
 		super.initializeExecution(configuration);
 
 		const selector = project.generateSelector(this.locator);
-		
 		const id = await PageParser.findSingle(page, selector, this.title);
 
 		this.source = await page.url();
@@ -28,7 +27,7 @@ export class NavigationInstruction extends Instruction {
 		
 		await super.screenshot(project, page, [this.rectangle]);
 
-		const center = {x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2)};
+		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await mouse.click(center.x, center.y);
 
 		const step = `navigate to '${this.title}' from '${this.source}'`;

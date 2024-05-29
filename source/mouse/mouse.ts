@@ -3,26 +3,29 @@ import { PageParser } from "../page/parser";
 import { MotionPoint } from "./motion.point";
 
 export class Mouse {
-	x = 0;
-	y = 0;
+	private readonly waitTimeout = 1000;
+	private readonly stepTimeout = 1000 / 60;
+	private readonly steps = 100;
+	private readonly stepDuration = 100;
+	private readonly maxDuration = 300;
 
-	motion: MotionPoint[] = [];
+	x: number;
+	y: number;
+
+	motion: MotionPoint[];
 	
 	private start: Date;
-	private waitTimeout = 1000;
-	
-	private stepTimeout = 1000 / 60;
-	private steps = 100;
-	private stepDuration = 100;
-	private maxDuration = 300;
 
 	constructor(
 		private page: Page,
 		private recording: boolean
 	) {
+		this.x = 0;
+		this.y = 0;
+		this.motion = [];
+		
 		if (recording) {
 			this.start = new Date();
-
 			this.addMotionCoordinate();
 		}
 	}
@@ -94,7 +97,7 @@ export class Mouse {
 			const now = new Date();
 			const time = now.getTime() - this.start.getTime();
 
-			this.motion.push({time: time, x: this.x, y: this.y});
+			this.motion.push({ time: time, x: this.x, y: this.y });
 		}
 	}
 }

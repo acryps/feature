@@ -14,6 +14,7 @@ import { BrowserManager } from "./browser/manager";
 import { Resolution } from "./browser/resolution";
 import { ExecutionConfiguration } from "./execution/configuration";
 import { Identifier } from "./utilities/identifier";
+import { MotionPoint } from "./mouse/motion.point";
 import * as filesystem from 'fs';
 
 export class Feature {
@@ -83,7 +84,10 @@ export class Feature {
 		return steps;
 	}
 
-	async generateVideo(project: Project, resolution: Resolution) {
+	async generateVideo(project: Project, resolution: Resolution): Promise<{
+		videoSource: string,
+		motion: MotionPoint[]
+	}> {
 		const page = await BrowserManager.getPage(resolution);
 		
 		const mouse = new Mouse(page, true);

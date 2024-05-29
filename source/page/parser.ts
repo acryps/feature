@@ -16,10 +16,10 @@ export class PageParser {
 			for (let element of elements) {
 				window[id] = element;
 
-				return {id: id, elements: elements.length};	
+				return { id: id, elements: elements.length };	
 			}
 
-			return {id: id, elements: elements.length};
+			return { id: null, elements: elements.length };
 		}, selector, elementContent, id);
 
 		if (response.elements > 1) {

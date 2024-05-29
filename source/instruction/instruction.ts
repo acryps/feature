@@ -7,51 +7,50 @@ import { ExecutionConfiguration } from "../execution/configuration";
 import { PageParser } from "../page/parser";
 
 export abstract class Instruction {
-	guide: string[] = [];
-	screenshots: Image[] = [];
+	protected guide: string[] = [];
+	protected screenshots: Image[] = [];
 
-	generateGuide: boolean;
-	generateScreenshots: boolean;
+	private generateGuide: boolean;
+	private generateScreenshots: boolean;
 	
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		throw new Error("Method not implemented.");
 	}
 
-	initializeExecution(configuration: ExecutionConfiguration) {
+	protected initializeExecution(configuration: ExecutionConfiguration) {
 		this.generateGuide = configuration.guide;
 		this.generateScreenshots = configuration.screenshots;
 	}
 
-	finishExecution(): Step {
+	protected finishExecution(): Step {
 		const result: Step = {
 			...(this.generateGuide ? { guide: this.guide } : {}),
 			...(this.generateScreenshots ? { screenshots: this.screenshots } : {}),
 		};
 
-		this.generateGuide = null;
-		this.generateScreenshots = null;
 		this.guide = [];
 		this.screenshots = [];
+		this.generateGuide = null;
+		this.generateScreenshots = null;
 
 		return result;
 	}
 
-	async screenshot(project: Project, page: Page, highlight: DOMRect[]) {
+	protected async screenshot(project: Project, page: Page, highlight: DOMRect[]) {
 		if (this.generateScreenshots) {
-			const imageBuffer = await page.screenshot();
+			const image = await page.screenshot();
 
 			const ignoredIds: string[] = [];
 
-			for (let ignoreSelector of project.ignoreSelectors) {
+			for (let ignoreSelector of project.ignoredSelectors) {
 				ignoredIds.push(...await PageParser.findMultiple(page, ignoreSelector));
 			}
 			
 			const ignore = await PageParser.getBoundingRectangles(page, ignoredIds);
-
-			const annotations: ImageAnnotations = {highlight: highlight, ignore: ignore}
+			const annotations: ImageAnnotations = { highlight: highlight, ignore: ignore }
 	
 			this.screenshots.push({
-				image: imageBuffer,
+				image: image,
 				annotations: annotations
 			});
 		}

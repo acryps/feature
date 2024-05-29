@@ -34,7 +34,7 @@ export class BrowserManager {
 		if (this.running()) {
 			const page = await this.browsers[this.rotationIndex].newPage();
 
-			await page.setViewport({ width: resolution.width, height: resolution.height});
+			await page.setViewport({ width: resolution.width, height: resolution.height });
 	
 			if (this.rotationIndex + 1 == this.browsers.length) {
 				this.rotationIndex = 0;
