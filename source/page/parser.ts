@@ -10,7 +10,7 @@ export class PageParser {
 			let elements = [...document.querySelectorAll(selector)];
 
 			if (content) {
-				elements = elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase());
+				elements = elements.filter(element => element.textContent.toLowerCase().trim() === content.toLowerCase().trim());
 			}
 			
 			for (let element of elements) {
@@ -48,7 +48,7 @@ export class PageParser {
 			const ids: string[] = [];
 
 			if (content) {
-				elements = elements.filter(element => element.textContent.toLowerCase() === content.toLowerCase());
+				elements = elements.filter(element => element.textContent.toLowerCase().trim() === content.toLowerCase().trim());
 			}
 			
 			for (let element of elements) {
@@ -115,7 +115,7 @@ export class PageParser {
 			}
 
 			element.blur();
-			
+
 			return placeholder;
 		}, id, content);
 
@@ -152,19 +152,9 @@ export class PageParser {
 	}
 
 	static async visibleBoundingRectangle(page: Page, mouse: Mouse, id: string): Promise<DOMRect> {
-		const viewport = await page.viewport();
+		await mouse.scrollIntoView(page, id);
+		
 		const rectangle = await this.getBoundingRectangle(page, id);
-
-		const visible = rectangle 
-			&& rectangle.x >= 0 && rectangle.y >= 0
-			&& (rectangle.x + rectangle.width) <= viewport.width
-			&& (rectangle.y + rectangle.height) <= viewport.height;
-
-		if (!visible) {
-			await mouse.scrollIntoView(page, id);
-
-			return await this.getBoundingRectangle(page, id);
-		}
 
 		return rectangle;
 	}
