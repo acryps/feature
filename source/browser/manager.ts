@@ -17,9 +17,8 @@ export class BrowserManager {
 
 	static async launch(headless: boolean) {
 		for (let index = 0; index < this.size; index++) {
-			this.browsers.push(await launch({
-				headless: headless
-			}));
+			const browser = await launch({ headless: headless });
+			this.browsers.push(browser);
 		}
 	}
 

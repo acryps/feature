@@ -153,7 +153,7 @@ export class PageParser {
 
 	static async visibleBoundingRectangle(page: Page, mouse: Mouse, id: string): Promise<DOMRect> {
 		await mouse.scrollIntoView(page, id);
-		
+
 		const rectangle = await this.getBoundingRectangle(page, id);
 
 		return rectangle;
