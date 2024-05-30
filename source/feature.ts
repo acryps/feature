@@ -2,7 +2,6 @@ import { ScreenRecorder } from "puppeteer";
 import { ClickInstruction } from "./instruction/click";
 import { Instruction } from "./instruction/instruction";
 import { NavigationInstruction } from "./instruction/navigate";
-import { PrepareInstruction } from "./instruction/prepare";
 import { PresentInstruction } from "./instruction/present";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
@@ -34,12 +33,6 @@ export class Feature {
 		this.instructions = [];
 		this.executionResult = new ExecutionResult();
 		this.clipboardId = ClipboardManager.getId();
-	}
-
-	prepare(name: string, route: string): Feature {
-		this.instructions.push(new PrepareInstruction(name, route));
-
-		return this;
 	}
 
 	click(locator: string, elementContent?: string): Feature {
