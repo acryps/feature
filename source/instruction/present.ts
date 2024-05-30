@@ -28,7 +28,10 @@ export class PresentInstruction extends Instruction {
 			console.error(`[error] could not find area to present`);
 		} else {
 			this.elementsContent = await PageParser.getElementsContent(page, ids, valueTagSelectors);
+			const first = ids.shift();
+			
 			this.rectangles = await PageParser.getBoundingRectangles(page, ids);
+			this.rectangles.push(await PageParser.visibleBoundingRectangle(page, mouse, first));
 		}
 
 		await super.screenshot(project, page, this.rectangles);
