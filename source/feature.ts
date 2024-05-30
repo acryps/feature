@@ -16,6 +16,7 @@ import { ExecutionConfiguration } from "./execution/configuration";
 import { Identifier } from "./utilities/identifier";
 import { MotionPoint } from "./mouse/motion.point";
 import { HoverInstruction } from "./instruction/hover";
+import { ScrollToInstruction } from "./instruction/scroll-to";
 import * as filesystem from 'fs';
 
 export class Feature {
@@ -68,6 +69,12 @@ export class Feature {
 
 	hover(locator: string, elementContent?: string): Feature {
 		this.instructions.push(new HoverInstruction(locator, elementContent));
+
+		return this;
+	}
+
+	scrollTo(locator: string, elementContent?: string): Feature {
+		this.instructions.push(new ScrollToInstruction(locator, elementContent));
 
 		return this;
 	}
