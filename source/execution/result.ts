@@ -1,5 +1,5 @@
 import { Step } from "./step";
-import { MotionPoint } from "../mouse/motion.point";
+import { MotionPoint } from "../mouse/motion-point";
 import { FeatureMetadata } from "./metadata";
 import { ImageAnnotations } from "./image";
 import { Difference } from "./difference";

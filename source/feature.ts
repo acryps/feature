@@ -14,7 +14,7 @@ import { BrowserManager } from "./browser/manager";
 import { Resolution } from "./browser/resolution";
 import { ExecutionConfiguration } from "./execution/configuration";
 import { Identifier } from "./utilities/identifier";
-import { MotionPoint } from "./mouse/motion.point";
+import { MotionPoint } from "./mouse/motion-point";
 import { HoverInstruction } from "./instruction/hover";
 import { ScrollToInstruction } from "./instruction/scroll-to";
 import * as filesystem from 'fs';

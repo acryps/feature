@@ -1,4 +1,4 @@
-import { MotionPoint } from "../mouse/motion.point";
+import { MotionPoint } from "../mouse/motion-point";
 import { StepAnnotations } from "./step";
 
 export class FeatureMetadata {
