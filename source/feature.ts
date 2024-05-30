@@ -15,6 +15,7 @@ import { Resolution } from "./browser/resolution";
 import { ExecutionConfiguration } from "./execution/configuration";
 import { Identifier } from "./utilities/identifier";
 import { MotionPoint } from "./mouse/motion.point";
+import { HoverInstruction } from "./instruction/hover";
 import * as filesystem from 'fs';
 
 export class Feature {
@@ -61,6 +62,12 @@ export class Feature {
 
 	present(locator: string, valueTags?: string[]): Feature {
 		this.instructions.push(new PresentInstruction(locator, valueTags));
+
+		return this;
+	}
+
+	hover(locator: string, elementContent?: string): Feature {
+		this.instructions.push(new HoverInstruction(locator, elementContent));
 
 		return this;
 	}

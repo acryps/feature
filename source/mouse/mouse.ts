@@ -23,7 +23,7 @@ export class Mouse {
 		this.x = 0;
 		this.y = 0;
 		this.motion = [];
-		
+
 		if (recording) {
 			this.start = new Date();
 			this.addMotionCoordinate();
@@ -31,6 +31,13 @@ export class Mouse {
 	}
 
 	async click(x: number, y: number) {
+		await this.hover(x, y);
+		await this.page.mouse.click(x, y);
+
+		await this.page.waitForNetworkIdle();
+	}
+
+	async hover(x: number, y: number) {
 		this.addMotionCoordinate();
 
 		if (this.recording) {
@@ -39,11 +46,7 @@ export class Mouse {
 			await new Promise<void>(done => setTimeout(done, 2 * this.waitTimeout));
 		}
 
-		await this.page.mouse.click(x, y);
-
 		this.addMotionCoordinate();
-
-		await this.page.waitForNetworkIdle();
 	}
 
 	async simulateCursorMovement(x: number, y: number) {
