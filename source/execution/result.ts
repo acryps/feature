@@ -154,8 +154,8 @@ export class ExecutionResult {
 					...this.steps[stepIndex].screenshots[screenshotIndex].annotations.ignore
 				];
 
-				image1 = this.applyMasks(image1, ignored);
-				image2 = this.applyMasks(image2, ignored);
+				image1 = this.applyMask(image1, ignored);
+				image2 = this.applyMask(image2, ignored);
 
 				const difference = Jimp.diff(image1, image2);
 
@@ -168,7 +168,7 @@ export class ExecutionResult {
 		return differences;
 	}
 
-	private applyMasks(image: Jimp, rectangles: DOMRect[]): Jimp {
+	private applyMask(image: Jimp, rectangles: DOMRect[]): Jimp {
 		for (let rectangle of rectangles) {
 			if (rectangle.width > 0 && rectangle.height > 0) {
 				const mask = new Jimp(rectangle.width, rectangle.height, 0xffffffff);
