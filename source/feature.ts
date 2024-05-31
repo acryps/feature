@@ -18,13 +18,11 @@ import { HoverInstruction } from "./instruction/hover";
 import { ScrollToInstruction } from "./instruction/scroll-to";
 import { CopyToClipboardInstruction } from "./instruction/clipboard/copy-to";
 import { WriteFromClipboardInstruction } from "./instruction/clipboard/write-from";
-import { ClipboardManager } from "./utilities/clipboard";
 import * as filesystem from 'fs';
 
 export class Feature {
 	private instructions: Instruction[];
 	private executionResult: ExecutionResult;
-	private clipboardId: string;
 
 	constructor (
 		public name: string,
@@ -32,7 +30,6 @@ export class Feature {
 	) {
 		this.instructions = [];
 		this.executionResult = new ExecutionResult();
-		this.clipboardId = ClipboardManager.getId();
 	}
 
 	click(locator: string, elementContent?: string): Feature {
@@ -78,13 +75,13 @@ export class Feature {
 	}
 
 	copyToClipboard(locator: string): Feature {
-		this.instructions.push(new CopyToClipboardInstruction(locator, this.clipboardId));
+		this.instructions.push(new CopyToClipboardInstruction(locator));
 
 		return this;
 	}
 
 	writeFromClipboard(locator: string): Feature {
-		this.instructions.push(new WriteFromClipboardInstruction(locator, this.clipboardId));
+		this.instructions.push(new WriteFromClipboardInstruction(locator));
 
 		return this;
 	}
@@ -94,8 +91,6 @@ export class Feature {
 
 		const steps: Step[] = [];
 		const mouse = new Mouse(page, false);
-
-		ClipboardManager.write(this.clipboardId, '');
 
 		try {
 			for (let instruction of this.instructions) {
@@ -124,8 +119,6 @@ export class Feature {
 		if (!filesystem.existsSync(path)) {
 			filesystem.mkdirSync(path, {recursive: true});
 		}
-
-		ClipboardManager.write(this.clipboardId, '');
 		
 		const recorder: ScreenRecorder = await page.screencast({path: `${path}/${name}.webm`});
 

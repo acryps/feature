@@ -5,7 +5,6 @@ import { Mouse } from "../../mouse/mouse";
 import { Project } from "../../project";
 import { Instruction } from "../instruction";
 import { PageParser } from "../../page/parser";
-import { ClipboardManager } from "../../utilities/clipboard";
 
 export class WriteFromClipboardInstruction extends Instruction {
 	private fieldName: string;
@@ -14,8 +13,7 @@ export class WriteFromClipboardInstruction extends Instruction {
 	private content: string;
 
 	constructor(
-		private locator: string,
-		private clipboardId: string,
+		private locator: string
 	) {
 		super();
 	}
@@ -31,7 +29,7 @@ export class WriteFromClipboardInstruction extends Instruction {
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await mouse.click(center.x, center.y);
 
-		this.content = ClipboardManager.read(this.clipboardId);
+		this.content = await PageParser.readFromClipboard(page, id);
 
 		this.fieldName = await PageParser.inputContent(page, id, this.content);
 

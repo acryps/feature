@@ -1,5 +1,5 @@
 import { cpus } from "os";
-import { Browser, launch } from "puppeteer";
+import { Browser, launch, Permission, Page } from "puppeteer";
 import { Resolution } from "./resolution";
 
 export class BrowserManager {
@@ -45,5 +45,13 @@ export class BrowserManager {
 		} else {
 			throw new Error(`attempted to gather page without launching the browser manager`);
 		}
+	}
+
+	static async overridePermissions(page: Page, permissions: Permission[]) {
+		const browser = await page.browser();
+		const context = await browser.defaultBrowserContext();
+		const url = page.url();
+
+		await context.overridePermissions(url, permissions);
 	}
 }

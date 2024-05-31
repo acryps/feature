@@ -1,6 +1,7 @@
 import { Page } from "puppeteer";
 import { Mouse } from '../mouse/mouse';
 import { Identifier } from "../utilities/identifier";
+import { BrowserManager } from "../browser/manager";
 
 export class PageParser {
 	static async findSingle(page: Page, selector: string, elementContent?: string): Promise<string> {
@@ -157,6 +158,24 @@ export class PageParser {
 		const rectangle = await this.getBoundingRectangle(page, id);
 
 		return rectangle;
+	}
+
+	static async readFromClipboard(page: Page, id: string) {
+		await BrowserManager.overridePermissions(page, ['clipboard-read']);
+
+		const content = await page.evaluate(async (id) => {
+			return await navigator.clipboard.readText();
+		}, id);
+
+		return content;
+	}
+
+	static async copyToClipboard(page: Page, content: string) {
+		await BrowserManager.overridePermissions(page, ['clipboard-sanitized-write']);
+
+		await page.evaluate(async (content) => {
+			await navigator.clipboard.writeText(content);
+		}, content);
 	}
 
 	// set timer to wait for changes on the page

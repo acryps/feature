@@ -5,12 +5,9 @@ import { Mouse } from "../../mouse/mouse";
 import { Project } from "../../project";
 import { Instruction } from "../instruction";
 import { PageParser } from "../../page/parser";
-import { ClipboardManager } from "../../utilities/clipboard";
-
 export class CopyToClipboardInstruction extends Instruction {
 	constructor(
-		private locator: string,
-		private clipboardId: string
+		private locator: string
 	) {
 		super();
 	}
@@ -23,7 +20,7 @@ export class CopyToClipboardInstruction extends Instruction {
 
 		const content = await PageParser.getElementContent(page, id);
 
-		ClipboardManager.write(this.clipboardId, content);
+		await PageParser.copyToClipboard(page, content);
 
 		const step = `copied '${content}' to clipboard`;
 		this.guide.push(step);
