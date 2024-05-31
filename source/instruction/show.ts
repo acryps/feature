@@ -5,7 +5,7 @@ import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
 
-export class PresentInstruction extends Instruction {
+export class ShowInstruction extends Instruction {
 	private elementsContent: string[];
 	private rectangles?: DOMRect[];
 

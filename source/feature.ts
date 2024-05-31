@@ -2,7 +2,7 @@ import { ScreenRecorder } from "puppeteer";
 import { ClickInstruction } from "./instruction/click";
 import { Instruction } from "./instruction/instruction";
 import { NavigationInstruction } from "./instruction/navigate";
-import { PresentInstruction } from "./instruction/present";
+import { ShowInstruction } from "./instruction/show";
 import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
@@ -59,8 +59,8 @@ export class Feature {
 		return this;
 	}
 
-	present(locator: string, valueTags?: string[]): Feature {
-		this.instructions.push(new PresentInstruction(locator, valueTags));
+	show(locator: string, valueTags?: string[]): Feature {
+		this.instructions.push(new ShowInstruction(locator, valueTags));
 
 		return this;
 	}
