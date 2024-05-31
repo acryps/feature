@@ -33,7 +33,9 @@ export class Mouse {
 	async click(x: number, y: number) {
 		await this.hover(x, y);
 		await this.page.mouse.click(x, y);
+		
 		await this.page.waitForNetworkIdle();
+		await PageParser.waitForUpdates(this.page);
 	}
 
 	async hover(x: number, y: number) {

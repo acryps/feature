@@ -18,6 +18,8 @@ import { HoverInstruction } from "./instruction/hover";
 import { ScrollToInstruction } from "./instruction/scroll-to";
 import { CopyToClipboardInstruction } from "./instruction/clipboard/copy-to";
 import { WriteFromClipboardInstruction } from "./instruction/clipboard/write-from";
+import { WaitForInstruction } from "./instruction/wait-for";
+import { WaitWhileInstruction } from "./instruction/wait-while";
 import * as filesystem from 'fs';
 
 export class Feature {
@@ -82,6 +84,18 @@ export class Feature {
 
 	writeFromClipboard(locator: string): Feature {
 		this.instructions.push(new WriteFromClipboardInstruction(locator));
+
+		return this;
+	}
+
+	waitFor(locator: string) {
+		this.instructions.push(new WaitForInstruction(locator));
+
+		return this;
+	}
+
+	waitWhile(locator: string, elementContent?: string) {
+		this.instructions.push(new WaitWhileInstruction(locator, elementContent));
 
 		return this;
 	}

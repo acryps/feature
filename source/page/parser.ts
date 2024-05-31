@@ -178,6 +178,30 @@ export class PageParser {
 		}, content);
 	}
 
+	static async waitWhile(page: Page, selector: string) {
+		await new Promise<void>((done, reject) => {
+			const timer = setTimeout(() => reject(), 30 * 1000);
+
+			setTimeout(() => {
+				const waiter = setInterval(async () => {
+					const present = await page.evaluate((selector) => {
+						return !!document.querySelector(selector);
+					}, selector);
+					
+					if (!present) {
+						clearTimeout(timer);
+						clearInterval(waiter);
+						
+						done();
+					}
+				}, 250);
+			}, 100);
+		});
+
+		await page.waitForNetworkIdle();
+		await this.waitForUpdates(page);
+	}
+
 	// set timer to wait for changes on the page
 	static async waitForUpdates(page: Page) {
 		// wait for no changes on the page
