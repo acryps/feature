@@ -18,7 +18,9 @@ export class WaitWhileInstruction extends Instruction {
 		super.initializeExecution(configuration);
 
 		const selector = project.generateSelector(this.locator);
-		
+
+		await super.screenshot(project, page, []);
+
 		await PageParser.waitWhile(page, selector);
 
 		const step = `waited while '${this.locator}' was present`;
