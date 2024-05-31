@@ -17,7 +17,6 @@ export class CopyToClipboardInstruction extends Instruction {
 
 		const selector = project.generateSelector(this.locator);
 		const id = await PageParser.findSingle(page, selector);
-
 		const content = await PageParser.getElementContent(page, id);
 
 		await PageParser.copyToClipboard(page, content);

@@ -21,7 +21,6 @@ export class WriteInstruction extends Instruction {
 
 		const selector = project.generateSelector(this.locator);
 		const id = await PageParser.findSingle(page, selector);
-
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };

@@ -21,7 +21,6 @@ export class ShowInstruction extends Instruction {
 
 		const selector = project.generateSelector(this.locator);
 		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
-
 		const ids: string[] = await PageParser.findMultiple(page, selector);
 
 		if (ids.length == 0) {

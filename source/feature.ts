@@ -94,8 +94,8 @@ export class Feature {
 		return this;
 	}
 
-	waitWhile(locator: string, elementContent?: string) {
-		this.instructions.push(new WaitWhileInstruction(locator, elementContent));
+	waitWhile(locator: string) {
+		this.instructions.push(new WaitWhileInstruction(locator));
 
 		return this;
 	}

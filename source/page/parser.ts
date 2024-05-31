@@ -4,6 +4,8 @@ import { Identifier } from "../utilities/identifier";
 import { BrowserManager } from "../browser/manager";
 
 export class PageParser {
+	private static readonly timeout = 30 * 1000;
+
 	static async findSingle(page: Page, selector: string, elementContent?: string): Promise<string> {
 		const id = Identifier.get();
 
@@ -44,9 +46,8 @@ export class PageParser {
 				return id;
 			}
 
-			let elements = [...document.querySelectorAll(selector)];
-			
 			const ids: string[] = [];
+			let elements = [...document.querySelectorAll(selector)];
 
 			if (content) {
 				elements = elements.filter(element => element.textContent.toLowerCase().trim() === content.toLowerCase().trim());
@@ -67,7 +68,6 @@ export class PageParser {
 	static async getBoundingRectangle(page: Page, id: string): Promise<DOMRect> {
 		const rectangle = await page.evaluate((id) => {
 			const element = window[id];
-
 			const rectangle: DOMRect = element.getBoundingClientRect();
 
 			return JSON.stringify(rectangle);
@@ -82,7 +82,6 @@ export class PageParser {
 
 			for (let id of ids) {
 				const element = window[id];
-
 				const rectangle: DOMRect = element.getBoundingClientRect();
 	
 				rectangles.push(JSON.stringify(rectangle));
@@ -92,6 +91,14 @@ export class PageParser {
 		}, ids);
 
 		return rectangles.map(rectangle => JSON.parse(rectangle) as DOMRect);
+	}
+
+	static async visibleBoundingRectangle(page: Page, mouse: Mouse, id: string): Promise<DOMRect> {
+		await mouse.scrollIntoView(page, id);
+
+		const rectangle = await this.getBoundingRectangle(page, id);
+
+		return rectangle;
 	}
 
 	static async getElementContent(page: Page, id: string): Promise<string> {
@@ -152,20 +159,12 @@ export class PageParser {
 		return elementsContent;
 	}
 
-	static async visibleBoundingRectangle(page: Page, mouse: Mouse, id: string): Promise<DOMRect> {
-		await mouse.scrollIntoView(page, id);
-
-		const rectangle = await this.getBoundingRectangle(page, id);
-
-		return rectangle;
-	}
-
-	static async readFromClipboard(page: Page, id: string) {
+	static async readFromClipboard(page: Page) {
 		await BrowserManager.overridePermissions(page, ['clipboard-read']);
 
-		const content = await page.evaluate(async (id) => {
+		const content = await page.evaluate(async () => {
 			return await navigator.clipboard.readText();
-		}, id);
+		});
 
 		return content;
 	}
@@ -180,7 +179,7 @@ export class PageParser {
 
 	static async waitWhile(page: Page, selector: string) {
 		await new Promise<void>((done, reject) => {
-			const timer = setTimeout(() => reject(), 30 * 1000);
+			const timer = setTimeout(() => reject(), this.timeout);
 
 			setTimeout(() => {
 				const waiter = setInterval(async () => {
@@ -202,14 +201,10 @@ export class PageParser {
 		await this.waitForUpdates(page);
 	}
 
-	// set timer to wait for changes on the page
 	static async waitForUpdates(page: Page) {
-		// wait for no changes on the page
 		await new Promise<void>((done, reject) => {
-			// timeout
-			const timer = setTimeout(() => reject(), 30 * 1000);
+			const timer = setTimeout(() => reject(), this.timeout);
 			
-			// wait for initial load
 			setTimeout(() => {
 				let content: string;
 				

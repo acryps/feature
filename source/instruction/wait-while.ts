@@ -8,8 +8,7 @@ import { PageParser } from "../page/parser";
 
 export class WaitWhileInstruction extends Instruction {
 	constructor(
-		private locator: string,
-		private elementContent?: string
+		private locator: string
 	) {
 		super();
 	}

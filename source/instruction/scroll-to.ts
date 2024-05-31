@@ -34,7 +34,6 @@ export class ScrollToInstruction extends Instruction {
 		await super.screenshot(project, page, [this.rectangle]);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
-
 		const step = `scrolled to '${this.name}' at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
 		this.guide.push(step);
 
