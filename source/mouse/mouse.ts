@@ -33,7 +33,6 @@ export class Mouse {
 	async click(x: number, y: number) {
 		await this.hover(x, y);
 		await this.page.mouse.click(x, y);
-
 		await this.page.waitForNetworkIdle();
 	}
 
@@ -44,6 +43,8 @@ export class Mouse {
 			await this.simulateCursorMovement(x, y);
 
 			await new Promise<void>(done => setTimeout(done, 2 * this.waitTimeout));
+		} else {
+			await this.page.mouse.move(x, y);
 		}
 
 		this.addMotionCoordinate();
