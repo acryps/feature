@@ -4,13 +4,15 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
+import { Multiple } from "../element/multiple";
+import { Single } from "../element/single";
 
 export class ShowInstruction extends Instruction {
 	private elementsContent: string[];
 	private rectangles?: DOMRect[];
 
 	constructor(
-		private locator: string,
+		private elements: Multiple | Single,
 		private valueTags?: string[]
 	){
 		super();
@@ -19,9 +21,12 @@ export class ShowInstruction extends Instruction {
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
-		const selector = project.generateSelector(this.locator);
 		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
-		const ids: string[] = await PageParser.findMultiple(page, selector);
+		let ids = await this.elements.find(page, project);
+
+		if (!Array.isArray(ids)) {
+			ids = [ids];
+		}
 
 		if (ids.length == 0) {
 			console.error(`[error] could not find area to present`);

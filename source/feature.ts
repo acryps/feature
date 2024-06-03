@@ -1,9 +1,5 @@
 import { ScreenRecorder } from "puppeteer";
-import { ClickInstruction } from "./instruction/click";
 import { Instruction } from "./instruction/instruction";
-import { NavigationInstruction } from "./instruction/navigate";
-import { ShowInstruction } from "./instruction/show";
-import { WriteInstruction } from "./instruction/write";
 import { Project } from "./project";
 import { RedirectInstruction } from "./instruction/redirect";
 import { Mouse } from "./mouse/mouse";
@@ -14,17 +10,17 @@ import { Resolution } from "./browser/resolution";
 import { ExecutionConfiguration } from "./execution/configuration";
 import { Identifier } from "./utilities/identifier";
 import { MotionPoint } from "./mouse/motion-point";
-import { HoverInstruction } from "./instruction/hover";
-import { ScrollToInstruction } from "./instruction/scroll-to";
-import { CopyToClipboardInstruction } from "./instruction/clipboard/copy-to";
-import { WriteFromClipboardInstruction } from "./instruction/clipboard/write-from";
 import { WaitForInstruction } from "./instruction/wait-for";
 import { WaitWhileInstruction } from "./instruction/wait-while";
+import { Single } from "./element/single";
+import { Multiple } from "./element/multiple";
 import * as filesystem from 'fs';
 
 export class Feature {
 	private instructions: Instruction[];
 	private executionResult: ExecutionResult;
+
+	private currentElement?: Single | Multiple;
 
 	constructor (
 		public name: string,
@@ -34,56 +30,16 @@ export class Feature {
 		this.executionResult = new ExecutionResult();
 	}
 
-	click(locator: string, elementContent?: string): Feature {
-		this.instructions.push(new ClickInstruction(locator, elementContent));
-
-		return this;
+	element(locator: string, elementContent?: string): Single {
+		return new Single(this, locator, elementContent, null, null);
 	}
 
-	navigate(locator: string, title: string): Feature {
-		this.instructions.push(new NavigationInstruction(locator, title));
-
-		return this;
+	elements(locator: string): Multiple {
+		return new Multiple(this, locator, null, null);
 	}
 
 	redirect(url: string): Feature {
 		this.instructions.push(new RedirectInstruction(url));
-
-		return this;
-	}
-
-	write(locator: string, content: string): Feature {
-		this.instructions.push(new WriteInstruction(locator, content));
-
-		return this;
-	}
-
-	show(locator: string, valueTags?: string[]): Feature {
-		this.instructions.push(new ShowInstruction(locator, valueTags));
-
-		return this;
-	}
-
-	hover(locator: string, elementContent?: string): Feature {
-		this.instructions.push(new HoverInstruction(locator, elementContent));
-
-		return this;
-	}
-
-	scrollTo(locator: string, elementContent?: string): Feature {
-		this.instructions.push(new ScrollToInstruction(locator, elementContent));
-
-		return this;
-	}
-
-	copyToClipboard(locator: string): Feature {
-		this.instructions.push(new CopyToClipboardInstruction(locator));
-
-		return this;
-	}
-
-	writeFromClipboard(locator: string): Feature {
-		this.instructions.push(new WriteFromClipboardInstruction(locator));
 
 		return this;
 	}
@@ -98,6 +54,16 @@ export class Feature {
 		this.instructions.push(new WaitWhileInstruction(locator));
 
 		return this;
+	}
+
+	present(): Single | Multiple {
+		return this.currentElement;
+	}
+
+	addInstruction(instruction: Instruction, element: Single | Multiple) {
+		this.currentElement = element;
+
+		this.instructions.push(instruction);
 	}
 
 	async execute(project: Project, resolution: Resolution, configuration: ExecutionConfiguration) {

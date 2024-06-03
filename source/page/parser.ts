@@ -2,40 +2,13 @@ import { Page } from "puppeteer";
 import { Mouse } from '../mouse/mouse';
 import { Identifier } from "../utilities/identifier";
 import { BrowserManager } from "../browser/manager";
+import { Condition } from "../element/condition";
 
 export class PageParser {
 	private static readonly timeout = 30 * 1000;
 
-	static async findSingle(page: Page, selector: string, elementContent?: string): Promise<string> {
-		const id = Identifier.get();
-
-		const response = await page.evaluate((selector, content, id) => {
-			let elements = [...document.querySelectorAll(selector)];
-
-			if (content) {
-				elements = elements.filter(element => element.textContent.toLowerCase().trim() === content.toLowerCase().trim());
-			}
-			
-			for (let element of elements) {
-				window[id] = element;
-
-				return { id: id, elements: elements.length };	
-			}
-
-			return { id: null, elements: elements.length };
-		}, selector, elementContent, id);
-
-		if (response.elements > 1) {
-			console.warn(`[warning] several elements match '${selector.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'! The first one is used.`);
-		} else if (response.elements == 0) {
-			console.warn(`[warning] no elements match '${selector.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'!`);
-		}
-
-		return response.id;
-	}
-
-	static async findMultiple(page: Page, selector: string, elementContent?: string): Promise<string[]> {
-		const ids = await page.evaluate((selector, content) => {
+	static async findAll(page: Page, parentIds: string[], selector: string, conditions: Condition[]): Promise<string[]> {
+		const ids = await page.evaluate((parentIds, selector, conditions) => {
 			const generateId = () => {
 				let id = '';
 		
@@ -46,23 +19,75 @@ export class PageParser {
 				return id;
 			}
 
-			const ids: string[] = [];
-			let elements = [...document.querySelectorAll(selector)];
+			let ids: string[] = [];
+			let elements: Element[] = [];
 
-			if (content) {
-				elements = elements.filter(element => element.textContent.toLowerCase().trim() === content.toLowerCase().trim());
+			if (parentIds.length == 0) {
+				elements = [...document.querySelectorAll(selector)];
+			} else {
+				for (let parentId of parentIds) {
+					elements.push(...window[parentId].querySelectorAll(selector));
+				}
 			}
-			
+
 			for (let element of elements) {
-				const id = generateId();
-				window[id] = element;
-				ids.push(id);
+				let current = element;
+
+				for (let condition of conditions) {
+					const conditionElements = [...element.querySelectorAll(condition.selector)];
+
+					if (!conditionElements || !conditionElements.find(locatedElement => locatedElement.textContent.toLowerCase().trim() === condition.value.toLowerCase().trim())) {
+						current = null;
+					}
+				}
+
+				if (current) {
+					const id = generateId();
+					window[id] = current;
+					ids.push(id);
+				}
 			}
 
 			return ids;
-		}, selector, elementContent);
+		}, parentIds, selector, conditions);
 
 		return ids;
+	}
+
+	static async find(page: Page, parentIds: string[], selector: string, elementContent?: string): Promise<string> {
+		const id = Identifier.get();
+
+		const response = await page.evaluate((parentIds, selector, elementContent, id) => {
+			let elements: Element[] = [];
+
+			if (parentIds.length == 0) {
+				elements = [...document.querySelectorAll(selector)];
+			} else {
+				for (let parentId of parentIds) {
+					elements.push(...window[parentId].querySelectorAll(selector))
+				}
+			}
+
+			if (elementContent) {
+				elements = elements.filter(element => element.textContent.toLowerCase().trim() === elementContent.toLowerCase().trim());
+			}
+			
+			for (let element of elements) {
+				window[id] = element;
+
+				return { id: id, elements: elements.length };	
+			}
+
+			return { id: null, elements: elements.length };
+		}, parentIds, selector, elementContent, id);
+
+		if (response.elements > 1) {
+			console.warn(`[warning] several elements match '${selector?.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'! The first one is used.`);
+		} else if (response.elements == 0) {
+			console.warn(`[warning] no elements match '${selector?.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'!`);
+		}
+
+		return response.id;
 	}
 
 	static async getBoundingRectangle(page: Page, id: string): Promise<DOMRect> {

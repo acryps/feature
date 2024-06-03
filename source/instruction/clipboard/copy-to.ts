@@ -5,9 +5,10 @@ import { Mouse } from "../../mouse/mouse";
 import { Project } from "../../project";
 import { Instruction } from "../instruction";
 import { PageParser } from "../../page/parser";
+import { Single } from "../../element/single";
 export class CopyToClipboardInstruction extends Instruction {
 	constructor(
-		private locator: string
+		private element: Single
 	) {
 		super();
 	}
@@ -15,8 +16,7 @@ export class CopyToClipboardInstruction extends Instruction {
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		super.initializeExecution(configuration);
 
-		const selector = project.generateSelector(this.locator);
-		const id = await PageParser.findSingle(page, selector);
+		const id = await this.element.find(page, project);
 		const content = await PageParser.getElementContent(page, id);
 
 		await PageParser.copyToClipboard(page, content);

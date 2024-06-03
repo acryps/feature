@@ -43,7 +43,7 @@ export abstract class Instruction {
 			const ignoredIds: string[] = [];
 
 			for (let ignoreSelector of project.ignoredSelectors) {
-				ignoredIds.push(...await PageParser.findMultiple(page, ignoreSelector));
+				ignoredIds.push(...await PageParser.findAll(page, [], ignoreSelector, []));
 			}
 			
 			const ignore = await PageParser.getBoundingRectangles(page, ignoredIds);

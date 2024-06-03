@@ -4,13 +4,14 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
+import { Single } from "../element/single";
 
 export class WriteInstruction extends Instruction {
 	private fieldName: string;
 	private rectangle?: DOMRect;
 
 	constructor(
-		private locator: string,
+		private element: Single,
 		private content: string
 	){
 		super();
@@ -19,8 +20,7 @@ export class WriteInstruction extends Instruction {
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
-		const selector = project.generateSelector(this.locator);
-		const id = await PageParser.findSingle(page, selector);
+		const id = await this.element.find(page, project);
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
