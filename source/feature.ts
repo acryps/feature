@@ -1,4 +1,4 @@
-import { ScreenRecorder } from "puppeteer";
+import { ScreenRecorder, Viewport } from "puppeteer";
 import { Instruction } from "./instruction/instruction";
 import { Project } from "./project";
 import { GoInstruction } from "./instruction/go";
@@ -6,7 +6,6 @@ import { Mouse } from "./mouse/mouse";
 import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
 import { BrowserManager } from "./browser/manager";
-import { Resolution } from "./browser/resolution";
 import { ExecutionConfiguration } from "./execution/configuration";
 import { Identifier } from "./utilities/identifier";
 import { MotionPoint } from "./mouse/motion-point";
@@ -66,8 +65,8 @@ export class Feature {
 		this.instructions.push(instruction);
 	}
 
-	async execute(project: Project, resolution: Resolution, configuration: ExecutionConfiguration) {
-		const page = await BrowserManager.getPage(resolution);
+	async execute(project: Project, viewport: Viewport, configuration: ExecutionConfiguration) {
+		const page = await BrowserManager.getPage(viewport);
 
 		const steps: Step[] = [];
 		const mouse = new Mouse(page, false);
@@ -85,11 +84,11 @@ export class Feature {
 		return steps;
 	}
 
-	async generateVideo(project: Project, resolution: Resolution): Promise<{
+	async generateVideo(project: Project, viewport: Viewport): Promise<{
 		videoSource: string,
 		motion: MotionPoint[]
 	}> {
-		const page = await BrowserManager.getPage(resolution);
+		const page = await BrowserManager.getPage(viewport);
 		
 		const mouse = new Mouse(page, true);
 

@@ -1,6 +1,5 @@
 import { cpus } from "os";
-import { Browser, launch, Permission, Page } from "puppeteer";
-import { Resolution } from "./resolution";
+import { Browser, launch, Permission, Page, Viewport } from "puppeteer";
 
 export class BrowserManager {
 	private static browsers: Browser[] = [];
@@ -29,11 +28,11 @@ export class BrowserManager {
 		this.rotationIndex = 0;
 	}
 
-	static async getPage(resolution: Resolution) {
+	static async getPage(viewport: Viewport) {
 		if (this.running()) {
 			const page = await this.browsers[this.rotationIndex].newPage();
 
-			await page.setViewport({ width: resolution.width, height: resolution.height });
+			await page.setViewport(viewport);
 	
 			if (this.rotationIndex + 1 == this.browsers.length) {
 				this.rotationIndex = 0;
