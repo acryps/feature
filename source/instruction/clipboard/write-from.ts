@@ -1,11 +1,11 @@
 import { Page } from "puppeteer";
-import { ExecutionConfiguration } from "../execution/configuration";
-import { Step } from "../execution/step";
-import { Mouse } from "../mouse/mouse";
-import { Project } from "../project";
-import { Instruction } from "./instruction";
-import { PageParser } from "../page/parser";
-import { Single } from "../element/single";
+import { ExecutionConfiguration } from "../../execution/configuration";
+import { Step } from "../../execution/step";
+import { Mouse } from "../../mouse/mouse";
+import { Project } from "../../project";
+import { Instruction } from "../instruction";
+import { PageParser } from "../../page/parser";
+import { SingleElement } from "../../element/single-element";
 
 export class WriteFromClipboardInstruction extends Instruction {
 	private fieldName: string;
@@ -14,7 +14,7 @@ export class WriteFromClipboardInstruction extends Instruction {
 	private content: string;
 
 	constructor(
-		private element: Single
+		private element: SingleElement
 	) {
 		super();
 	}
