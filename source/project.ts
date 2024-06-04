@@ -36,10 +36,10 @@ export class Project {
 		const locatorParts = locator.split(' ');
 		const locatorPart = locatorParts.shift();
 
-		return this.selector(locatorPart, locatorParts, '');
+		return this.assembleSelector(locatorPart, locatorParts, '');
 	}
 
-	private selector(locatorPart: string, locatorParts: string[], selector: string): string {
+	private assembleSelector(locatorPart: string, locatorParts: string[], selector: string): string {
 		const selectors: string[] = [];
 
 		if (locatorPart) {
@@ -49,7 +49,7 @@ export class Project {
 				const remainingLocatorParts = [...locatorParts];
 				const nextLocatorPart = remainingLocatorParts.shift();
 
-				selectors.push(this.selector(nextLocatorPart, remainingLocatorParts, [selector, selectorVariation].join(' ')));
+				selectors.push(this.assembleSelector(nextLocatorPart, remainingLocatorParts, [selector, selectorVariation].join(' ')));
 			}
 		} else {
 			return selector;
