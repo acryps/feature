@@ -1,17 +1,17 @@
-import { Single } from "./single";
-import { Multiple } from "./multiple";
+import { SingleElement } from "./single-element";
+import { MultiElement } from "./multi-element";
 import { Page } from "puppeteer";
 import { Project } from "../project";
 
 export abstract class Element {
 	constructor(
 		protected locator?: string,
-		protected parent?: Single,
-		protected parents?: Multiple,
+		protected parent?: SingleElement,
+		protected parents?: MultiElement,
 	) {}
 
 	getLocator(): string {
-		this.check();
+		this.validateParentAssignment();
 		
 		let locator = '';
 
@@ -27,21 +27,21 @@ export abstract class Element {
 		return `${locator}${divider}${extension}`;
 	}
 
-	private check() {
+	private validateParentAssignment() {
 		if (this.parent && this.parents) {
 			throw new Error(`elements cannot have an 'element parent' and 'elements parent'`);
 		}
 	}
 
-	protected async parentIds(page: Page, project: Project): Promise<string[]> {
-		this.check();
+	protected async findParentIds(page: Page, project: Project): Promise<string[]> {
+		this.validateParentAssignment();
 
 		if (this.parent) {
 			return [await this.parent.find(page, project)];
 		}
 
 		if (this.parents) {
-			this.parents.prepareConditions(project);
+			this.parents.prepareConstraintSelectors(project);
 
 			const ids = await this.parents.find(page, project);
 			

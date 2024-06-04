@@ -4,7 +4,7 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
-import { Single } from "../element/single";
+import { SingleElement } from "../element/single-element";
 
 export class ClickInstruction extends Instruction {
 	private name: string;
@@ -14,7 +14,7 @@ export class ClickInstruction extends Instruction {
 	private vertical: string;
 
 	constructor(
-		private element: Single
+		private element: SingleElement
 	){
 		super();
 	}

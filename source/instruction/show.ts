@@ -4,15 +4,15 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
-import { Multiple } from "../element/multiple";
-import { Single } from "../element/single";
+import { MultiElement } from "../element/multi-element";
+import { SingleElement } from "../element/single-element";
 
 export class ShowInstruction extends Instruction {
 	private elementsContent: string[];
 	private rectangles?: DOMRect[];
 
 	constructor(
-		private elements: Multiple | Single,
+		private elements: MultiElement | SingleElement,
 		private valueTags: string[]
 	){
 		super();

@@ -12,15 +12,15 @@ import { Identifier } from "./utilities/identifier";
 import { MotionPoint } from "./mouse/motion-point";
 import { WaitForInstruction } from "./instruction/wait-for";
 import { WaitWhileInstruction } from "./instruction/wait-while";
-import { Single } from "./element/single";
-import { Multiple } from "./element/multiple";
+import { SingleElement } from "./element/single-element";
+import { MultiElement } from "./element/multi-element";
 import * as filesystem from 'fs';
 
 export class Feature {
 	private instructions: Instruction[];
 	private executionResult: ExecutionResult;
 
-	private currentElement?: Single | Multiple;
+	private currentElement?: SingleElement | MultiElement;
 
 	constructor (
 		public name: string,
@@ -30,12 +30,12 @@ export class Feature {
 		this.executionResult = new ExecutionResult();
 	}
 
-	element(locator: string, elementContent?: string): Single {
-		return new Single(this, locator, elementContent, null, null);
+	element(locator: string, elementContent?: string): SingleElement {
+		return new SingleElement(this, locator, elementContent, null, null);
 	}
 
-	elements(locator: string): Multiple {
-		return new Multiple(this, locator, null, null);
+	elements(locator: string): MultiElement {
+		return new MultiElement(this, locator, null, null);
 	}
 
 	go(url: string): Feature {
@@ -56,11 +56,11 @@ export class Feature {
 		return this;
 	}
 
-	present(): Single | Multiple {
+	present(): SingleElement | MultiElement {
 		return this.currentElement;
 	}
 
-	addInstruction(instruction: Instruction, element: Single | Multiple) {
+	addInstruction(instruction: Instruction, element: SingleElement | MultiElement) {
 		this.currentElement = element;
 
 		this.instructions.push(instruction);

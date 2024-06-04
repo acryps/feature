@@ -1,4 +1,4 @@
-export class Condition {
+export class SelectorConstraint {
 	locator: string;
 	value: string;
 	

@@ -2,12 +2,12 @@ import { Page } from "puppeteer";
 import { Mouse } from '../mouse/mouse';
 import { Identifier } from "../utilities/identifier";
 import { BrowserManager } from "../browser/manager";
-import { Condition } from "../element/condition";
+import { SelectorConstraint } from "../element/search-constraint";
 
 export class PageParser {
 	private static readonly timeout = 30 * 1000;
 
-	static async findAll(page: Page, parentIds: string[], selector: string, conditions: Condition[]): Promise<string[]> {
+	static async findAll(page: Page, parentIds: string[], selector: string, conditions: SelectorConstraint[]): Promise<string[]> {
 		const ids = await page.evaluate((parentIds, selector, conditions) => {
 			const generateId = () => {
 				let id = '';

@@ -2,31 +2,31 @@ import { Page } from "puppeteer";
 import { Feature } from "../feature";
 import { ClickInstruction } from "../instruction/click";
 import { Project } from "../project";
-import { Multiple } from "./multiple";
+import { MultiElement } from "./multi-element";
 import { Element } from "./element";
 import { PageParser } from "../page/parser";
 import { HoverInstruction } from "../instruction/hover";
 import { ScrollToInstruction } from "../instruction/scroll-to";
 import { WriteInstruction } from "../instruction/write";
-import { CopyToClipboardInstruction } from "../instruction/copy-to";
-import { WriteFromClipboardInstruction } from "../instruction/write-from";
+import { CopyToClipboardInstruction } from "../instruction/clipboard/copy-to";
+import { WriteFromClipboardInstruction } from "../instruction/clipboard/write-from";
 import { ShowInstruction } from "../instruction/show";
 
-export class Single extends Element {
+export class SingleElement extends Element {
 	private id?: string;
 
 	constructor(
 		private feature: Feature,
 		locator?: string,
 		public readonly elementContent?: string,
-		parent?: Single,
-		parents?: Multiple
+		parent?: SingleElement,
+		parents?: MultiElement
 	) {
 		super(locator, parent, parents);
 	}
 
 	async find(page: Page, project: Project): Promise<string> {
-		const ids = await super.parentIds(page, project);
+		const ids = await super.findParentIds(page, project);
 
 		if (this.locator) {
 			const selector = project.generateSelector(this.locator);
@@ -44,12 +44,12 @@ export class Single extends Element {
 		return this.id;
 	}
 
-	element(locator: string, elementContent?: string): Single {
-		return new Single(this.feature, locator, elementContent, this, null);
+	element(locator: string, elementContent?: string): SingleElement {
+		return new SingleElement(this.feature, locator, elementContent, this, null);
 	}
 
-	elements(locator: string): Multiple {
-		return new Multiple(this.feature, locator, this, null);
+	elements(locator: string): MultiElement {
+		return new MultiElement(this.feature, locator, this, null);
 	}
  
 	click(): Feature {

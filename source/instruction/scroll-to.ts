@@ -5,14 +5,14 @@ import { PageParser } from "../page/parser";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { Mouse } from "../mouse/mouse";
-import { Single } from "../element/single";
+import { SingleElement } from "../element/single-element";
 
 export class ScrollToInstruction extends Instruction {
 	private name: string;
 	private rectangle?: DOMRect;
 
 	constructor(
-		private element: Single
+		private element: SingleElement
 	) {
 		super();
 	}

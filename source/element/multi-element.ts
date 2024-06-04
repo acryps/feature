@@ -1,27 +1,27 @@
 import { Page } from "puppeteer";
 import { Feature } from "../feature";
 import { Project } from "../project";
-import { Condition } from "./condition";
+import { SelectorConstraint as SearchConstraint } from "./search-constraint";
 import { Element } from './element';
 import { PageParser } from "../page/parser";
-import { Single } from "./single";
+import { SingleElement } from "./single-element";
 import { ShowInstruction } from "../instruction/show";
 
-export class Multiple extends Element {
+export class MultiElement extends Element {
 	private ids?: string[];
 
-	private conditions: Condition[];
+	private searchConstraints: SearchConstraint[];
 	private filter: () => string | string[];
 
 	constructor(
 		private feature: Feature,
 		locator?: string,
-		parent?: Single,
-		parents?: Multiple
+		parent?: SingleElement,
+		parents?: MultiElement
 	) {
 		super(locator, parent, parents); 
 
-		this.conditions = [];
+		this.searchConstraints = [];
 
 		this.filter = () => {
 			return this.ids;
@@ -29,11 +29,11 @@ export class Multiple extends Element {
 	}
 
 	async find(page: Page, project: Project): Promise<string | string[]> {
-		const ids = await super.parentIds(page, project);
+		const ids = await super.findParentIds(page, project);
 
 		if (this.locator) {
 			const selector = project.generateSelector(this.locator);
-			this.ids = await PageParser.findAll(page, ids, selector, this.conditions);
+			this.ids = await PageParser.findAll(page, ids, selector, this.searchConstraints);
 		} else {
 			this.ids = ids;
 		}
@@ -41,8 +41,8 @@ export class Multiple extends Element {
 		return this.filter();
 	}
 
-	elements(locator: string): Multiple {
-		return new Multiple(this.feature, locator, null, this);
+	elements(locator: string): MultiElement {
+		return new MultiElement(this.feature, locator, null, this);
 	}
 
 	show(valueTags: string[]): Feature {
@@ -52,46 +52,46 @@ export class Multiple extends Element {
 		return this.feature;
 	}
 
-	where(locator: string, value: string): Multiple {
-		this.conditions.push({ locator: locator, value: value });
+	where(locator: string, value: string): MultiElement {
+		this.searchConstraints.push({ locator: locator, value: value });
 
 		return this;
 	}
 
-	first(): Single {
+	first(): SingleElement {
 		this.filter = () => {
 			return this.ids.at(0);
 		}
 		
-		return new Single(this.feature, null, null, null, this);
+		return new SingleElement(this.feature, null, null, null, this);
 	}
 	
-	last(): Single {
+	last(): SingleElement {
 		this.filter = () => {
 			return this.ids.at(-1);
 		}
 		
-		return new Single(this.feature, null, null, null, this);
+		return new SingleElement(this.feature, null, null, null, this);
 	}
 	
-	get(index: number): Single {
+	get(index: number): SingleElement {
 		this.filter = () => {
 			return this.ids.at(index);
 		}
 		
-		return new Single(this.feature, null, null, null, this);
+		return new SingleElement(this.feature, null, null, null, this);
 	}
 	
-	range(start: number, end: number): Multiple {
+	range(start: number, end: number): MultiElement {
 		this.filter = () => {
 			return this.ids.slice(start, end);
 		}
 		
-		return new Multiple(this.feature, null, null, this);
+		return new MultiElement(this.feature, null, null, this);
 	}
 
-	prepareConditions(project: Project) {
-		for (let condition of this.conditions) {
+	prepareConstraintSelectors(project: Project) {
+		for (let condition of this.searchConstraints) {
 			condition.selector = project.generateSelector(condition.locator);
 		}
 	}
