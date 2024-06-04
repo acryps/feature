@@ -73,6 +73,11 @@ export class Mouse {
 				done();
 			}, this.stepTimeout));
 		}
+
+		this.x = x;
+		this.y = y;
+
+		await this.page.mouse.move(this.x, this.y);
 	}
 
 	async scrollIntoView(page: Page, id: string) {
@@ -94,6 +99,8 @@ export class Mouse {
 
 		if (this.recording) {
 			await PageParser.waitForUpdates(page);
+
+			await new Promise<void>(done => setTimeout(done, this.waitTimeout));
 		}
 	}
 
