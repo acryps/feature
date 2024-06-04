@@ -1,7 +1,7 @@
 import { Step } from "./step";
 import { MotionPoint } from "../mouse/motion-point";
 import { FeatureMetadata } from "./metadata";
-import { ImageAnnotations } from "./image";
+import { ImageAnnotation } from "./image";
 import { ImageDifference } from "./image-difference";
 import * as filesystem from 'fs';
 import * as Jimp from 'jimp';
@@ -61,9 +61,9 @@ export class ExecutionResult {
 		
 								if (filesystem.existsSync(screenshotPath)) {
 									const image = filesystem.readFileSync(screenshotPath);
-									const annotations: ImageAnnotations = { highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore };
+									const annotation: ImageAnnotation = { highlight: screenshotMetadata.highlight, ignore: screenshotMetadata.ignore };
 		
-									step.screenshots.push({ image: image, annotations: annotations });
+									step.screenshots.push({ image: image, annotation: annotation });
 								} else {
 									console.warn(`[warn] could not find '${screenshotPath}'`);
 								}
@@ -106,7 +106,7 @@ export class ExecutionResult {
 				metadata.steps = [];
 		
 				for (let [stepIndex, step] of this.steps.entries()) {
-					const screenshotsMetadata: ImageAnnotations[] = [];
+					const screenshotsMetadata: ImageAnnotation[] = [];
 	
 					if (step.screenshots) {
 						if (!filesystem.existsSync(`${stepsPath}/${stepIndex}`)) {
@@ -114,7 +114,7 @@ export class ExecutionResult {
 						}
 	
 						for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {
-							screenshotsMetadata.push({ highlight: screenshot.annotations.highlight, ignore: screenshot.annotations.ignore });
+							screenshotsMetadata.push({ highlight: screenshot.annotation.highlight, ignore: screenshot.annotation.ignore });
 			
 							await filesystem.writeFileSync(`${stepsPath}/${stepIndex}/${screenshotIndex}${this.fileExtension.image}`, screenshot.image);
 						}
@@ -150,8 +150,8 @@ export class ExecutionResult {
 				let image2 = await Jimp.read(result.steps[stepIndex].screenshots[screenshotIndex].image);
 
 				const ignored = [
-					...result.steps[stepIndex].screenshots[screenshotIndex].annotations.ignore,
-					...this.steps[stepIndex].screenshots[screenshotIndex].annotations.ignore
+					...result.steps[stepIndex].screenshots[screenshotIndex].annotation.ignore,
+					...this.steps[stepIndex].screenshots[screenshotIndex].annotation.ignore
 				];
 
 				image1 = this.applyMask(image1, ignored);

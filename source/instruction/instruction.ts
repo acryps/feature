@@ -1,7 +1,7 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Mouse } from "../mouse/mouse";
-import { Image, ImageAnnotations } from "../execution/image";
+import { Image, ImageAnnotation } from "../execution/image";
 import { Step } from "../execution/step";
 import { ExecutionConfiguration } from "../execution/configuration";
 import { PageParser } from "../page/parser";
@@ -47,11 +47,11 @@ export abstract class Instruction {
 			}
 			
 			const ignore = await PageParser.getBoundingRectangles(page, ignoredIds);
-			const annotations: ImageAnnotations = { highlight: highlight, ignore: ignore }
+			const annotation: ImageAnnotation = { highlight: highlight, ignore: ignore }
 	
 			this.screenshots.push({
 				image: image,
-				annotations: annotations
+				annotation: annotation
 			});
 		}
 	}

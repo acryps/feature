@@ -1,9 +1,9 @@
 export class Image {
 	image: Buffer;
-	annotations: ImageAnnotations;
+	annotation: ImageAnnotation;
 }
 
-export class ImageAnnotations {
+export class ImageAnnotation {
 	highlight: DOMRect[];
 	ignore: DOMRect[];
 }

@@ -1,11 +1,11 @@
-import { Image, ImageAnnotations } from "./image";
+import { Image, ImageAnnotation } from "./image";
 
 export class Step {
 	guide?: string[];
 	screenshots?: Image[];
 }
 
-export class StepAnnotations {
+export class StepAnnotation {
 	guide?: string[];
-	screenshots?: ImageAnnotations[];
+	screenshots?: ImageAnnotation[];
 }
