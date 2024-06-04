@@ -7,7 +7,7 @@ import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
 import { BrowserManager } from "./browser/manager";
 import { ExecutionConfiguration } from "./execution/configuration";
-import { Identifier } from "./utilities/identifier";
+import { Identifier } from "./shared/identifier";
 import { MotionPoint } from "./mouse/motion-point";
 import { WaitForInstruction } from "./instruction/wait-for";
 import { WaitWhileInstruction } from "./instruction/wait-while";

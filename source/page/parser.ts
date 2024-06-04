@@ -1,6 +1,6 @@
 import { Page } from "puppeteer";
 import { Mouse } from '../mouse/mouse';
-import { Identifier } from "../utilities/identifier";
+import { Identifier } from "../shared/identifier";
 import { BrowserManager } from "../browser/manager";
 import { SelectorConstraint } from "../element/search-constraint";
 
