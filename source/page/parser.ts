@@ -118,14 +118,6 @@ export class PageParser {
 		return rectangles.map(rectangle => JSON.parse(rectangle) as DOMRect);
 	}
 
-	static async visibleBoundingRectangle(page: Page, mouse: Mouse, id: string): Promise<DOMRect> {
-		await mouse.scrollIntoView(page, id);
-
-		const rectangle = await this.getBoundingRectangle(page, id);
-
-		return rectangle;
-	}
-
 	static async getElementContent(page: Page, id: string): Promise<string> {
 		return await page.evaluate((id) => {
 			const element: HTMLElement = window[id];

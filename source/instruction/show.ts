@@ -35,7 +35,9 @@ export class ShowInstruction extends Instruction {
 			const first = ids.shift();
 			
 			this.rectangles = await PageParser.getBoundingRectangles(page, ids);
-			this.rectangles.push(await PageParser.visibleBoundingRectangle(page, mouse, first));
+
+			await mouse.scrollIntoView(page, first);
+			this.rectangles.push(await PageParser.getBoundingRectangle(page, first));
 		}
 
 		await super.screenshot(project, page, this.rectangles);

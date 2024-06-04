@@ -21,7 +21,9 @@ export class ScrollToInstruction extends Instruction {
 		super.initializeExecution(configuration);
 
 		const id = await this.element.find(page, project);
-		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
+
+		await mouse.scrollIntoView(page, id);
+		this.rectangle = await PageParser.getBoundingRectangle(page, id);
 
 		if (this.element.elementContent) {
 			this.name = this.element.elementContent;

@@ -31,7 +31,8 @@ export class ClickInstruction extends Instruction {
 			this.name = content ? content : this.element.getLocator();
 		}
 
-		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
+		await mouse.scrollIntoView(page, id);
+		this.rectangle = await PageParser.getBoundingRectangle(page, id);
 
 		if (this.rectangle) {
 			const viewport = await page.viewport();

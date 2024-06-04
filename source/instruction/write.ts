@@ -21,7 +21,9 @@ export class WriteInstruction extends Instruction {
 		super.initializeExecution(configuration);
 
 		const id = await this.element.find(page, project);
-		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
+
+		await mouse.scrollIntoView(page, id);
+		this.rectangle = await PageParser.getBoundingRectangle(page, id);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await mouse.hover(center.x, center.y);
