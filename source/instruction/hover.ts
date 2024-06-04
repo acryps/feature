@@ -5,14 +5,14 @@ import { Mouse } from "../mouse/mouse";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
+import { Single } from "../element/single";
 
 export class HoverInstruction extends Instruction {
 	private name: string;
 	private rectangle?: DOMRect;
 
 	constructor(
-		private locator: string,
-		private elementContent?: string,
+		private element: Single
 	) {
 		super();
 	}
@@ -20,15 +20,14 @@ export class HoverInstruction extends Instruction {
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		super.initializeExecution(configuration);
 
-		const selector = project.generateSelector(this.locator);
-		const id = await PageParser.findSingle(page, selector, this.elementContent);
+		const id = await this.element.find(page, project);
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
 
-		if (this.elementContent) {
-			this.name = this.elementContent;
+		if (this.element.elementContent) {
+			this.name = this.element.elementContent;
 		} else {
 			const content = await PageParser.getElementContent(page, id);
-			this.name = content ? content : this.locator;
+			this.name = content ? content : this.element.getLocator();
 		}
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };

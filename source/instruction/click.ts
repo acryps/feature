@@ -4,6 +4,7 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
+import { Single } from "../element/single";
 
 export class ClickInstruction extends Instruction {
 	private name: string;
@@ -13,8 +14,7 @@ export class ClickInstruction extends Instruction {
 	private vertical: string;
 
 	constructor(
-		private locator: string,
-		private elementContent?: string,
+		private element: Single
 	){
 		super();
 	}
@@ -22,14 +22,13 @@ export class ClickInstruction extends Instruction {
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
-		const selector = project.generateSelector(this.locator);
-		const id = await PageParser.findSingle(page, selector, this.elementContent);
+		const id = await this.element.find(page, project);
 
-		if (this.elementContent) {
-			this.name = this.elementContent;
+		if (this.element.elementContent) {
+			this.name = this.element.elementContent;
 		} else {
 			const content = await PageParser.getElementContent(page, id);
-			this.name = content ? content : this.locator;
+			this.name = content ? content : this.element.getLocator();
 		}
 
 		this.rectangle = await PageParser.visibleBoundingRectangle(page, mouse, id);
