@@ -33,9 +33,9 @@ export class SingleElement extends Element {
 			this.id = await PageParser.find(page, ids, selector, this.elementContent);
 		} else {
 			if (ids.length > 1) {
-				throw new Error(`found several items for single element`);
+				throw new Error(`Found several items for single element`);
 			} else if (ids.length == 0) {
-				throw new Error(`found no element`);
+				throw new Error(`Found no element`);
 			} else {
 				this.id = ids.at(0);
 			}

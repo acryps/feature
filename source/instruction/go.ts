@@ -19,7 +19,7 @@ export class GoInstruction extends Instruction {
 		});
 
 		if (+response.status >= 400) {
-			throw new Error(`[error] failed to load page '${this.url}'`);
+			throw new Error(`Failed to load page '${this.url}'`);
 		}
 
 		const step = `go to '${this.url}'`;

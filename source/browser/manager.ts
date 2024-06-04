@@ -42,7 +42,7 @@ export class BrowserManager {
 
 			return page;
 		} else {
-			throw new Error(`attempted to gather page without launching the browser manager`);
+			throw new Error(`Attempted to gather page without launching the browser manager`);
 		}
 	}
 

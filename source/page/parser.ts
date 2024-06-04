@@ -145,7 +145,7 @@ export class PageParser {
 		}, id, content);
 
 		if (!placeholder) {
-			throw new Error(`[error] could not find input element!`);
+			throw new Error(`Could not find input element!`);
 		}
 
 		return placeholder;

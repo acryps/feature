@@ -32,7 +32,7 @@ export class ExecutionResult {
 			console.log(`[info] loading feature '${name}' from '${path}'`);
 
 			if (!filesystem.existsSync(path)) {
-				throw new Error(`feature does not exist at '${path}'!`);
+				throw new Error(`Feature does not exist at '${path}'!`);
 			}
 
 			if (filesystem.existsSync(videoSource)) {
@@ -137,12 +137,12 @@ export class ExecutionResult {
 		const differences: ImageDifference[] = [];
 
 		if (this.steps.length != result.steps.length) {
-			throw new Error(`cannot compare execution results with different amount of steps`);
+			throw new Error(`Cannot compare execution results with different amount of steps`);
 		}
 
 		for (let [stepIndex, step] of this.steps.entries()) {
 			if (step.screenshots.length != result.steps[stepIndex].screenshots.length) {
-				throw new Error(`step '${stepIndex}' contains different amounts of screenshots`);
+				throw new Error(`Step '${stepIndex}' contains different amounts of screenshots`);
 			}
 
 			for (let [screenshotIndex, screenshot] of step.screenshots.entries()) {

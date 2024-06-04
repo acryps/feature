@@ -29,7 +29,7 @@ export abstract class Element {
 
 	private validateParentAssignment() {
 		if (this.parent && this.parents) {
-			throw new Error(`elements cannot have an 'element parent' and 'elements parent'`);
+			throw new Error(`Elements cannot have an 'element parent' and 'elements parent'`);
 		}
 	}
 
