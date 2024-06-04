@@ -15,7 +15,7 @@ export class ClickInstruction extends Instruction {
 
 	constructor(
 		private element: SingleElement
-	){
+	) {
 		super();
 	}
 

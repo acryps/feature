@@ -7,7 +7,7 @@ import { ExecutionConfiguration } from "../execution/configuration";
 export class GoInstruction extends Instruction {
 	constructor(
 		private url: string
-	){
+	) {
 		super();
 	}
 

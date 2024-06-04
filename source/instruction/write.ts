@@ -13,7 +13,7 @@ export class WriteInstruction extends Instruction {
 	constructor(
 		private element: SingleElement,
 		private content: string
-	){
+	) {
 		super();
 	}
 

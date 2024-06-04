@@ -21,7 +21,7 @@ export class Feature {
 
 	private currentElement?: SingleElement | MultiElement;
 
-	constructor (
+	constructor(
 		public name: string,
 		public description: string,
 	) {

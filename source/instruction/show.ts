@@ -14,7 +14,7 @@ export class ShowInstruction extends Instruction {
 	constructor(
 		private elements: MultiElement | SingleElement,
 		private valueTags: string[]
-	){
+	) {
 		super();
 	}
 

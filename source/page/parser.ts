@@ -210,7 +210,7 @@ export class PageParser {
 						
 						done();
 					}
-				}, 250);
+				}, 5);
 			}, 100);
 		});
 
