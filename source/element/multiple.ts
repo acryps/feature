@@ -45,7 +45,7 @@ export class Multiple extends Element {
 		return new Multiple(this.feature, locator, null, this);
 	}
 
-	show(valueTags?: string[]): Feature {
+	show(valueTags: string[]): Feature {
 		const instruction = new ShowInstruction(this, valueTags);
 		this.feature.addInstruction(instruction, this);
 

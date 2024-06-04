@@ -13,7 +13,7 @@ export class ShowInstruction extends Instruction {
 
 	constructor(
 		private elements: Multiple | Single,
-		private valueTags?: string[]
+		private valueTags: string[]
 	){
 		super();
 	}
@@ -21,7 +21,7 @@ export class ShowInstruction extends Instruction {
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
-		const valueTagSelectors = this.valueTags.map(valueTag => project.generateSelector(valueTag));
+		const valueTagSelectors = this.valueTags?.map(valueTag => project.generateSelector(valueTag));
 		let ids = await this.elements.find(page, project);
 
 		if (!Array.isArray(ids)) {
