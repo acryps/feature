@@ -8,8 +8,8 @@ import { PageParser } from "../page/parser";
 import { HoverInstruction } from "../instruction/hover";
 import { ScrollToInstruction } from "../instruction/scroll-to";
 import { WriteInstruction } from "../instruction/write";
-import { CopyToClipboardInstruction } from "../instruction/clipboard/copy-to";
-import { WriteFromClipboardInstruction } from "../instruction/clipboard/write-from";
+import { CopyToClipboardInstruction } from "../instruction/copy-to";
+import { WriteFromClipboardInstruction } from "../instruction/write-from";
 import { ShowInstruction } from "../instruction/show";
 
 export class Single extends Element {

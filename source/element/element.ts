@@ -11,6 +11,8 @@ export abstract class Element {
 	) {}
 
 	getLocator(): string {
+		this.check();
+		
 		let locator = '';
 
 		if (this.parent) {
