@@ -81,12 +81,6 @@ export class PageParser {
 			return { id: null, elements: elements.length };
 		}, parentIds, selector, elementContent, id);
 
-		if (response.elements > 1) {
-			console.warn(`[warning] several elements match '${selector?.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'! The first one is used.`);
-		} else if (response.elements == 0) {
-			console.warn(`[warning] no elements match '${selector?.split(',')[0]}${elementContent ? `"${elementContent}"` : ''}'!`);
-		}
-
 		return response.id;
 	}
 

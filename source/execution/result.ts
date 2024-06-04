@@ -29,16 +29,12 @@ export class ExecutionResult {
 			const videoSource = `${path}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
 			const metadataSource = `${path}/${this.metadataFileName}`;
 
-			console.log(`[info] loading feature '${name}' from '${path}'`);
-
 			if (!filesystem.existsSync(path)) {
-				throw new Error(`Feature does not exist at '${path}'!`);
+				throw new Error(`Feature does not exist at '${path}'`);
 			}
 
 			if (filesystem.existsSync(videoSource)) {
 				this.videoSource = videoSource;
-			} else {
-				console.warn(`[warn] video source '${videoSource}' does not exist`);
 			}
 
 			if (filesystem.existsSync(metadataSource)) {
@@ -65,7 +61,7 @@ export class ExecutionResult {
 		
 									step.screenshots.push({ image: image, annotation: annotation });
 								} else {
-									console.warn(`[warn] could not find '${screenshotPath}'`);
+									throw new Error(`Could not find screenshot ${screenshotIndex} for step ${stepIndex}. Searching at '${screenshotPath}'`);
 								}
 							}
 						}
@@ -73,11 +69,9 @@ export class ExecutionResult {
 						this.steps.push(step);
 					}
 				}
-			} else {
-				console.warn(`[warn] metadata '${metadataSource}' does not exist`);
 			}
 		} catch (error) {
-			console.error(`[error] failed to load feature '${name}': '${error}'`);
+			throw new Error(`Failed to load feature '${name}': '${error}'`);
 		}
 	}
 
@@ -85,9 +79,7 @@ export class ExecutionResult {
 		try {
 			const path = `${process.env.MEDIA_PATH}/${name}`;
 			const stepsPath = `${path}/${this.stepsFolderName}`;
-			
-			console.log(`[info] saving feature '${name}' into '${path}'`);
-			
+
 			if (!filesystem.existsSync(`${path}/`)) {
 				filesystem.mkdirSync(`${path}/`, { recursive: true });
 			}
@@ -129,7 +121,7 @@ export class ExecutionResult {
 	
 			filesystem.writeFileSync(`${path}/${this.metadataFileName}`, JSON.stringify(metadata));
 		} catch (error) {
-			console.error(`[error] failed to save execution result for feature '${name}'; '${error}'`);
+			throw new Error(`Failed to save execution result for feature '${name}'; '${error}'`);
 		}
 	}
 

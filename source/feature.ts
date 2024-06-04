@@ -76,7 +76,7 @@ export class Feature {
 				steps.push(await instruction.execute(project, page, mouse, configuration));
 			}
 		} catch (error) {
-			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
+			throw new Error(`Failed to execute feature '${this.name}': '${error}'`);
 		}
 
 		this.executionResult.steps = steps;
@@ -106,7 +106,7 @@ export class Feature {
 				await instruction.execute(project, page, mouse, {guide: false, screenshots: false});
 			}
 		} catch (error) {
-			console.error(`[error] failed to execute feature '${this.name}': '${error}'`);
+			throw new Error(`Failed to execute feature '${this.name}': '${error}'`);
 		}
 
 		await recorder?.stop();

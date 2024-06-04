@@ -29,7 +29,7 @@ export class ShowInstruction extends Instruction {
 		}
 
 		if (ids.length == 0) {
-			console.error(`[error] could not find area to present`);
+			throw new Error(`Could not find elements to show`);
 		} else {
 			this.elementsContent = await PageParser.getElementsContent(page, ids, valueTagSelectors);
 			const first = ids.shift();
