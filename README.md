@@ -23,7 +23,7 @@ project.wrap = (selector: string) => {
 }
 
 const feature1 = new Feature('Example 1', 'Create product');
-feature1.redirect(`https://assembly.acryps.com/`)
+feature1.go(`https://assembly.acryps.com/`)
 	// create a product and configure
 	.element('product detail create').click()
 	.element('slot header name', 'Body').click()
@@ -40,7 +40,7 @@ feature1.redirect(`https://assembly.acryps.com/`)
 	.element('navigation page-links href', 'home').click()
 
 const feature2 = new Feature('Example 2', 'Modify product');
-feature2.redirect(`https://assembly.acryps.com/`)
+feature2.go(`https://assembly.acryps.com/`)
 	// import product using product code
 	.element('importer input').write('ecM1B000032DU???X?5????F010??')
 	.element('importer action', 'Import').click()
@@ -59,7 +59,7 @@ feature2.redirect(`https://assembly.acryps.com/`)
 	.elements('saved-assemblies-section assembly').show(['name', 'product-code'])
 
 const feature3 = new Feature('Example 3', 'Copy product code and load')
-feature3.redirect('https://assembly.acryps.com/configure/yckiuj/0')
+feature3.go('https://assembly.acryps.com/configure/yckiuj/0')
 	// copy product code 
 	// .element('product-code action', 'Copy').click()
 	.element('product-code code').copyToClipboard()	// alternate version
@@ -106,7 +106,7 @@ project.ignore('badge');
 
 const feature = new Feature('create a product', 'create a basic product');
 
-feature.redirect('https://ringbaker.com')
+feature.go('https://ringbaker.com')
 	.element('banner button', `Let's go`).click()
 
 	.elements('pack-container pack').get(1).click()

@@ -1,7 +1,7 @@
 import { ScreenRecorder } from "puppeteer";
 import { Instruction } from "./instruction/instruction";
 import { Project } from "./project";
-import { RedirectInstruction } from "./instruction/redirect";
+import { GoInstruction } from "./instruction/go";
 import { Mouse } from "./mouse/mouse";
 import { Step } from "./execution/step";
 import { ExecutionResult } from "./execution/result";
@@ -38,8 +38,8 @@ export class Feature {
 		return new Multiple(this, locator, null, null);
 	}
 
-	redirect(url: string): Feature {
-		this.instructions.push(new RedirectInstruction(url));
+	go(url: string): Feature {
+		this.instructions.push(new GoInstruction(url));
 
 		return this;
 	}

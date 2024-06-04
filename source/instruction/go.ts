@@ -4,7 +4,7 @@ import { Mouse } from "../mouse/mouse";
 import { Instruction } from "./instruction";
 import { ExecutionConfiguration } from "../execution/configuration";
 
-export class RedirectInstruction extends Instruction {
+export class GoInstruction extends Instruction {
 	constructor(
 		private url: string
 	){
@@ -22,7 +22,7 @@ export class RedirectInstruction extends Instruction {
 			throw new Error(`[error] failed to load page '${this.url}'`);
 		}
 
-		const step = `redirect to '${this.url}'`;
+		const step = `go to '${this.url}'`;
 		this.guide.push(step);
 
 		console.log(`[info] ${step}`);
