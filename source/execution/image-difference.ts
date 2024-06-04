@@ -1,4 +1,4 @@
-export class Difference {
+export class ImageDifference {
 	step: number;
 	screenshot: number;
 	difference: Buffer;

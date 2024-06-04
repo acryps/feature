@@ -2,7 +2,7 @@ import { Step } from "./step";
 import { MotionPoint } from "../mouse/motion-point";
 import { FeatureMetadata } from "./metadata";
 import { ImageAnnotations } from "./image";
-import { Difference } from "./difference";
+import { ImageDifference } from "./image-difference";
 import * as filesystem from 'fs';
 import * as Jimp from 'jimp';
 
@@ -133,8 +133,8 @@ export class ExecutionResult {
 		}
 	}
 
-	async imageCompare(result: ExecutionResult): Promise<Difference[]> {
-		const differences: Difference[] = [];
+	async getImageDifferences(result: ExecutionResult): Promise<ImageDifference[]> {
+		const differences: ImageDifference[] = [];
 
 		if (this.steps.length != result.steps.length) {
 			throw new Error(`cannot compare execution results with different amount of steps`);
