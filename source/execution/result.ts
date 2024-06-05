@@ -21,11 +21,9 @@ export class ExecutionResult {
 		public steps?: Step[],
 	) {}
 	
-	load(name: string) {
+	load(path: string) {
 		try {
 			this.steps = [];
-
-			const path = `${process.env.MEDIA_PATH}/${name}`;
 			const videoSource = `${path}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
 			const metadataSource = `${path}/${this.metadataFileName}`;
 
@@ -75,9 +73,8 @@ export class ExecutionResult {
 		}
 	}
 
-	async save(name: string) {
+	async save(path: string) {
 		try {
-			const path = `${process.env.MEDIA_PATH}/${name}`;
 			const stepsPath = `${path}/${this.stepsFolderName}`;
 
 			if (!filesystem.existsSync(`${path}/`)) {
