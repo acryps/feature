@@ -28,8 +28,6 @@ export class Feature {
 
 	private instructions: Instruction[];
 
-	private currentElement?: SingleElement | MultiElement;
-
 	constructor(
 		public name: string,
 		public description: string,
@@ -63,13 +61,7 @@ export class Feature {
 		return this;
 	}
 
-	present(): SingleElement | MultiElement {
-		return this.currentElement;
-	}
-
 	addInstruction(instruction: Instruction, element: SingleElement | MultiElement) {
-		this.currentElement = element;
-
 		this.instructions.push(instruction);
 	}
 
