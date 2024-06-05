@@ -7,6 +7,7 @@ import { MultiElement } from "./element/multi-element";
 import { Execution } from "./execution/execution";
 import { Project } from "./project";
 import { Viewport } from "puppeteer";
+import { PrepareInstruction } from "./instruction/prepare";
 
 export class Feature {
 	instructions: Instruction[];
@@ -24,6 +25,12 @@ export class Feature {
 
 	elements(locator: string): MultiElement {
 		return new MultiElement(this, locator, null, null);
+	}
+
+	prepare(feature: Feature): Feature {
+		this.instructions.push(new PrepareInstruction(feature));
+
+		return this;
 	}
 
 	go(url: string): Feature {
