@@ -1,10 +1,11 @@
-import { ScreenRecorder, Viewport } from "puppeteer";
+import { Page, ScreenRecorder, Viewport } from "puppeteer";
 import { Project } from "../project";
 import { ExecutionResult } from "./result";
 import { BrowserManager } from "../browser/manager";
 import { Step } from "./step";
 import { Mouse } from "../mouse/mouse";
 import { Feature } from "../feature";
+import { ExecutionConfiguration } from "./configuration";
 import * as filesystem from 'fs';
 
 export class Execution {
@@ -57,21 +58,13 @@ export class Execution {
 	async run(): Promise<ExecutionResult> {
 		try {
 			if (this.configuration.guide || this.configuration.screenshots) {
+				const configuration = { guide: this.configuration.guide, screenshots: this.configuration.screenshots };
 				const page = await BrowserManager.getPage(this.viewport);
-				const steps: Step[] = [];
 				const mouse = new Mouse(page, false);
 
-				try {
-					for (let instruction of this.feature.instructions) {
-						const configuration = { guide: this.configuration.guide, screenshots: this.configuration.screenshots };
-						steps.push(await instruction.execute(this.project, page, mouse, configuration));
-					}
-				} catch (error) {
-					const separator = this.configuration.guide && this.configuration.screenshots ? ' and ' : ' ';
-					throw new Error(`Failed to capture ${this.configuration.guide ? 'guide' : ''}${separator}${this.configuration.screenshots ? 'screenshots' : ''}: '${error}'`);
-				}
+				await this.prepareExecution(page);
 
-				this.result.steps = steps;
+				this.result.steps = await this.executeInstructions(page, mouse, configuration);
 			}
 
 			if (this.configuration.video) {
@@ -79,6 +72,7 @@ export class Execution {
 					throw new Error(`Cannot capture video without specified path`);
 				}
 
+				const configuration = { guide: false, screenshots: false };
 				const page = await BrowserManager.getPage(this.viewport);
 				const mouse = new Mouse(page, true);
 
@@ -89,16 +83,12 @@ export class Execution {
 				if (!filesystem.existsSync(path)) {
 					filesystem.mkdirSync(path, {recursive: true});
 				}
+
+				await this.prepareExecution(page);
 				
 				const recorder: ScreenRecorder = await page.screencast({path: `${path}/${name}.webm`});
 
-				try {
-					for (let instruction of this.feature.instructions) {
-						await instruction.execute(this.project, page, mouse, {guide: false, screenshots: false});
-					}
-				} catch (error) {
-					throw new Error(`Failed to record video: '${error}'`);
-				}
+				await this.executeInstructions(page, mouse, configuration);
 		
 				await recorder?.stop();
 		
@@ -110,5 +100,31 @@ export class Execution {
 		}
 
 		return this.result;
+	}
+
+	async prepareExecution(page: Page) {
+		const mouse = new Mouse(page, false);
+
+		try {
+			for (let prepareInstruction of this.feature.prepareInstructions) {
+				await prepareInstruction.execute(this.project, page, mouse, { guide: false, screenshots: false });
+			}
+		} catch (error) {
+			throw new Error(`Failed to execute prepare instructions: '${error}'`);
+		}
+	}
+
+	async executeInstructions(page: Page, mouse, configuration: ExecutionConfiguration) {
+		const steps: Step[] = [];
+
+		try {
+			for (let instruction of this.feature.instructions) {
+				steps.push(await instruction.execute(this.project, page, mouse, configuration));
+			}
+		} catch (error) {
+			throw new Error(`Failed to execute instructions: '${error}'`);
+		}
+
+		return steps;
 	}
 }

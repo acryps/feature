@@ -16,7 +16,7 @@ export class PrepareInstruction extends Instruction {
 	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		super.initializeExecution(configuration);
 
-		await this.feature.execute(project).run();
+		await this.feature.execute(project).executeInstructions(page, mouse, { guide: false, screenshots: false });
 
 		const step = `prepared feature '${this.feature.name}'`;
 		this.guide.push(step);

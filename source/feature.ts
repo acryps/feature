@@ -11,12 +11,14 @@ import { PrepareInstruction } from "./instruction/prepare";
 
 export class Feature {
 	instructions: Instruction[];
+	prepareInstructions: PrepareInstruction[];
 
 	constructor(
 		public name: string,
 		public description: string,
 	) {
 		this.instructions = [];
+		this.prepareInstructions = [];
 	}
 
 	element(locator: string, elementContent?: string): SingleElement {
@@ -28,7 +30,7 @@ export class Feature {
 	}
 
 	prepare(feature: Feature): Feature {
-		this.instructions.push(new PrepareInstruction(feature));
+		this.prepareInstructions.push(new PrepareInstruction(feature));
 
 		return this;
 	}
