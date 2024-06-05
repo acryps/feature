@@ -16,8 +16,17 @@ import { MultiElement } from "./element/multi-element";
 import * as filesystem from 'fs';
 
 export class Feature {
+	private readonly defaultViewport: Viewport = {
+		width: 1280, 
+		height: 720,
+		deviceScaleFactor: 1
+	};
+	private readonly defaultConfiguration: ExecutionConfiguration = {
+		guide: true,
+		screenshots: true
+	}
+
 	private instructions: Instruction[];
-	private executionResult: ExecutionResult;
 
 	private currentElement?: SingleElement | MultiElement;
 
@@ -26,7 +35,6 @@ export class Feature {
 		public description: string,
 	) {
 		this.instructions = [];
-		this.executionResult = new ExecutionResult();
 	}
 
 	element(locator: string, elementContent?: string): SingleElement {
@@ -65,11 +73,18 @@ export class Feature {
 		this.instructions.push(instruction);
 	}
 
-	async execute(project: Project, viewport: Viewport, configuration: ExecutionConfiguration) {
+	async execute(project: Project, viewport?: Viewport, configuration?: ExecutionConfiguration, executionResult?: ExecutionResult) {
 		const page = await BrowserManager.getPage(viewport);
-
 		const steps: Step[] = [];
 		const mouse = new Mouse(page, false);
+
+		if (!viewport) {
+			viewport = this.defaultViewport;
+		}
+
+		if (!configuration) {
+			configuration = this.defaultConfiguration;
+		}
 
 		try {
 			for (let instruction of this.instructions) {
@@ -79,21 +94,24 @@ export class Feature {
 			throw new Error(`Failed to execute feature '${this.name}': '${error}'`);
 		}
 
-		this.executionResult.steps = steps;
+		executionResult.steps = steps;
 
 		return steps;
 	}
 
-	async generateVideo(project: Project, viewport: Viewport): Promise<{
+	async generateVideo(project: Project, viewport?: Viewport, executionResult?: ExecutionResult): Promise<{
 		videoSource: string,
 		motion: MotionPoint[]
 	}> {
 		const page = await BrowserManager.getPage(viewport);
-		
 		const mouse = new Mouse(page, true);
 
 		const path = process.env.MEDIA_PATH;
 		const name = Identifier.get();
+
+		if (!viewport) {
+			viewport = this.defaultViewport;
+		}
 
 		if (!filesystem.existsSync(path)) {
 			filesystem.mkdirSync(path, {recursive: true});
@@ -111,16 +129,12 @@ export class Feature {
 
 		await recorder?.stop();
 
-		this.executionResult.motion = mouse.motion;
-		this.executionResult.videoSource = `${path}/${name}.webm`;
+		executionResult.motion = mouse.motion;
+		executionResult.videoSource = `${path}/${name}.webm`;
 
 		return {
 			videoSource: `${path}/${name}.webm`,
 			motion: mouse.motion
 		}
-	}
-
-	getExecutionResult() {
-		return this.executionResult;
 	}
 }
