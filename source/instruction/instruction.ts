@@ -1,10 +1,11 @@
 import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Mouse } from "../mouse/mouse";
-import { Image, ImageAnnotation } from "../execution/image";
-import { Step } from "../execution/step";
+import { Image } from "../execution/image/image";
+import { Step } from "../execution/step/step";
 import { ExecutionConfiguration } from "../execution/configuration";
 import { PageParser } from "../page/parser";
+import { ImageAnnotation } from "../execution/image/annotation";
 
 export abstract class Instruction {
 	protected guide: string[] = [];

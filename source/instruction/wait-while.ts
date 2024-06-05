@@ -1,6 +1,6 @@
 import { Page } from "puppeteer";
 import { ExecutionConfiguration } from "../execution/configuration";
-import { Step } from "../execution/step";
+import { Step } from "../execution/step/step";
 import { Mouse } from "../mouse/mouse";
 import { Project } from "../project";
 import { Instruction } from "./instruction";

@@ -2,14 +2,14 @@ import { Page } from "puppeteer";
 import { Feature } from "../feature";
 import { ClickInstruction } from "../instruction/click";
 import { Project } from "../project";
-import { MultiElement } from "./multi-element";
+import { MultiElement } from "./multi";
 import { Element } from "./element";
 import { PageParser } from "../page/parser";
 import { HoverInstruction } from "../instruction/hover";
-import { ScrollToInstruction } from "../instruction/scroll-to";
+import { ScrollToInstruction } from "../instruction/scroll";
 import { WriteInstruction } from "../instruction/write";
-import { CopyToClipboardInstruction } from "../instruction/clipboard/copy-to";
-import { WriteFromClipboardInstruction } from "../instruction/clipboard/write-from";
+import { CopyToClipboardInstruction } from "../instruction/clipboard/copy";
+import { WriteFromClipboardInstruction } from "../instruction/clipboard/write";
 import { ShowInstruction } from "../instruction/show";
 
 export class SingleElement extends Element {

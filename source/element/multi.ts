@@ -1,10 +1,10 @@
 import { Page } from "puppeteer";
 import { Feature } from "../feature";
 import { Project } from "../project";
-import { SelectorConstraint as SearchConstraint } from "./search-constraint";
+import { SearchConstraint } from "./constraint";
 import { Element } from './element';
 import { PageParser } from "../page/parser";
-import { SingleElement } from "./single-element";
+import { SingleElement } from "./single";
 import { ShowInstruction } from "../instruction/show";
 
 export class MultiElement extends Element {

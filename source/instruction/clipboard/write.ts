@@ -1,11 +1,11 @@
 import { Page } from "puppeteer";
 import { ExecutionConfiguration } from "../../execution/configuration";
-import { Step } from "../../execution/step";
+import { Step } from "../../execution/step/step";
 import { Mouse } from "../../mouse/mouse";
 import { Project } from "../../project";
 import { Instruction } from "../instruction";
 import { PageParser } from "../../page/parser";
-import { SingleElement } from "../../element/single-element";
+import { SingleElement } from "../../element/single";
 
 export class WriteFromClipboardInstruction extends Instruction {
 	private fieldName: string;

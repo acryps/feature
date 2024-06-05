@@ -4,8 +4,8 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
-import { MultiElement } from "../element/multi-element";
-import { SingleElement } from "../element/single-element";
+import { MultiElement } from "../element/multi";
+import { SingleElement } from "../element/single";
 
 export class ShowInstruction extends Instruction {
 	private elementsContent: string[];

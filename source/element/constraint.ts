@@ -1,4 +1,4 @@
-export class SelectorConstraint {
+export class SearchConstraint {
 	locator: string;
 	value: string;
 	

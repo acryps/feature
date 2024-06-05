@@ -2,7 +2,7 @@ import { Page, ScreenRecorder, Viewport } from "puppeteer";
 import { Project } from "../project";
 import { ExecutionResult } from "./result";
 import { BrowserManager } from "../browser/manager";
-import { Step } from "./step";
+import { Step } from "./step/step";
 import { Mouse } from "../mouse/mouse";
 import { Feature } from "../feature";
 import { ExecutionConfiguration } from "./configuration";

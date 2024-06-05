@@ -1,6 +1,6 @@
 import { Page } from "puppeteer";
 import { PageParser } from "../page/parser";
-import { MotionPoint } from "./motion-point";
+import { MotionPoint } from "./point";
 
 export class Mouse {
 	private readonly waitTimeout = 1000;

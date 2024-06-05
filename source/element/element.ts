@@ -1,5 +1,5 @@
-import { SingleElement } from "./single-element";
-import { MultiElement } from "./multi-element";
+import { SingleElement } from "./single";
+import { MultiElement } from "./multi";
 import { Page } from "puppeteer";
 import { Project } from "../project";
 

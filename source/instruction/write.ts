@@ -4,7 +4,7 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
-import { SingleElement } from "../element/single-element";
+import { SingleElement } from "../element/single";
 
 export class WriteInstruction extends Instruction {
 	private fieldName: string;
