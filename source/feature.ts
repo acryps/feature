@@ -51,7 +51,7 @@ export class Feature {
 		return this;
 	}
 
-	addInstruction(instruction: Instruction, element: SingleElement | MultiElement) {
+	addInstruction(instruction: Instruction) {
 		this.instructions.push(instruction);
 	}
 

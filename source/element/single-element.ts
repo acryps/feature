@@ -54,50 +54,43 @@ export class SingleElement extends Element {
 	}
  
 	click(): Feature {
-		const instruction = new ClickInstruction(this);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new ClickInstruction(this));
 
 		return this.feature;
 	}
 
 	hover(): Feature {
-		const instruction = new HoverInstruction(this);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new HoverInstruction(this));
 
 		return this.feature;
 	}
 
 	scrollTo(): Feature {
-		const instruction = new ScrollToInstruction(this);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new ScrollToInstruction(this));
 
 		return this.feature;
 	}
 
 	show(valueTags?: string[]): Feature {
-		const instruction = new ShowInstruction(this, valueTags);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new ShowInstruction(this, valueTags));
 
 		return this.feature;
 	}
 
 	write(content: string): Feature {
-		const instruction = new WriteInstruction(this, content);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new WriteInstruction(this, content));
 
 		return this.feature;
 	}
 
 	copyToClipboard(): Feature {
-		const instruction = new CopyToClipboardInstruction(this);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new CopyToClipboardInstruction(this));
 
 		return this.feature;
 	}
 
 	writeFromClipboard(): Feature {
-		const instruction = new WriteFromClipboardInstruction(this);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new WriteFromClipboardInstruction(this));
 
 		return this.feature;
 	}

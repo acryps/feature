@@ -44,8 +44,7 @@ export class MultiElement extends Element {
 	}
 
 	show(valueTags: string[]): Feature {
-		const instruction = new ShowInstruction(this, valueTags);
-		this.feature.addInstruction(instruction, this);
+		this.feature.addInstruction(new ShowInstruction(this, valueTags));
 
 		return this.feature;
 	}
