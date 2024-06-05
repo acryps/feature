@@ -7,6 +7,8 @@ import * as filesystem from 'fs';
 import * as Jimp from 'jimp';
 
 export class ExecutionResult {
+	private readonly differenceThreshold = 0.0001;
+
 	private readonly metadataFileName = 'feature.json';
 	private readonly stepsFolderName = 'steps';
 
@@ -21,7 +23,7 @@ export class ExecutionResult {
 		public steps?: Step[],
 	) {}
 	
-	load(path: string) {
+	load(path: string): ExecutionResult {
 		try {
 			this.steps = [];
 			const videoSource = `${path}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
@@ -71,6 +73,8 @@ export class ExecutionResult {
 		} catch (error) {
 			throw new Error(`Failed to load feature '${name}': '${error}'`);
 		}
+
+		return this;
 	}
 
 	async save(path: string) {
@@ -148,7 +152,7 @@ export class ExecutionResult {
 
 				const difference = Jimp.diff(image1, image2);
 
-				if (difference.percent > 0) {
+				if (difference.percent > this.differenceThreshold) {
 					differences.push({ step: stepIndex, screenshot: screenshotIndex, difference: difference.image.bitmap.data })
 				}
 			}
