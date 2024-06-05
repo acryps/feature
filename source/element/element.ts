@@ -4,11 +4,18 @@ import { Page } from "puppeteer";
 import { Project } from "../project";
 
 export abstract class Element {
+	protected filter = (ids: string[]) => { return ids; };
+
 	constructor(
 		protected locator?: string,
 		protected parent?: SingleElement,
 		protected parents?: MultiElement,
-	) {}
+		filter?: (ids: string[]) => string[],
+	) {
+		if (filter) {
+			this.filter = filter;
+		}
+	}
 
 	getLocator(): string {
 		this.validateParentAssignment();
@@ -36,22 +43,19 @@ export abstract class Element {
 	protected async findParentIds(page: Page, project: Project): Promise<string[]> {
 		this.validateParentAssignment();
 
+		let ids = [];
+
 		if (this.parent) {
-			return [await this.parent.find(page, project)];
+			ids = [await this.parent.find(page, project)];
 		}
 
 		if (this.parents) {
 			this.parents.prepareConstraintSelectors(project);
 
-			const ids = await this.parents.find(page, project);
-			
-			if (Array.isArray(ids)) {
-				return ids;
-			} else {
-				return [ids];
-			}
+			ids = await this.parents.find(page, project);
 		}
 
-		return [];
+		// apply element filter
+		return this.filter(ids);
 	}
 }

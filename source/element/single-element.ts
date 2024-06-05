@@ -20,9 +20,10 @@ export class SingleElement extends Element {
 		locator?: string,
 		public readonly elementContent?: string,
 		parent?: SingleElement,
-		parents?: MultiElement
+		parents?: MultiElement,
+		filter?: (ids: string[]) => string[],
 	) {
-		super(locator, parent, parents);
+		super(locator, parent, parents, filter);
 	}
 
 	async find(page: Page, project: Project): Promise<string> {

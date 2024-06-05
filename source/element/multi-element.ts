@@ -11,24 +11,22 @@ export class MultiElement extends Element {
 	private ids?: string[];
 
 	private searchConstraints: SearchConstraint[];
-	private filter: () => string | string[];
+
+	private childFilter = (ids: string[]) => { return ids; };
 
 	constructor(
 		private feature: Feature,
 		locator?: string,
 		parent?: SingleElement,
-		parents?: MultiElement
+		parents?: MultiElement,
+		filter?: (ids: string[]) => string[],
 	) {
-		super(locator, parent, parents); 
+		super(locator, parent, parents, filter); 
 
 		this.searchConstraints = [];
-
-		this.filter = () => {
-			return this.ids;
-		}
 	}
 
-	async find(page: Page, project: Project): Promise<string | string[]> {
+	async find(page: Page, project: Project): Promise<string[]> {
 		const ids = await super.findParentIds(page, project);
 
 		if (this.locator) {
@@ -38,11 +36,11 @@ export class MultiElement extends Element {
 			this.ids = ids;
 		}
 
-		return this.filter();
+		return this.ids;
 	}
 
 	elements(locator: string): MultiElement {
-		return new MultiElement(this.feature, locator, null, this);
+		return new MultiElement(this.feature, locator, null, this, this.childFilter);
 	}
 
 	show(valueTags: string[]): Feature {
@@ -59,35 +57,45 @@ export class MultiElement extends Element {
 	}
 
 	first(): SingleElement {
-		this.filter = () => {
-			return this.ids.at(0);
+		this.childFilter = (ids: string[]) => {
+			return [ids.at(0)];
 		}
 		
-		return new SingleElement(this.feature, null, null, null, this);
+		return new SingleElement(this.feature, null, null, null, this, this.childFilter);
 	}
 	
 	last(): SingleElement {
-		this.filter = () => {
-			return this.ids.at(-1);
+		this.childFilter = (ids: string[]) => {
+			return [ids.at(-1)];
 		}
 		
-		return new SingleElement(this.feature, null, null, null, this);
+		return new SingleElement(this.feature, null, null, null, this, this.childFilter);
 	}
 	
 	get(index: number): SingleElement {
-		this.filter = () => {
-			return this.ids.at(index);
+		this.childFilter = (ids: string[]) => {
+			return [ids.at(index)];
 		}
 		
-		return new SingleElement(this.feature, null, null, null, this);
+		return new SingleElement(this.feature, null, null, null, this, this.childFilter);
 	}
 	
-	range(start: number, end: number): MultiElement {
-		this.filter = () => {
-			return this.ids.slice(start, end);
+	slice(start: number, end: number): MultiElement {
+		if (start < 0 || start > end || start === end) {
+			let hint = '';
+
+			if (start === end) {
+				hint = ' (it must contain at least one value)';
+			}
+
+			throw new Error(`The slice (${start}, ${end}) is invalid${hint}`);
+		}
+
+		this.childFilter = (ids: string[]) => {
+			return ids.slice(start, end);
 		}
 		
-		return new MultiElement(this.feature, null, null, this);
+		return new MultiElement(this.feature, null, null, this, this.childFilter);
 	}
 
 	prepareConstraintSelectors(project: Project) {
