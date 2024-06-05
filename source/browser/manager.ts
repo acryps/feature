@@ -14,7 +14,11 @@ export class BrowserManager {
 		return this.browsers.length > 0;
 	}
 
-	static async launch(headless: boolean) {
+	static async launch(headless?: boolean) {
+		if (headless === undefined) {
+			headless = true;
+		}
+
 		for (let index = 0; index < this.size; index++) {
 			const browser = await launch({ headless: headless });
 			this.browsers.push(browser);
