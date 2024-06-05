@@ -25,8 +25,6 @@ export class CopyToClipboardInstruction extends Instruction {
 		const step = `copied '${content}' to clipboard`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }

@@ -41,8 +41,6 @@ export class WriteFromClipboardInstruction extends Instruction {
 		const step = `write '${this.content}' from clipboard in '${this.fieldName}' field`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }

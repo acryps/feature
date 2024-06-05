@@ -25,8 +25,6 @@ export class WaitWhileInstruction extends Instruction {
 		const step = `waited while '${this.locator}' was present`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }

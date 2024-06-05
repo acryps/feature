@@ -25,8 +25,6 @@ export class GoInstruction extends Instruction {
 		const step = `go to '${this.url}'`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }

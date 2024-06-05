@@ -45,8 +45,6 @@ export class ShowInstruction extends Instruction {
 		const step = `find elements ${this.elementsContent.map(element => `'${element}'`).join(', ')}`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }

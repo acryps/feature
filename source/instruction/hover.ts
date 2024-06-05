@@ -40,8 +40,6 @@ export class HoverInstruction extends Instruction {
 		const step = `hovering on '${this.name}' at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }

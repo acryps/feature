@@ -24,8 +24,6 @@ export class WaitForInstruction extends Instruction {
 		const step = `waited for '${this.locator}'`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }

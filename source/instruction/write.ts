@@ -37,8 +37,6 @@ export class WriteInstruction extends Instruction {
 		const step = `write '${this.content}' in '${this.fieldName}' field`;
 		this.guide.push(step);
 
-		console.log(`[info] ${step}`);
-
 		return super.finishExecution();
 	}
 }
