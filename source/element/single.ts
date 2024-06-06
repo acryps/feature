@@ -11,12 +11,13 @@ import { WriteInstruction } from "../instruction/write";
 import { CopyToClipboardInstruction } from "../instruction/clipboard/copy";
 import { WriteFromClipboardInstruction } from "../instruction/clipboard/write";
 import { ShowInstruction } from "../instruction/show";
+import { SelectElement } from "./select";
 
 export class SingleElement extends Element {
 	private id?: string;
 
 	constructor(
-		private feature: Feature,
+		readonly feature: Feature,
 		locator?: string,
 		public readonly elementContent?: string,
 		parent?: SingleElement,
@@ -99,5 +100,9 @@ export class SingleElement extends Element {
 		this.feature.addInstruction(new WriteFromClipboardInstruction(this));
 
 		return this.feature;
+	}
+	
+	select(): SelectElement {
+		return new SelectElement(this);
 	}
 }

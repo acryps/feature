@@ -7,7 +7,7 @@ export abstract class Element {
 	protected filter = (ids: string[]) => { return ids; };
 
 	constructor(
-		protected locator?: string,
+		readonly locator?: string,
 		protected parent?: SingleElement,
 		protected parents?: MultiElement,
 		filter?: (ids: string[]) => string[],
