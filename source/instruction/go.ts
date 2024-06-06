@@ -22,6 +22,8 @@ export class GoInstruction extends Instruction {
 			throw new Error(`Failed to load page '${this.url}'`);
 		}
 
+		await super.screenshot(project, page, []);
+
 		const step = `go to '${this.url}'`;
 		this.guide.push(step);
 
