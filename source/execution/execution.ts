@@ -10,7 +10,7 @@ import * as filesystem from 'fs';
 
 export class Execution {
 	private configuration = {
-		guide: true,
+		guide: false,
 		screenshots: false,
 		video: false
 	};
