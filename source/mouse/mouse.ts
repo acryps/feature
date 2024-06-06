@@ -3,11 +3,11 @@ import { PageParser } from "../page/parser";
 import { MotionPoint } from "./point";
 
 export class Mouse {
-	private readonly waitTimeout = 1000;
+	private readonly waitTimeout = 200;
 	private readonly stepTimeout = 1000 / 60;
-	private readonly steps = 100;
-	private readonly stepDuration = 100;
-	private readonly maxDuration = 300;
+	private readonly steps = 250;
+	private readonly stepDuration = 25;
+	private readonly maxDuration = 200;
 
 	x: number;
 	y: number;
