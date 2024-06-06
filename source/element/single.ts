@@ -45,6 +45,12 @@ export class SingleElement extends Element {
 		return this.id;
 	}
 
+	use(callback: (element: SingleElement) => void): Feature {
+		callback(this);
+
+		return this.feature;
+	}
+
 	element(locator: string, elementContent?: string): SingleElement {
 		return new SingleElement(this.feature, locator, elementContent, this, null);
 	}

@@ -43,6 +43,12 @@ export class MultiElement extends Element {
 		return new MultiElement(this.feature, locator, null, this, this.childFilter);
 	}
 
+	use(callback: (elements: MultiElement) => void): Feature {
+		callback(this);
+
+		return this.feature;
+	}
+
 	show(valueTags: string[]): Feature {
 		this.feature.addInstruction(new ShowInstruction(this, valueTags));
 
