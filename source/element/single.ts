@@ -78,7 +78,7 @@ export class SingleElement extends Element {
 		return this.feature;
 	}
 
-	show(valueTags?: string[]): Feature {
+	show(valueTags: string[]): Feature {
 		this.feature.addInstruction(new ShowInstruction(this, valueTags));
 
 		return this.feature;
