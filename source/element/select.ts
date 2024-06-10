@@ -25,8 +25,8 @@ export class SelectElement {
 		return this.element.feature;
 	}
 
-	get(index: number): Feature {
-		const option = this.element.elements('option').get(index);
+	at(index: number): Feature {
+		const option = this.element.elements('option').at(index);
 		this.element.feature.addInstruction(new SelectInstruction(this.element, option));
 
 		return this.element.feature;

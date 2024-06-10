@@ -77,7 +77,7 @@ export class MultipleElement extends Element {
 		return new SingleElement(this.feature, null, null, null, this, this.childFilter);
 	}
 	
-	get(index: number): SingleElement {
+	at(index: number): SingleElement {
 		this.childFilter = (ids: string[]) => {
 			return [ids.at(index)];
 		}
