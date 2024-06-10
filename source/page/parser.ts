@@ -26,7 +26,7 @@ export class PageParser {
 				elements = [...document.querySelectorAll(selector)];
 			} else {
 				for (let parentId of parentIds) {
-					elements.push(...window[parentId].querySelectorAll(selector));
+					elements.push(...window[parentId]?.querySelectorAll(selector));
 				}
 			}
 
@@ -64,7 +64,7 @@ export class PageParser {
 				elements = [...document.querySelectorAll(selector)];
 			} else {
 				for (let parentId of parentIds) {
-					elements.push(...window[parentId].querySelectorAll(selector))
+					elements.push(...window[parentId]?.querySelectorAll(selector))
 				}
 			}
 
