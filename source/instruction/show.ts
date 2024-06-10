@@ -4,7 +4,7 @@ import { Instruction } from "./instruction";
 import { PageParser } from "../page/parser";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
-import { MultiElement } from "../element/multi";
+import { MultipleElement } from "../element/multiple";
 import { SingleElement } from "../element/single";
 
 export class ShowInstruction extends Instruction {
@@ -12,7 +12,7 @@ export class ShowInstruction extends Instruction {
 	private rectangles?: DOMRect[];
 
 	constructor(
-		private elements: MultiElement | SingleElement,
+		private elements: MultipleElement | SingleElement,
 		private valueTags: string[]
 	) {
 		super();

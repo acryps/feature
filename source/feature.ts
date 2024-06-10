@@ -3,7 +3,7 @@ import { GoInstruction } from "./instruction/go";
 import { WaitForInstruction } from "./instruction/wait-for";
 import { WaitWhileInstruction } from "./instruction/wait-while";
 import { SingleElement } from "./element/single";
-import { MultiElement } from "./element/multi";
+import { MultipleElement } from "./element/multiple";
 import { Execution } from "./execution/execution";
 import { Project } from "./project";
 import { Viewport } from "puppeteer";
@@ -25,8 +25,8 @@ export class Feature {
 		return new SingleElement(this, locator, elementContent, null, null);
 	}
 
-	elements(locator: string): MultiElement {
-		return new MultiElement(this, locator, null, null);
+	elements(locator: string): MultipleElement {
+		return new MultipleElement(this, locator, null, null);
 	}
 
 	prepare(feature: Feature): Feature {

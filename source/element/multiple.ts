@@ -7,7 +7,7 @@ import { PageParser } from "../page/parser";
 import { SingleElement } from "./single";
 import { ShowInstruction } from "../instruction/show";
 
-export class MultiElement extends Element {
+export class MultipleElement extends Element {
 	private ids?: string[];
 
 	private searchConstraints: SearchConstraint[];
@@ -18,7 +18,7 @@ export class MultiElement extends Element {
 		private feature: Feature,
 		locator?: string,
 		parent?: SingleElement,
-		parents?: MultiElement,
+		parents?: MultipleElement,
 		filter?: (ids: string[]) => string[],
 	) {
 		super(locator, parent, parents, filter); 
@@ -39,11 +39,11 @@ export class MultiElement extends Element {
 		return this.ids;
 	}
 
-	elements(locator: string): MultiElement {
-		return new MultiElement(this.feature, locator, null, this, this.childFilter);
+	elements(locator: string): MultipleElement {
+		return new MultipleElement(this.feature, locator, null, this, this.childFilter);
 	}
 
-	use(callback: (elements: MultiElement) => void): Feature {
+	use(callback: (elements: MultipleElement) => void): Feature {
 		callback(this);
 
 		return this.feature;
@@ -55,7 +55,7 @@ export class MultiElement extends Element {
 		return this.feature;
 	}
 
-	where(locator: string, value: string): MultiElement {
+	where(locator: string, value: string): MultipleElement {
 		this.searchConstraints.push({ locator: locator, value: value });
 
 		return this;
@@ -85,7 +85,7 @@ export class MultiElement extends Element {
 		return new SingleElement(this.feature, null, null, null, this, this.childFilter);
 	}
 	
-	slice(start: number, end: number): MultiElement {
+	slice(start: number, end: number): MultipleElement {
 		if (start < 0 || start > end || start === end) {
 			let hint = '';
 
@@ -100,7 +100,7 @@ export class MultiElement extends Element {
 			return ids.slice(start, end);
 		}
 		
-		return new MultiElement(this.feature, null, null, this, this.childFilter);
+		return new MultipleElement(this.feature, null, null, this, this.childFilter);
 	}
 
 	prepareConstraintSelectors(project: Project) {

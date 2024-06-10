@@ -1,5 +1,5 @@
 import { SingleElement } from "./single";
-import { MultiElement } from "./multi";
+import { MultipleElement } from "./multiple";
 import { Page } from "puppeteer";
 import { Project } from "../project";
 
@@ -9,7 +9,7 @@ export abstract class Element {
 	constructor(
 		readonly locator?: string,
 		protected parent?: SingleElement,
-		protected parents?: MultiElement,
+		protected parents?: MultipleElement,
 		filter?: (ids: string[]) => string[],
 	) {
 		if (filter) {

@@ -2,7 +2,7 @@ import { Page } from "puppeteer";
 import { Feature } from "../feature";
 import { ClickInstruction } from "../instruction/click";
 import { Project } from "../project";
-import { MultiElement } from "./multi";
+import { MultipleElement } from "./multiple";
 import { Element } from "./element";
 import { PageParser } from "../page/parser";
 import { HoverInstruction } from "../instruction/hover";
@@ -21,7 +21,7 @@ export class SingleElement extends Element {
 		locator?: string,
 		public readonly elementContent?: string,
 		parent?: SingleElement,
-		parents?: MultiElement,
+		parents?: MultipleElement,
 		filter?: (ids: string[]) => string[],
 	) {
 		super(locator, parent, parents, filter);
@@ -58,8 +58,8 @@ export class SingleElement extends Element {
 		return new SingleElement(this.feature, locator, elementContent, this, null);
 	}
 
-	elements(locator: string): MultiElement {
-		return new MultiElement(this.feature, locator, this, null);
+	elements(locator: string): MultipleElement {
+		return new MultipleElement(this.feature, locator, this, null);
 	}
  
 	click(): Feature {
