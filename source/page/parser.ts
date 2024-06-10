@@ -1,4 +1,4 @@
-import { Page } from "puppeteer";
+import { KeyInput, Page } from "puppeteer";
 import { Mouse } from '../mouse/mouse';
 import { Identifier } from "../shared/identifier";
 import { BrowserManager } from "../browser/manager";
@@ -125,24 +125,17 @@ export class PageParser {
 	}
 
 	static async inputContent(page: Page, id: string, content: string): Promise<string> {
-		const placeholder = await page.evaluate((id, content) => {
-			const element = window[id];
-			let placeholder = '';
+		await page.evaluate(id => window[id].focus(), id);
+		await new Promise<void>(done => setTimeout(() => done(), 10));
 
-			if (element instanceof HTMLInputElement) {
-				element.value = content;
-				placeholder = element.placeholder;
-			} else {
-				element.textContent = content;
-				placeholder = element.localName;
-			}
+		for (let character of content) {
+			await page.keyboard.press(character as KeyInput);
+			await new Promise<void>(done => setTimeout(() => done(), 20));
+		}
 
-			element.blur();
+		await page.evaluate(id => window[id].blur(), id);
 
-			return placeholder;
-		}, id, content);
-
-		return placeholder;
+		return await page.evaluate(id => window[id].placeholder, id);
 	}
 
 	static async getElementsContent(page: Page, ids: string[], valueSelectors: string[]): Promise<string[]> {
