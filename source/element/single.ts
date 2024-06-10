@@ -36,11 +36,13 @@ export class SingleElement extends Element {
 		} else {
 			if (ids.length > 1) {
 				throw new Error(`Found several items for single element`);
-			} else if (ids.length == 0) {
-				throw new Error(`Found no element`);
 			} else {
 				this.id = ids.at(0);
 			}
+		}
+
+		if (!this.id) {
+			throw new Error(`Found no element`);
 		}
 
 		return this.id;
