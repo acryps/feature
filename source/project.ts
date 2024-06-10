@@ -49,7 +49,7 @@ export class Project {
 				const remainingLocatorParts = [...locatorParts];
 				const nextLocatorPart = remainingLocatorParts.shift();
 
-				selectors.push(this.assembleSelector(nextLocatorPart, remainingLocatorParts, [selector, selectorVariation].join(' ')));
+				selectors.push(this.assembleSelector(nextLocatorPart, remainingLocatorParts, [selector, selectorVariation].filter(element => !!element).join(' ')));
 			}
 		} else {
 			return selector;
