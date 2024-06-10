@@ -71,7 +71,7 @@ export class ExecutionResult {
 				}
 			}
 		} catch (error) {
-			throw new Error(`Failed to load feature '${name}': '${error}'`);
+			throw new Error(`Failed to load feature '${name}': ${error}`);
 		}
 
 		return this;
@@ -122,7 +122,7 @@ export class ExecutionResult {
 	
 			filesystem.writeFileSync(`${path}/${this.metadataFileName}`, JSON.stringify(metadata));
 		} catch (error) {
-			throw new Error(`Failed to save execution result for feature '${name}'; '${error}'`);
+			throw new Error(`Failed to save execution result for feature '${name}'; ${error}`);
 		}
 	}
 

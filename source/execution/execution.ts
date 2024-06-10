@@ -96,7 +96,7 @@ export class Execution {
 				this.result.videoSource = `${path}/${name}.webm`;
 			}
 		} catch (error) {
-			throw new Error(`Failed to execute feature '${this.feature.name}': '${error}'`);
+			throw new Error(`Failed to execute feature '${this.feature.name}': ${error}`);
 		}
 
 		return this.result;
@@ -110,7 +110,7 @@ export class Execution {
 				await prepareInstruction.execute(this.project, page, mouse, { guide: false, screenshots: false });
 			}
 		} catch (error) {
-			throw new Error(`Failed to execute prepare instructions: '${error}'`);
+			throw new Error(`Failed to execute prepare instructions: ${error}`);
 		}
 	}
 
@@ -122,7 +122,7 @@ export class Execution {
 				steps.push(await instruction.execute(this.project, page, mouse, configuration));
 			}
 		} catch (error) {
-			throw new Error(`Failed to execute instructions: '${error}'`);
+			throw new Error(`Failed to execute instructions: ${error}`);
 		}
 
 		return steps;
