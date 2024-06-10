@@ -59,6 +59,7 @@ export class PageParser {
 
 		const response = await page.evaluate((parentIds, selector, elementContent, id) => {
 			let elements: Element[] = [];
+			let assignedId: string = null;
 
 			if (parentIds.length == 0) {
 				elements = [...document.querySelectorAll(selector)];
@@ -71,15 +72,18 @@ export class PageParser {
 			if (elementContent) {
 				elements = elements.filter(element => element.textContent.toLowerCase().trim() === elementContent.toLowerCase().trim());
 			}
-			
-			for (let element of elements) {
-				window[id] = element;
 
-				return { id: id, elements: elements.length };	
+			if (elements.length > 0) {
+				window[id] = elements.at(0);
+				assignedId = id;
 			}
 
-			return { id: null, elements: elements.length };
+			return { id: assignedId, elements: elements.length };
 		}, parentIds, selector, elementContent, id);
+
+		if (response.elements > 1) {
+			throw new Error(`Found several elements for single element with selector '${selector.split(',').at(0)}, ...' (Use .elements() to handle multiple elements)`);
+		}
 
 		return response.id;
 	}
@@ -137,10 +141,6 @@ export class PageParser {
 
 			return placeholder;
 		}, id, content);
-
-		if (!placeholder) {
-			throw new Error(`Could not find input element!`);
-		}
 
 		return placeholder;
 	}
