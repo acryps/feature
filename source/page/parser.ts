@@ -230,7 +230,7 @@ export class PageParser {
 					} else {
 						content = updated;
 					}
-				}, 250);
+				}, 500);
 			}, 100);
 		});
 	}
