@@ -21,6 +21,8 @@ export class WaitForInstruction extends Instruction {
 
 		await page.waitForSelector(selector);
 
+		await super.screenshot(project, page, []);
+
 		const step = `waited for '${this.locator}'`;
 		this.guide.push(step);
 

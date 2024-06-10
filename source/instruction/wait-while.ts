@@ -22,6 +22,8 @@ export class WaitWhileInstruction extends Instruction {
 
 		await PageParser.waitWhile(page, selector);
 
+		await super.screenshot(project, page, []);
+
 		const step = `waited while '${this.locator}' was present`;
 		this.guide.push(step);
 
