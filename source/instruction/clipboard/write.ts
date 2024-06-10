@@ -28,8 +28,7 @@ export class WriteFromClipboardInstruction extends Instruction {
 		this.rectangle = await PageParser.getBoundingRectangle(page, id);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
-		
-		await mouse.click(center.x, center.y);
+		await mouse.hover(center.x, center.y);
 
 		this.content = await PageParser.readFromClipboard(page);
 		this.fieldName = await PageParser.inputContent(page, id, this.content);
