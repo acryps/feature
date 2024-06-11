@@ -5,6 +5,7 @@ import { Project } from "../../project";
 import { Instruction } from "../instruction";
 import { PageScraper } from "../../page/scraper";
 import { SingleElement } from "../../element/single";
+import { PageInteractor } from "../../page/interactor";
 
 export class CopyToClipboardInstruction extends Instruction {
 	constructor(
@@ -13,13 +14,13 @@ export class CopyToClipboardInstruction extends Instruction {
 		super();
 	}
 
-	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
-		super.initializeExecution(configuration);
+	async execute(project: Project, interactor: PageInteractor): Promise<Step> {
+		super.initializeExecution(interactor.configuration);
 
-		const id = await this.element.find(scraper, project);
-		const content = await scraper.getElementContent(id);
+		const id = await this.element.find(interactor.scraper, project);
+		const content = await interactor.scraper.getElementContent(id);
 
-		await scraper.copyToClipboard(content);
+		await interactor.scraper.copyToClipboard(content);
 
 		const step = `copied '${content}' to clipboard`;
 		this.guide.push(step);

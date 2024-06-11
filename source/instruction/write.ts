@@ -1,9 +1,7 @@
 import { Project } from "../project";
 import { Instruction } from "./instruction";
-import { PageScraper } from "../page/scraper";
-import { Mouse } from "../mouse/mouse";
-import { ExecutionConfiguration } from "../execution/configuration";
 import { SingleElement } from "../element/single";
+import { PageInteractor } from "../page/interactor";
 
 export class WriteInstruction extends Instruction {
 	private fieldName: string;
@@ -16,22 +14,22 @@ export class WriteInstruction extends Instruction {
 		super();
 	}
 
-	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration) {
-		super.initializeExecution(configuration);
+	async execute(project: Project, interactor: PageInteractor) {
+		super.initializeExecution(interactor.configuration);
 
-		const id = await this.element.find(scraper, project);
+		const id = await this.element.find(interactor.scraper, project);
 
-		await mouse.scrollIntoView(id);
-		this.rectangle = await scraper.getBoundingRectangle(id);
+		await interactor.mouse.scrollIntoView(id);
+		this.rectangle = await interactor.scraper.getBoundingRectangle(id);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
-		await mouse.hover(center.x, center.y);
+		await interactor.mouse.hover(center.x, center.y);
 
-		this.fieldName = await scraper.inputContent(id, this.content);
+		this.fieldName = await interactor.keyboard.write(id, this.content);
 
-		await scraper.waitForUpdates();
+		await interactor.scraper.waitForUpdates();
 
-		await super.screenshot(project, scraper, [this.rectangle]);
+		await super.screenshot(project, interactor.scraper, [this.rectangle]);
 
 		const step = `write '${this.content}' in '${this.fieldName}' field`;
 		this.guide.push(step);

@@ -1,10 +1,10 @@
 import { Project } from "../project";
-import { Mouse } from "../mouse/mouse";
 import { Image } from "../execution/image/image";
 import { Step } from "../execution/step/step";
 import { ExecutionConfiguration } from "../execution/configuration";
 import { PageScraper } from "../page/scraper";
 import { ImageAnnotation } from "../execution/image/annotation";
+import { PageInteractor } from "../page/interactor";
 
 export abstract class Instruction {
 	protected guide: string[] = [];
@@ -13,7 +13,7 @@ export abstract class Instruction {
 	private generateGuide: boolean;
 	private generateScreenshots: boolean;
 	
-	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
+	async execute(project: Project, interactor: PageInteractor): Promise<Step> {
 		throw new Error("Method not implemented.");
 	}
 

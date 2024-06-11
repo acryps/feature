@@ -1,10 +1,9 @@
 import { ExecutionConfiguration } from "../execution/configuration";
 import { Step } from "../execution/step/step";
 import { Feature } from "../feature";
-import { Mouse } from "../mouse/mouse";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
-import { PageScraper } from "../page/scraper";
+import { PageInteractor } from "../page/interactor";
 
 export class PrepareInstruction extends Instruction {
 	constructor(
@@ -13,10 +12,12 @@ export class PrepareInstruction extends Instruction {
 		super();
 	}
 
-	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
-		super.initializeExecution(configuration);
+	async execute(project: Project, interactor: PageInteractor): Promise<Step> {
+		super.initializeExecution(interactor.configuration);
 
-		await this.feature.execute(project).executeInstructions(scraper, mouse, { guide: false, screenshots: false });
+		const prepareInteractor = new PageInteractor(interactor.page, new ExecutionConfiguration(false, false, false));
+
+		await this.feature.execute(project).executeInstructions(prepareInteractor);
 
 		const step = `prepared feature '${this.feature.name}'`;
 		this.guide.push(step);

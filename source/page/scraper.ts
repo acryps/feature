@@ -127,29 +127,6 @@ export class PageScraper {
 		}, id);
 	}
 
-	async inputContent(id: string, content: string): Promise<string> {
-		await this.page.evaluate((id, content) => {
-			const input: HTMLElement = window[id];
-			input.focus();
-
-			if (document.activeElement !== input) {
-				throw new Error(`Failed to focus on current element and thus cannot write '${content}' (use only input or editable elements!)`);
-			}
-
-			input.textContent = '';
-		}, id, content);
-		await new Promise<void>(done => setTimeout(() => done(), 10));
-
-		for (let character of content) {
-			await this.page.keyboard.press(character as KeyInput);
-			await new Promise<void>(done => setTimeout(() => done(), 20));
-		}
-
-		await this.page.evaluate(id => window[id].blur(), id);
-
-		return await this.page.evaluate(id => window[id].placeholder, id);
-	}
-
 	async getElementsContent(ids: string[], valueSelectors: string[]): Promise<string[]> {
 		const elementsContent = await this.page.evaluate((ids, valueSelectors) => {
 			const elementsContent: string[] = [];

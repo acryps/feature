@@ -3,18 +3,13 @@ import { Project } from "../project";
 import { ExecutionResult } from "./result";
 import { BrowserManager } from "../browser/manager";
 import { Step } from "./step/step";
-import { Mouse } from "../mouse/mouse";
 import { Feature } from "../feature";
 import { ExecutionConfiguration } from "./configuration";
+import { PageInteractor } from "../page/interactor";
 import * as filesystem from 'fs';
-import { PageScraper } from "../page/scraper";
 
 export class Execution {
-	private configuration = {
-		guide: false,
-		screenshots: false,
-		video: false
-	};
+	private configuration = new ExecutionConfiguration(false, false, false);
 
 	private viewport: Viewport = {
 		width: 1280, 
@@ -61,13 +56,12 @@ export class Execution {
 
 		try {
 			if (this.configuration.guide || this.configuration.screenshots) {
-				const configuration = { guide: this.configuration.guide, screenshots: this.configuration.screenshots };
-				const scraper = await browserManager.getPageScraper(this.viewport);
-				const mouse = new Mouse(scraper, false);
+				const configuration = new ExecutionConfiguration(this.configuration.guide, this.configuration.screenshots, false);
+				const interactor = new PageInteractor(await browserManager.getPage(this.viewport), configuration);
 
-				await this.prepareExecution(scraper);
+				await this.executePrepareInstructions(interactor.page);
 
-				this.result.steps = await this.executeInstructions(scraper, mouse, configuration);
+				this.result.steps = await this.executeInstructions(interactor);
 			}
 
 			if (this.configuration.video) {
@@ -75,11 +69,12 @@ export class Execution {
 					throw new Error(`Cannot capture video without specified path`);
 				}
 
-				const configuration = { guide: false, screenshots: false };
-				const scraper = await browserManager.getPageScraper(this.viewport);
-				const mouse = new Mouse(scraper, true);
+				// only execute video
+				const configuration = new ExecutionConfiguration(false, false, true);
+				const interactor = new PageInteractor(await browserManager.getPage(this.viewport), configuration);
 
 				const pathParts = this.videoPath.split('/');
+
 				// remove the file extension
 				const name = pathParts.pop().split('.').slice(0, -1).join('.');	
 				const path = pathParts.join('/');
@@ -88,15 +83,15 @@ export class Execution {
 					filesystem.mkdirSync(path, {recursive: true});
 				}
 
-				await this.prepareExecution(scraper);
-				
-				const recorder: ScreenRecorder = await scraper.page.screencast({path: `${path}/${name}.webm`});
+				await this.executePrepareInstructions(interactor.page);
 
-				await this.executeInstructions(scraper, mouse, configuration);
+				const recorder: ScreenRecorder = await interactor.page.screencast({path: `${path}/${name}.webm`});
+
+				await this.executeInstructions(interactor);
 		
 				await recorder?.stop();
 		
-				this.result.motion = mouse.motion;
+				this.result.motion = interactor.mouse.motion;
 				this.result.videoSource = `${path}/${name}.webm`;
 			}
 		} catch (error) {
@@ -108,24 +103,26 @@ export class Execution {
 		return this.result;
 	}
 
-	async prepareExecution(page: PageScraper) {
-		const mouse = new Mouse(page, false);
+	async executePrepareInstructions(page: Page) {
+		// preparation only needs to execute the instructions, nothing else
+		const configuration = new ExecutionConfiguration(false, false, false);
+		const interactor = new PageInteractor(page, configuration)
 
 		try {
 			for (let prepareInstruction of this.feature.prepareInstructions) {
-				await prepareInstruction.execute(this.project, page, mouse, { guide: false, screenshots: false });
+				await prepareInstruction.execute(this.project, interactor);
 			}
 		} catch (error) {
 			throw new Error(`Failed to execute prepare instructions: ${error}`);
 		}
 	}
 
-	async executeInstructions(page: PageScraper, mouse, configuration: ExecutionConfiguration) {
+	async executeInstructions(interactor: PageInteractor) {
 		const steps: Step[] = [];
 
 		try {
 			for (let instruction of this.feature.instructions) {
-				steps.push(await instruction.execute(this.project, page, mouse, configuration));
+				steps.push(await instruction.execute(this.project, interactor));
 			}
 		} catch (error) {
 			throw new Error(`Failed to execute instructions: ${error}`);

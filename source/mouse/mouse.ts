@@ -1,5 +1,4 @@
-import { Page } from "puppeteer";
-import { PageParser } from "../page/parser";
+import { PageScraper } from "../page/scraper";
 import { MotionPoint } from "./point";
 
 export class Mouse {
@@ -17,7 +16,7 @@ export class Mouse {
 	private start: Date;
 
 	constructor(
-		private page: Page,
+		private scraper: PageScraper,
 		private recording: boolean
 	) {
 		this.x = 0;
@@ -32,10 +31,10 @@ export class Mouse {
 
 	async click(x: number, y: number) {
 		await this.hover(x, y);
-		await this.page.mouse.click(x, y);
+		await this.scraper.page.mouse.click(x, y);
 		
-		await this.page.waitForNetworkIdle();
-		await PageParser.waitForUpdates(this.page);
+		await this.scraper.page.waitForNetworkIdle();
+		await this.scraper.waitForUpdates();
 	}
 
 	async hover(x: number, y: number) {
@@ -45,7 +44,7 @@ export class Mouse {
 			await this.simulateCursorMovement(x, y);
 			await new Promise<void>(done => setTimeout(done, this.waitTimeout));
 		} else {
-			await this.page.mouse.move(x, y);
+			await this.scraper.page.mouse.move(x, y);
 		}
 
 		this.addMotionCoordinate();
@@ -68,7 +67,7 @@ export class Mouse {
 				this.x += stepSizeX;
 				this.y += stepSizeY;
 
-				await this.page.mouse.move(this.x, this.y);
+				await this.scraper.page.mouse.move(this.x, this.y);
 
 				done();
 			}, this.stepTimeout));
@@ -77,17 +76,17 @@ export class Mouse {
 		this.x = x;
 		this.y = y;
 
-		await this.page.mouse.move(this.x, this.y);
+		await this.scraper.page.mouse.move(this.x, this.y);
 	}
 
-	async scrollIntoView(page: Page, id: string) {
+	async scrollIntoView(id: string) {
 		const behavior: ScrollBehavior = this.recording ? 'smooth' : 'auto';
 
 		if (this.recording) {
 			await new Promise<void>(done => setTimeout(done, this.waitTimeout));
 		}
 
-		await page.evaluate((id, behavior) => {
+		await this.scraper.page.evaluate((id, behavior) => {
 			const element: HTMLElement = window[id];
 
 			element.scrollIntoView({
@@ -98,7 +97,7 @@ export class Mouse {
 		}, id, behavior);
 
 		if (this.recording) {
-			await PageParser.waitForUpdates(page);
+			await this.scraper.waitForUpdates();
 
 			await new Promise<void>(done => setTimeout(done, this.waitTimeout));
 		}

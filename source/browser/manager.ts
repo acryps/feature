@@ -35,7 +35,7 @@ export class BrowserManager {
 		this.rotationIndex = 0;
 	}
 
-	async getPageScraper(viewport: Viewport): Promise<PageScraper> {
+	async getPage(viewport: Viewport): Promise<Page> {
 		if (this.running()) {
 			const page = await this.browsers[this.rotationIndex].newPage();
 
@@ -47,7 +47,7 @@ export class BrowserManager {
 				this.rotationIndex++;
 			}
 
-			return new PageScraper(page);
+			return page;
 		} else {
 			throw new Error(`Attempted to gather page without launching the browser manager`);
 		}
