@@ -7,6 +7,7 @@ import { Mouse } from "../mouse/mouse";
 import { Feature } from "../feature";
 import { ExecutionConfiguration } from "./configuration";
 import * as filesystem from 'fs';
+import { PageScraper } from "../page/scraper";
 
 export class Execution {
 	private configuration = {
@@ -61,12 +62,12 @@ export class Execution {
 		try {
 			if (this.configuration.guide || this.configuration.screenshots) {
 				const configuration = { guide: this.configuration.guide, screenshots: this.configuration.screenshots };
-				const page = await browserManager.getPage(this.viewport);
-				const mouse = new Mouse(page, false);
+				const scraper = await browserManager.getPageScraper(this.viewport);
+				const mouse = new Mouse(scraper, false);
 
-				await this.prepareExecution(page);
+				await this.prepareExecution(scraper);
 
-				this.result.steps = await this.executeInstructions(page, mouse, configuration);
+				this.result.steps = await this.executeInstructions(scraper, mouse, configuration);
 			}
 
 			if (this.configuration.video) {
@@ -75,8 +76,8 @@ export class Execution {
 				}
 
 				const configuration = { guide: false, screenshots: false };
-				const page = await browserManager.getPage(this.viewport);
-				const mouse = new Mouse(page, true);
+				const scraper = await browserManager.getPageScraper(this.viewport);
+				const mouse = new Mouse(scraper, true);
 
 				const pathParts = this.videoPath.split('/');
 				// remove the file extension
@@ -87,11 +88,11 @@ export class Execution {
 					filesystem.mkdirSync(path, {recursive: true});
 				}
 
-				await this.prepareExecution(page);
+				await this.prepareExecution(scraper);
 				
-				const recorder: ScreenRecorder = await page.screencast({path: `${path}/${name}.webm`});
+				const recorder: ScreenRecorder = await scraper.page.screencast({path: `${path}/${name}.webm`});
 
-				await this.executeInstructions(page, mouse, configuration);
+				await this.executeInstructions(scraper, mouse, configuration);
 		
 				await recorder?.stop();
 		
@@ -107,7 +108,7 @@ export class Execution {
 		return this.result;
 	}
 
-	async prepareExecution(page: Page) {
+	async prepareExecution(page: PageScraper) {
 		const mouse = new Mouse(page, false);
 
 		try {
@@ -119,7 +120,7 @@ export class Execution {
 		}
 	}
 
-	async executeInstructions(page: Page, mouse, configuration: ExecutionConfiguration) {
+	async executeInstructions(page: PageScraper, mouse, configuration: ExecutionConfiguration) {
 		const steps: Step[] = [];
 
 		try {

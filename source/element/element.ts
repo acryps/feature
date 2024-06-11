@@ -1,7 +1,7 @@
 import { SingleElement } from "./single";
 import { MultipleElement } from "./multiple";
-import { Page } from "puppeteer";
 import { Project } from "../project";
+import { PageScraper } from "../page/scraper";
 
 export abstract class Element {
 	protected filter = (ids: string[]) => { return ids; };
@@ -40,19 +40,19 @@ export abstract class Element {
 		}
 	}
 
-	protected async findParentIds(page: Page, project: Project): Promise<string[]> {
+	protected async findParentIds(scraper: PageScraper, project: Project): Promise<string[]> {
 		this.validateParentAssignment();
 
 		let ids = [];
 
 		if (this.parent) {
-			ids = [await this.parent.find(page, project)];
+			ids = [await this.parent.find(scraper, project)];
 		}
 
 		if (this.parents) {
 			this.parents.prepareConstraintSelectors(project);
 
-			ids = await this.parents.find(page, project);
+			ids = await this.parents.find(scraper, project);
 		}
 
 		// apply element filter

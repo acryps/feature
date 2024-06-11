@@ -1,5 +1,6 @@
 import { cpus } from "os";
 import { Browser, launch, Permission, Page, Viewport } from "puppeteer";
+import { PageScraper } from "../page/scraper";
 
 export class BrowserManager {
 	private browsers: Browser[] = [];
@@ -34,7 +35,7 @@ export class BrowserManager {
 		this.rotationIndex = 0;
 	}
 
-	async getPage(viewport: Viewport) {
+	async getPageScraper(viewport: Viewport): Promise<PageScraper> {
 		if (this.running()) {
 			const page = await this.browsers[this.rotationIndex].newPage();
 
@@ -46,7 +47,7 @@ export class BrowserManager {
 				this.rotationIndex++;
 			}
 
-			return page;
+			return new PageScraper(page);
 		} else {
 			throw new Error(`Attempted to gather page without launching the browser manager`);
 		}

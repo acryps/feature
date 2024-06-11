@@ -1,10 +1,9 @@
-import { Page } from "puppeteer";
 import { ExecutionConfiguration } from "../../execution/configuration";
 import { Step } from "../../execution/step/step";
 import { Mouse } from "../../mouse/mouse";
 import { Project } from "../../project";
 import { Instruction } from "../instruction";
-import { PageParser } from "../../page/parser";
+import { PageScraper } from "../../page/scraper";
 import { SingleElement } from "../../element/single";
 
 export class WriteFromClipboardInstruction extends Instruction {
@@ -19,23 +18,23 @@ export class WriteFromClipboardInstruction extends Instruction {
 		super();
 	}
 
-	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
+	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		super.initializeExecution(configuration);
 
-		const id = await this.element.find(page, project);
+		const id = await this.element.find(scraper, project);
 
-		await mouse.scrollIntoView(page, id);
-		this.rectangle = await PageParser.getBoundingRectangle(page, id);
+		await mouse.scrollIntoView(id);
+		this.rectangle = await scraper.getBoundingRectangle(id);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await mouse.hover(center.x, center.y);
 
-		this.content = await PageParser.readFromClipboard(page);
-		this.fieldName = await PageParser.inputContent(page, id, this.content);
+		this.content = await scraper.readFromClipboard();
+		this.fieldName = await scraper.inputContent(id, this.content);
 
-		await PageParser.waitForUpdates(page);
+		await scraper.waitForUpdates();
 
-		await super.screenshot(project, page, [this.rectangle]);
+		await super.screenshot(project, scraper, [this.rectangle]);
 
 		const step = `write '${this.content}' from clipboard in '${this.fieldName}' field`;
 		this.guide.push(step);

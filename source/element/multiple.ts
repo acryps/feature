@@ -1,9 +1,8 @@
-import { Page } from "puppeteer";
 import { Feature } from "../feature";
 import { Project } from "../project";
 import { SearchConstraint } from "./constraint";
 import { Element } from './element';
-import { PageParser } from "../page/parser";
+import { PageScraper } from "../page/scraper";
 import { SingleElement } from "./single";
 import { ShowInstruction } from "../instruction/show";
 
@@ -26,12 +25,12 @@ export class MultipleElement extends Element {
 		this.searchConstraints = [];
 	}
 
-	async find(page: Page, project: Project): Promise<string[]> {
-		const ids = await super.findParentIds(page, project);
+	async find(scraper: PageScraper, project: Project): Promise<string[]> {
+		const ids = await super.findParentIds(scraper, project);
 
 		if (this.locator) {
 			const selector = project.generateSelector(this.locator);
-			this.ids = await PageParser.findAll(page, ids, selector, this.searchConstraints);
+			this.ids = await scraper.findAll(ids, selector, this.searchConstraints);
 		} else {
 			this.ids = ids;
 		}

@@ -3,11 +3,15 @@ import { Identifier } from "../shared/identifier";
 import { BrowserManager } from "../browser/manager";
 import { SearchConstraint } from "../element/constraint";
 
-export class PageParser {
-	private static readonly timeout = 30 * 1000;
+export class PageScraper {
+	private readonly timeout = 30 * 1000;
 
-	static async findAll(page: Page, parentIds: string[], selector: string, conditions: SearchConstraint[]): Promise<string[]> {
-		const ids = await page.evaluate((parentIds, selector, conditions) => {
+	constructor(
+		public readonly page: Page
+	) {}
+
+	async findAll(parentIds: string[], selector: string, conditions: SearchConstraint[]): Promise<string[]> {
+		const ids = await this.page.evaluate((parentIds, selector, conditions) => {
 			const generateId = () => {
 				let id = '';
 		
@@ -53,10 +57,10 @@ export class PageParser {
 		return ids;
 	}
 
-	static async find(page: Page, parentIds: string[], selector: string, elementContent?: string): Promise<string> {
+	async find(parentIds: string[], selector: string, elementContent?: string): Promise<string> {
 		const id = Identifier.get();
 
-		const response = await page.evaluate((parentIds, selector, elementContent, id) => {
+		const response = await this.page.evaluate((parentIds, selector, elementContent, id) => {
 			let elements: Element[] = [];
 			let assignedId: string = null;
 
@@ -87,8 +91,8 @@ export class PageParser {
 		return response.id;
 	}
 
-	static async getBoundingRectangle(page: Page, id: string): Promise<DOMRect> {
-		const rectangle = await page.evaluate((id) => {
+	async getBoundingRectangle(id: string): Promise<DOMRect> {
+		const rectangle = await this.page.evaluate((id) => {
 			const element = window[id];
 			const rectangle: DOMRect = element.getBoundingClientRect();
 
@@ -98,8 +102,8 @@ export class PageParser {
 		return JSON.parse(rectangle) as DOMRect;
 	}
 
-	static async getBoundingRectangles(page: Page, ids: string[]): Promise<DOMRect[]> {
-		const rectangles = await page.evaluate((ids) => {
+	async getBoundingRectangles(ids: string[]): Promise<DOMRect[]> {
+		const rectangles = await this.page.evaluate((ids) => {
 			const rectangles: string[] = [];
 
 			for (let id of ids) {
@@ -115,30 +119,30 @@ export class PageParser {
 		return rectangles.map(rectangle => JSON.parse(rectangle) as DOMRect);
 	}
 
-	static async getElementContent(page: Page, id: string): Promise<string> {
-		return await page.evaluate((id) => {
+	async getElementContent(id: string): Promise<string> {
+		return await this.page.evaluate((id) => {
 			const element: HTMLElement = window[id];
 
 			return element.textContent;
 		}, id);
 	}
 
-	static async inputContent(page: Page, id: string, content: string): Promise<string> {
-		await page.evaluate(id => window[id].focus(), id);
+	async inputContent(id: string, content: string): Promise<string> {
+		await this.page.evaluate(id => window[id].focus(), id);
 		await new Promise<void>(done => setTimeout(() => done(), 10));
 
 		for (let character of content) {
-			await page.keyboard.press(character as KeyInput);
+			await this.page.keyboard.press(character as KeyInput);
 			await new Promise<void>(done => setTimeout(() => done(), 20));
 		}
 
-		await page.evaluate(id => window[id].blur(), id);
+		await this.page.evaluate(id => window[id].blur(), id);
 
-		return await page.evaluate(id => window[id].placeholder, id);
+		return await this.page.evaluate(id => window[id].placeholder, id);
 	}
 
-	static async getElementsContent(page: Page, ids: string[], valueSelectors: string[]): Promise<string[]> {
-		const elementsContent = await page.evaluate((ids, valueSelectors) => {
+	async getElementsContent(ids: string[], valueSelectors: string[]): Promise<string[]> {
+		const elementsContent = await this.page.evaluate((ids, valueSelectors) => {
 			const elementsContent: string[] = [];
 
 			for (let id of ids) {
@@ -162,31 +166,31 @@ export class PageParser {
 		return elementsContent;
 	}
 
-	static async readFromClipboard(page: Page) {
-		await BrowserManager.overridePermissions(page, ['clipboard-read']);
+	async readFromClipboard() {
+		await BrowserManager.overridePermissions(this.page, ['clipboard-read']);
 
-		const content = await page.evaluate(async () => {
+		const content = await this.page.evaluate(async () => {
 			return await navigator.clipboard.readText();
 		});
 
 		return content;
 	}
 
-	static async copyToClipboard(page: Page, content: string) {
-		await BrowserManager.overridePermissions(page, ['clipboard-sanitized-write']);
+	async copyToClipboard(content: string) {
+		await BrowserManager.overridePermissions(this.page, ['clipboard-sanitized-write']);
 
-		await page.evaluate(async (content) => {
+		await this.page.evaluate(async (content) => {
 			await navigator.clipboard.writeText(content);
 		}, content);
 	}
 
-	static async waitWhile(page: Page, selector: string) {
+	async waitWhile(selector: string) {
 		await new Promise<void>((done, reject) => {
 			const timer = setTimeout(() => reject(), this.timeout);
 
 			setTimeout(() => {
 				const waiter = setInterval(async () => {
-					const present = await page.evaluate((selector) => {
+					const present = await this.page.evaluate((selector) => {
 						return !!document.querySelector(selector);
 					}, selector);
 					
@@ -200,11 +204,11 @@ export class PageParser {
 			}, 100);
 		});
 
-		await page.waitForNetworkIdle();
-		await this.waitForUpdates(page);
+		await this.page.waitForNetworkIdle();
+		await this.waitForUpdates();
 	}
 
-	static async waitForUpdates(page: Page) {
+	async waitForUpdates() {
 		await new Promise<void>((done, reject) => {
 			const timer = setTimeout(() => reject(), this.timeout);
 			
@@ -212,7 +216,7 @@ export class PageParser {
 				let content: string;
 				
 				const waiter = setInterval(async () => {
-					const updated = await page.evaluate(() => document.body.innerHTML);
+					const updated = await this.page.evaluate(() => document.body.innerHTML);
 					
 					if (updated == content) {
 						clearTimeout(timer);

@@ -1,10 +1,9 @@
-import { Page } from "puppeteer";
 import { Project } from "../project";
 import { Mouse } from "../mouse/mouse";
 import { Image } from "../execution/image/image";
 import { Step } from "../execution/step/step";
 import { ExecutionConfiguration } from "../execution/configuration";
-import { PageParser } from "../page/parser";
+import { PageScraper } from "../page/scraper";
 import { ImageAnnotation } from "../execution/image/annotation";
 
 export abstract class Instruction {
@@ -14,7 +13,7 @@ export abstract class Instruction {
 	private generateGuide: boolean;
 	private generateScreenshots: boolean;
 	
-	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
+	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		throw new Error("Method not implemented.");
 	}
 
@@ -37,17 +36,17 @@ export abstract class Instruction {
 		return result;
 	}
 
-	protected async screenshot(project: Project, page: Page, highlight: DOMRect[]) {
+	protected async screenshot(project: Project, scraper: PageScraper, highlight: DOMRect[]) {
 		if (this.generateScreenshots) {
-			const image = await page.screenshot();
+			const image = await scraper.page.screenshot();
 
 			const ignoredIds: string[] = [];
 
 			for (let ignoreSelector of project.ignoredSelectors) {
-				ignoredIds.push(...await PageParser.findAll(page, [], ignoreSelector, []));
+				ignoredIds.push(...await scraper.findAll([], ignoreSelector, []));
 			}
 			
-			const ignore = await PageParser.getBoundingRectangles(page, ignoredIds);
+			const ignore = await scraper.getBoundingRectangles(ignoredIds);
 			const annotation: ImageAnnotation = { highlight: highlight, ignore: ignore }
 	
 			this.screenshots.push({

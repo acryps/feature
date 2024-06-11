@@ -1,7 +1,7 @@
-import { Page, Viewport } from "puppeteer";
+import {  Viewport } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
-import { PageParser } from "../page/parser";
+import { PageScraper } from "../page/scraper";
 import { Mouse } from "../mouse/mouse";
 import { ExecutionConfiguration } from "../execution/configuration";
 import { SingleElement } from "../element/single";
@@ -19,27 +19,27 @@ export class ClickInstruction extends Instruction {
 		super();
 	}
 
-	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration) {
+	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration) {
 		super.initializeExecution(configuration);
 
-		const id = await this.element.find(page, project);
+		const id = await this.element.find(scraper, project);
 
 		if (this.element.elementContent) {
 			this.name = this.element.elementContent;
 		} else {
-			const content = await PageParser.getElementContent(page, id);
+			const content = await scraper.getElementContent(id);
 			this.name = content ? content : this.element.getLocator();
 		}
 
-		await mouse.scrollIntoView(page, id);
-		this.rectangle = await PageParser.getBoundingRectangle(page, id);
+		await mouse.scrollIntoView(id);
+		this.rectangle = await scraper.getBoundingRectangle(id);
 
 		if (this.rectangle) {
-			const viewport = await page.viewport();
+			const viewport = await scraper.page.viewport();
 			this.setPosition(this.rectangle, viewport);
 		}
 
-		await super.screenshot(project, page, [this.rectangle]);
+		await super.screenshot(project, scraper, [this.rectangle]);
 
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await mouse.click(center.x, center.y);

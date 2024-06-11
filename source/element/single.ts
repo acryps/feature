@@ -1,10 +1,9 @@
-import { Page } from "puppeteer";
 import { Feature } from "../feature";
 import { ClickInstruction } from "../instruction/click";
 import { Project } from "../project";
 import { MultipleElement } from "./multiple";
 import { Element } from "./element";
-import { PageParser } from "../page/parser";
+import { PageScraper } from "../page/scraper";
 import { HoverInstruction } from "../instruction/hover";
 import { ScrollToInstruction } from "../instruction/scroll";
 import { WriteInstruction } from "../instruction/write";
@@ -27,12 +26,12 @@ export class SingleElement extends Element {
 		super(locator, parent, parents, filter);
 	}
 
-	async find(page: Page, project: Project): Promise<string> {
-		const ids = await super.findParentIds(page, project);
+	async find(scraper: PageScraper, project: Project): Promise<string> {
+		const ids = await super.findParentIds(scraper, project);
 
 		if (this.locator) {
 			const selector = project.generateSelector(this.locator);
-			this.id = await PageParser.find(page, ids, selector, this.elementContent);
+			this.id = await scraper.find(ids, selector, this.elementContent);
 		} else {
 			if (ids.length > 1) {
 				throw new Error(`Found several items for single element`);

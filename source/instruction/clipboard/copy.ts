@@ -1,10 +1,9 @@
-import { Page } from "puppeteer";
 import { ExecutionConfiguration } from "../../execution/configuration";
 import { Step } from "../../execution/step/step";
 import { Mouse } from "../../mouse/mouse";
 import { Project } from "../../project";
 import { Instruction } from "../instruction";
-import { PageParser } from "../../page/parser";
+import { PageScraper } from "../../page/scraper";
 import { SingleElement } from "../../element/single";
 
 export class CopyToClipboardInstruction extends Instruction {
@@ -14,13 +13,13 @@ export class CopyToClipboardInstruction extends Instruction {
 		super();
 	}
 
-	async execute(project: Project, page: Page, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
+	async execute(project: Project, scraper: PageScraper, mouse: Mouse, configuration: ExecutionConfiguration): Promise<Step> {
 		super.initializeExecution(configuration);
 
-		const id = await this.element.find(page, project);
-		const content = await PageParser.getElementContent(page, id);
+		const id = await this.element.find(scraper, project);
+		const content = await scraper.getElementContent(id);
 
-		await PageParser.copyToClipboard(page, content);
+		await scraper.copyToClipboard(content);
 
 		const step = `copied '${content}' to clipboard`;
 		this.guide.push(step);
