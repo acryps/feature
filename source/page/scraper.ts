@@ -128,7 +128,16 @@ export class PageScraper {
 	}
 
 	async inputContent(id: string, content: string): Promise<string> {
-		await this.page.evaluate(id => window[id].focus(), id);
+		await this.page.evaluate((id, content) => {
+			const input: HTMLElement = window[id];
+			input.focus();
+
+			if (document.activeElement !== input) {
+				throw new Error(`Failed to focus on current element and thus cannot write '${content}' (use only input or editable elements!)`);
+			}
+
+			input.textContent = '';
+		}, id, content);
 		await new Promise<void>(done => setTimeout(() => done(), 10));
 
 		for (let character of content) {
