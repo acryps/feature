@@ -26,6 +26,16 @@ export class Project {
 		return [`${locatorPart}`, `ui-${locatorPart}`, `.ui-${locatorPart}`, `[ui-${locatorPart}]`, `.${locatorPart}`, `[${locatorPart}]`];
 	}
 
+	join(first: string, second: string) {
+		let separator = ' ';
+
+		if (second.at(0).includes('.') || second.at(0).includes('[')) {
+			separator = '';
+		}
+
+		return `${first}${separator}${second}`;
+	}
+
 	ignore(locator: string) {
 		if (locator) {
 			this.ignoredLocators.add(locator);
@@ -49,7 +59,7 @@ export class Project {
 				const remainingLocatorParts = [...locatorParts];
 				const nextLocatorPart = remainingLocatorParts.shift();
 
-				selectors.push(this.assembleSelector(nextLocatorPart, remainingLocatorParts, [selector, selectorVariation].filter(element => !!element).join(' ')));
+				selectors.push(this.assembleSelector(nextLocatorPart, remainingLocatorParts, this.join(selector, selectorVariation)));
 			}
 		} else {
 			return selector;
