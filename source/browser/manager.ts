@@ -2,19 +2,19 @@ import { cpus } from "os";
 import { Browser, launch, Permission, Page, Viewport } from "puppeteer";
 
 export class BrowserManager {
-	private static browsers: Browser[] = [];
-	private static rotationIndex = 0;
-	private static size = Math.ceil(Math.max(1, cpus().length) / 4);
+	private browsers: Browser[] = [];
+	private rotationIndex = 0;
+	private size = Math.ceil(Math.max(1, cpus().length) / 4);
 
-	static setSize(size: number) {
+	setSize(size: number) {
 		this.size = size;
 	}
 
-	static running(): boolean {
+	running(): boolean {
 		return this.browsers.length > 0;
 	}
 
-	static async launch(headless?: boolean) {
+	async launch(headless?: boolean): Promise<BrowserManager> {
 		if (headless === undefined) {
 			headless = true;
 		}
@@ -23,16 +23,18 @@ export class BrowserManager {
 			const browser = await launch({ headless: headless });
 			this.browsers.push(browser);
 		}
+
+		return this;
 	}
 
-	static async close() {
+	async close() {
 		await this.browsers.map(async browser => await browser.close());
 		
 		this.browsers = [];
 		this.rotationIndex = 0;
 	}
 
-	static async getPage(viewport: Viewport) {
+	async getPage(viewport: Viewport) {
 		if (this.running()) {
 			const page = await this.browsers[this.rotationIndex].newPage();
 

@@ -55,11 +55,13 @@ export class Execution {
 		return this;
 	}
 
-	async run(): Promise<ExecutionResult> {
+	async run(headless?: boolean): Promise<ExecutionResult> {
+		const browserManager = await new BrowserManager().launch(headless);
+
 		try {
 			if (this.configuration.guide || this.configuration.screenshots) {
 				const configuration = { guide: this.configuration.guide, screenshots: this.configuration.screenshots };
-				const page = await BrowserManager.getPage(this.viewport);
+				const page = await browserManager.getPage(this.viewport);
 				const mouse = new Mouse(page, false);
 
 				await this.prepareExecution(page);
@@ -73,11 +75,12 @@ export class Execution {
 				}
 
 				const configuration = { guide: false, screenshots: false };
-				const page = await BrowserManager.getPage(this.viewport);
+				const page = await browserManager.getPage(this.viewport);
 				const mouse = new Mouse(page, true);
 
 				const pathParts = this.videoPath.split('/');
-				const name = pathParts.pop().split('.').slice(0, -1).join('.');	// remove the extension
+				// remove the file extension
+				const name = pathParts.pop().split('.').slice(0, -1).join('.');	
 				const path = pathParts.join('/');
 
 				if (!filesystem.existsSync(path)) {
@@ -98,6 +101,8 @@ export class Execution {
 		} catch (error) {
 			throw new Error(`Failed to execute feature '${this.feature.name}': ${error}`);
 		}
+
+		await browserManager.close();
 
 		return this.result;
 	}

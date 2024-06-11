@@ -1,5 +1,4 @@
 import { KeyInput, Page } from "puppeteer";
-import { Mouse } from '../mouse/mouse';
 import { Identifier } from "../shared/identifier";
 import { BrowserManager } from "../browser/manager";
 import { SearchConstraint } from "../element/constraint";
