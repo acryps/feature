@@ -42,6 +42,8 @@ export class ClickInstruction extends Instruction {
 		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await interactor.mouse.click(center.x, center.y);
 
+		await super.screenshot(project, interactor.scraper, [this.rectangle]);
+
 		const step = `click '${this.name}' on the ${this.vertical} ${this.horizontal} at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
 		this.guide.push(step);
 
