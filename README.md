@@ -1,6 +1,6 @@
-## Features
+## Features - What and Why
 
-Define Your Own Web Application Features!
+Define your own web application features!
 
 Using Features, you can easily define and automatically execute custom features for your web application to generate guides, screenshots, and videos.
 
@@ -53,7 +53,7 @@ const result = await feature.execute(project)
 await result.save('./media/basic-usage');
 ```
 
-## Element Instructions
+## Elements
 
 In order to interact with a web application, we need to be able to tell Features which elements we want to interact with. To do this, we have `element` to handle single elements and `elements` to handle multiple elements. Both of those use 'locators' to search the element on the webpage. These locators describe the HTML tags of the elements.
 
@@ -118,3 +118,38 @@ feature.elements('panels panel')
 This is the basic usage of `element` and `elements`. However, the chaining of elements is unlimited, so you can do much more!
 
 Please refer to the class documentation for detailed descriptions of the functions available for [Feature](./documentation/feature.md), [SingleElement](./documentation/single.md), [MultipleElement](./documentation/multiple.md) and [Select](./documentation/select.md).
+
+## Execution and Result
+
+After having defined your own feature, it's time to execute it!
+
+A feature can be executed using `execute`, a `project`, and a `viewport`.
+
+```typescript
+const project = new Project('example-project', 'https://example.com');
+const viewport = { width: 1280, height: 720, deviceScaleFactor: 1 };
+
+const execution = feature.execute(project, viewport);
+```
+
+This returns an instance of `Execution`. Using an execution, we can specify how we want to execute the feature. By adding `guide`, `screenshot`, or `video`, we can specify if we want to generate a guide, screenshots, or video.
+We can additionally tell the execution to **not** run in `headless` mode, meaning you will be able to see the browser executing the feature. This can be done by simply adding a boolean value to the run function: `.run(false)`.
+
+```typescript
+// generate guide, screenshot, and video
+const result = await execution
+	.guide()
+	.screenshot()
+	.video('./media/video.webm')
+	.run();    // running headless
+```
+
+Finally, you can save your result using the `ExecutionResult`.
+
+```typescript
+await result.save('./media/example');
+```
+
+## Further Documentation
+
+For more detailed documentation and extended usage, see [here](./documentation/).
