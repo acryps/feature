@@ -13,9 +13,9 @@ export class WaitWhileInstruction extends Instruction {
 	async execute(project: Project, interactor: PageInteractor): Promise<Step> {
 		super.initializeExecution(interactor.configuration);
 
-		const selector = project.generateSelector(this.locator);
-
 		await super.screenshot(project, interactor.scraper, []);
+		
+		const selector = project.generateSelector(this.locator);
 
 		await interactor.scraper.waitWhile(selector);
 

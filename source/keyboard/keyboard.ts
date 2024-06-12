@@ -18,6 +18,7 @@ export class Keyboard {
 				throw new Error(`Failed to focus on current element and thus cannot write '${content}' (use only input or editable elements!)`);
 			}
 
+			// remove previous content
 			input.textContent = '';
 		}, id, content);
 
@@ -29,6 +30,7 @@ export class Keyboard {
 			await this.page.keyboard.press(character as KeyInput);
 
 			if (this.recording) {
+				// simulate typing of characters
 				await new Promise<void>(done => setTimeout(() => done(), this.keyStrokeTimeout));
 			}
 		}

@@ -79,8 +79,8 @@ export class SingleElement extends Element {
 		return this.feature;
 	}
 
-	show(valueTags: string[]): Feature {
-		this.feature.addInstruction(new ShowInstruction(this, valueTags));
+	show(locators: string[]): Feature {
+		this.feature.addInstruction(new ShowInstruction(this, locators));
 
 		return this.feature;
 	}
