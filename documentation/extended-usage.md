@@ -77,7 +77,7 @@ project.join = (first: string, second: string) => {
 
 Features can additionally be used to **find bugs or unwanted UI changes across different project versions**. To do this, the screenshots of features across different project versions can be visually compared to find differences.
 
-To do this, you need two saved execution results of the same feature for two different project versions. (See how to save execution results [here](#execution-and-result).)
+To do this, you need two saved execution results of the same feature for two different project versions. (See how to save execution results [here](../README.md#execution-and-result).)
 
 You need to load the two results and then compare the images.
 
