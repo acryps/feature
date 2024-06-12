@@ -27,7 +27,7 @@ Features uses **method chaining** in order **to define the instructions of the f
 const project = new Project('assembly', 'https://assembly.acryps.com');
 
 // define your own feature
-const feature = new Feature('basic usage', 'demonstrate basic usage of feature');
+const feature = new Feature('basic usage', 'demonstrate basic usage of feature')
 	// navigate to website
 	.go(`https://assembly.acryps.com/`)
 
@@ -90,14 +90,14 @@ We can select the title like this:
 ```typescript
 feature.element('title name')
 	// and then interact with it
-	.click()
+	.click();
 ```
 
 We can interact with multiple elements, such as the `panels`:
 
 ```typescript
 // now we selected all the 'panel' elements
-feature.elements('panels panel')
+feature.elements('panels panel');
 ```
 
 To interact with a single panel, we have to filter them. This can be done in various ways:
@@ -106,19 +106,19 @@ To interact with a single panel, we have to filter them. This can be done in var
 // select the first panel
 feature.elements('panels panel').first()
 	// then click on the selected element
-	.click()
+	.click();
 
 // get the element at index 1 (the second element)
 feature.elements('panels panel').at(1)
 	// then hover on it
-	.hover()
+	.hover();
 
 // filter according to where conditions
 feature.elements('panels panel')
 	// select the panel which has an element 'name' with content 'panel 1'
 	.where('name', 'panel 1')
 	.first()
-		.click()
+		.click();
 ```
 
 This is the basic usage of `element` and `elements`. However, the chaining of elements is unlimited, so you can do much more!
