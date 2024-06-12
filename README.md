@@ -1,159 +1,120 @@
-## Define and execute features
+## Features
 
-### Examples:
+Define Your Own Web Application Features!
 
-``` typescript
-// start browser manager in headless mode
-await BrowserManager.launch(true);
+Using Features, you can easily define and automatically execute custom features for your web application to generate guides, screenshots, and videos.
 
-// creating feature project
+**Why would I want to define all these features to generate guides, screenshots, or videos?** Imagine you have finished the first version of your web application and created complete video guides for its functionalities. After a couple of weeks, the web application is redesigned. Now the videos are outdated, and you have to tediously recreate the video guides again by hand. Not with Features! With Features, you can simply re-execute the features, and the video guides are regenerated for the updated web application within seconds.
+
+## Requirements
+
+To use Features, you need to install [ffmpeg](https://ffmpeg.org/).
+
+## Usage
+
+The following shows an example where a product is configured. 
+
+Features uses **method chaining** in order **to define the instructions of the feature**. Each instruction can simply be chained after the previous one.
+
+```typescript
+// define your project
 const project = new Project('assembly', 'https://assembly.acryps.com');
 
-// add elements which are ignored
-project.ignore('activity-indicator');
-project.ignore('assembly date');
+// define your own feature
+const feature = new Feature('basic usage', 'demonstrate basic usage of feature');
+	// navigate to website
+	.go(`https://assembly.acryps.com/`)
 
-// override default selector wrapper
-project.wrap = (selector: string) => {
-	if (selector == '!') {
-		return ['ui-dialog'];
-	}
+	// find html element 'action' which has content 'Action' and click it
+	.element('action', 'Create').click()
 
-	return [`${selector}`, `ui-${selector}`, `.ui-${selector}`, `[ui-${selector}]`, `.${selector}`, `[${selector}]`];
-}
+	// wait while html element 'indicator' is present
+	.waitWhile('indicator')
 
-const feature1 = new Feature('Example 1', 'Create product');
-feature1.go(`https://assembly.acryps.com/`)
-	// create a product and configure
-	.element('product detail create').click()
-	.element('slot header name', 'Body').click()
-	.element('options option name', 'Ductile Iron 5.3103').click()
+	// find html element 'Body Type' and click it
+	.element('name', 'Body Type').click()
 
-	// save product
-	.element('configurator actions save').click()
+	.element('name', 'Wafer').click()
 
-	// enter product configuration
-	.element('! input').write('My Configuration 1')
-	.element('! actions save').click()
+	.element('action', 'Save As...').click()
 
-	// navigate to home
-	.element('navigation page-links href', 'home').click()
+	// find html input element 'save-assembly input' and write 'My Configuration' into input field
+	.element('save-assembly input').write('My Configuration')
+	.element('action', 'Add to my Assemblies').click();
 
-const feature2 = new Feature('Example 2', 'Modify product');
-feature2.go(`https://assembly.acryps.com/`)
-	// import product using product code
-	.element('importer input').write('ecM1B000032DU???X?5????F010??')
-	.element('importer action', 'Import').click()
-	.waitWhile('activity-indicator')	// wait while loading
+// execute the feature for a project
+const result = await feature.execute(project)
+	.guide()								// generate a guide
+	.screenshot()							// generate screenshots for each step
+	.video('./basic-usage/video.webm')		// generate video
+	.run();
 
-	// change the configuration
-	.element('slot header name', 'Size').click()
-	.element('options option name', 'DN 25').click()
-
-	// save product
-	.element('configurator actions save').click()
-	.element('! input').write('Modified configuration')
-	.element('! actions save').click()
-
-	.element('navigation page-links href', 'home').click()
-	.elements('saved-assemblies-section assembly').show(['name', 'product-code'])
-
-const feature3 = new Feature('Example 3', 'Copy product code and load')
-feature3.go('https://assembly.acryps.com/configure/yckiuj/0')
-	// copy product code 
-	// .element('product-code action', 'Copy').click()
-	.element('product-code code').copyToClipboard()	// alternate version
-
-	.element('navigation page-links href', 'home').click()
-
-	// load it a second time and use waitWhile
-	.element('importer input').writeFromClipboard()
-	.element('importer action', 'Import').click()
-	.waitWhile('activity-indicator')
-
-	// navigate home
-	.element('navigation page-links href', 'home').click()
-
-	// load it a third time and use waitFor
-	.element('importer input').writeFromClipboard()
-	.element('importer action', 'Import').click()
-	.waitFor('slot header name')
-
-// execute the features
-const steps1 = await feature1.execute(project, { width: 1280, height: 720 }, { guide: true, screenshots: true });
-const result1 = feature1.getExecutionResult();
-await result1.save('example1');
-
-const steps2 = await feature2.execute(project, { width: 1280, height: 720 }, { guide: true, screenshots: false });
-const result2 = feature2.getExecutionResult();
-await result2.save('example2');
-
-const steps3 = await feature3.execute(project, { width: 1280, height: 720 }, { guide: true, screenshots: true });
-const videoResult = await feature3.generateVideo(project, { width: 1280, height: 720 });
-const result3 = feature3.getExecutionResult();
-await result3.save('example3');
-
-await BrowserManager.close();
+// save result
+await result.save('./media/basic-usage');
 ```
 
-```typescript 
-await BrowserManager.launch(false);
+## Element Instructions
 
-const project = new Project('ringbaker', 'https://ringbaker.com');
+In order to interact with a web application, we need to be able to tell Features which elements we want to interact with. To do this, we have `element` to handle single elements and `elements` to handle multiple elements. Both of those use 'locators' to search the element on the webpage. These locators describe the HTML tags of the elements.
 
-// add elements which are ignored
-project.ignore('badge');
+For example, if we have the following webpage:
 
-const feature = new Feature('create a product', 'create a basic product');
+```html
+<html>
+	<body>
+		<title>
+			<name>Title</name>
+		</title>
 
-feature.go('https://ringbaker.com')
-	.element('banner button', `Let's go`).click()
+		<panels>
+			<panel>
+				<name>panel 1</name>
+			</panel>
 
-	.elements('pack-container pack').get(1).click()
-
-	.element('add-modifier').click()
-
-	// select several elements
-	.elements('group')
-		// add conditions to the element-selection
-		.where('title', 'Surface')
-		// filter the selected elements
-		.first()
-			// add further selections on the current element
-			.elements('modifier')
-				// filter
-				.get(1)
-					// finally: interact with the selected element
-					.click()
-	
-	.elements('preset').get(2).click()
-
-	.element('toolbar button', 'Apply').click()
-
-	.element('add-modifier').click()
-
-	.elements('group').where('title', 'Bevel').first()
-		.elements('modifier').get(1).click()
-
-	.elements('preset').get(1).click()
-
-	.element('toolbar button', 'Apply').click()
-
-	.element('toolbar button', 'Continue').click()
-
-	.elements('material').last().click()
-
-	.element('toolbar button', 'Continue').click()
-
-	.element('toolbar button', 'Add Ring To Cart').click()
-
-	.waitWhile('spinner')
-
-await feature.execute(project, { width: 1280, height: 720 }, { guide: true, screenshots: true });
-await feature.generateVideo(project, { width: 1280, height: 720 });
-
-const result = feature.getExecutionResult();
-await result.save('ring1');
-
-await BrowserManager.close();
+			<panel>
+				<name>panel 2</name>
+			</panel>
+		</panels>
+	</body>
+</html>
 ```
+
+We can select the title like this:
+
+```typescript
+feature.element('title name')
+	// and then interact with it
+	.click()
+```
+
+We can interact with multiple elements, such as the `panels`:
+
+```typescript
+// now we selected all the 'panel' elements
+feature.elements('panels panel')
+```
+
+To interact with a single panel, we have to filter them. This can be done in various ways:
+
+```typescript
+// select the first panel
+feature.elements('panels panel').first()
+	// then click on the selected element
+	.click()
+
+// get the element at index 1 (the second element)
+feature.elements('panels panel').at(1)
+	// then hover on it
+	.hover()
+
+// filter according to where conditions
+feature.elements('panels panel')
+	// select the panel which has an element 'name' with content 'panel 1'
+	.where('name', 'panel 1')
+	.first()
+		.click()
+```
+
+This is the basic usage of `element` and `elements`. However, the chaining of elements is unlimited, so you can do much more!
+
+Please refer to the class documentation for detailed descriptions of the functions available for [Feature](./documentation/feature.md), [SingleElement](./documentation/single.md), [MultipleElement](./documentation/multiple.md) and [Select](./documentation/select.md).
