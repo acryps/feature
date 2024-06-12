@@ -1,10 +1,16 @@
-## Features - What and Why
+## Features - Define your own web application features!
 
-Define your own web application features!
+**What is a feature and what can I do with it?**
 
-Using Features, you can easily define and automatically execute custom features for your web application to generate guides, screenshots, and videos.
+Usually, your application consists of several different functionalities. This could be, for example, that a user can configure a product on a web configurator or that a user is able to search for a specific product using a search prompt, and so on. Now, using Features, you can define those functionalities in code. You can define them step-by-step for your web applications.
 
-**Why would I want to define all these features to generate guides, screenshots, or videos?** Imagine you have finished the first version of your web application and created complete video guides for its functionalities. After a couple of weeks, the web application is redesigned. Now the videos are outdated, and you have to tediously recreate the video guides again by hand. Not with Features! With Features, you can simply re-execute the features, and the video guides are regenerated for the updated web application within seconds.
+Using those defined features, you can **automatically generate guides, screenshots, and videos!** Thus, no more tedious work by hand!
+
+**Why would I want to do that?**
+
+Imagine you have finished the first version of your web application and created complete video guides for its functionalities. After a couple of weeks, the web application is redesigned. Now the videos are outdated, and you have to tediously recreate the video guides again by hand. Not with Features! With Features, you can **simply re-execute the features**, and the video guides are regenerated for the updated web application within seconds.
+
+Additionally, features can be used to **find bugs and unwanted UI changes across project versions**. By comparing the screenshots of features across different versions, you will see unwanted changes within seconds!
 
 ## Requirements
 
