@@ -44,9 +44,9 @@ const feature = new Feature('basic usage', 'demonstrate basic usage of feature')
 
 // execute the feature for a project
 const result = await feature.execute(project)
-	.guide()								// generate a guide
-	.screenshot()							// generate screenshots for each step
-	.video('./basic-usage/video.webm')		// generate video
+	.guide() // generate a guide
+	.screenshot() // generate screenshots for each step
+	.video('./basic-usage/video.webm') // generate video
 	.run();
 
 // save result
