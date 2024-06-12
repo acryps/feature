@@ -5,12 +5,6 @@ import { SingleElement } from "../element/single";
 import { PageInteractor } from "../page/interactor";
 
 export class ClickInstruction extends Instruction {
-	private name: string;
-	private rectangle?: DOMRect;
-
-	private horizontal: string;
-	private vertical: string;
-
 	constructor(
 		private element: SingleElement
 	) {
@@ -21,46 +15,64 @@ export class ClickInstruction extends Instruction {
 		super.initializeExecution(interactor.configuration);
 
 		const id = await this.element.find(interactor.scraper, project);
+		let name =  this.element.getLocator();
 
 		if (this.element.elementContent) {
-			this.name = this.element.elementContent;
+			name = this.element.elementContent;
 		} else {
 			const content = await interactor.scraper.getElementContent(id);
-			this.name = content ? content : this.element.getLocator();
+			name = content ? content : name;
 		}
 
 		await interactor.mouse.scrollIntoView(id);
-		this.rectangle = await interactor.scraper.getBoundingRectangle(id);
 
-		if (this.rectangle) {
-			const viewport = await interactor.scraper.page.viewport();
-			this.setPosition(this.rectangle, viewport);
-		}
+		const rectangle = await interactor.scraper.getBoundingRectangle(id);
+		const center = { x: rectangle.x + (rectangle.width / 2), y: rectangle.y + (rectangle.height / 2) };
+		const viewport = await interactor.scraper.page.viewport();
+		const position = this.getPosition(rectangle, viewport);
 
-		await super.screenshot(project, interactor.scraper, [this.rectangle]);
+		await super.screenshot(project, interactor.scraper, [rectangle]);
 
-		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
 		await interactor.mouse.click(center.x, center.y);
 
-		await super.screenshot(project, interactor.scraper, [this.rectangle]);
+		await super.screenshot(project, interactor.scraper, [rectangle]);
 
-		const step = `click '${this.name}' on the ${this.vertical} ${this.horizontal} at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
+		const step = `click '${name}' on the ${position}`;
 		this.guide.push(step);
 
 		return super.finishExecution();
 	}
 
-	private setPosition(rectangle: DOMRect, viewport: Viewport) {
-		if (rectangle.x > viewport.width / 2) {
-			this.horizontal = 'right';
+	private getPosition(rectangle: DOMRect, viewport: Viewport): string {
+		let position = '';
+
+		const sections = 3;
+		const sectionWidth = viewport.width / sections;
+		const sectionHeight = viewport.height / sections;
+
+		if (rectangle.y > sectionHeight * 2) {
+			position += `lower `;
+		} else if (sectionHeight < rectangle.y && rectangle.y < sectionHeight * 2) {
+			position += `middle `;
 		} else {
-			this.horizontal = 'left';
+			position += `upper `;
 		}
 
-		if (rectangle.y > viewport.height / 2) {
-			this.vertical = 'lower';
+		if (rectangle.x > sectionWidth * 2) {
+			position += `right`;
+		} else if (sectionWidth < rectangle.x && rectangle.x < sectionWidth * 2) {
+			position += `middle`;
 		} else {
-			this.vertical = 'upper';
+			position += `left`;
 		}
+
+		if (
+			sectionWidth < rectangle.x && rectangle.x < sectionWidth * 2 &&
+			sectionHeight < rectangle.y && rectangle.y < sectionHeight * 2
+		) {
+			position = 'middle';
+		}
+
+		return position;
 	}
 }
