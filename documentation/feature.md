@@ -8,7 +8,7 @@ Selects an HTML element according to the specified locator and element content.
 	- `locator`: The locator specifying the HTML element.
 	- `elementContent` (optional): Specifies the text content of the element.
 
-**Examples**
+**Example**
 ```typescript
 feature.element('title name');
 
@@ -79,6 +79,7 @@ Adds a feature which is prepared to the current feature. These features are exec
 - **Parameters:**
 	- `feature`: The feature which is prepared before the current feature.
 
+**Example**
 ```typescript
 const prepareFeature = new Feature('prepare-feature', 'example prepare feature')
 	.element('button', 'Submit').click();
