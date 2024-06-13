@@ -5,9 +5,6 @@ import { SingleElement } from "../element/single";
 import { PageInteractor } from "../page/interactor";
 
 export class HoverInstruction extends Instruction {
-	private name: string;
-	private rectangle?: DOMRect;
-
 	constructor(
 		private element: SingleElement
 	) {
@@ -18,23 +15,25 @@ export class HoverInstruction extends Instruction {
 		super.initializeExecution(interactor.configuration);
 
 		const id = await this.element.find(interactor.scraper, project);
-
-		await interactor.mouse.scrollIntoView(id);
-		this.rectangle = await interactor.scraper.getBoundingRectangle(id);
-
+		let name = this.element.getLocator();
+		
 		if (this.element.elementContent) {
-			this.name = this.element.elementContent;
+			name = this.element.elementContent;
 		} else {
 			const content = await interactor.scraper.getElementContent(id);
-			this.name = content ? content : this.element.getLocator();
+			name = content ? content : name;
 		}
+		
+		await interactor.mouse.scrollIntoView(id);
 
-		const center = { x: this.rectangle.x + (this.rectangle.width / 2), y: this.rectangle.y + (this.rectangle.height / 2) };
+		const rectangle = await interactor.scraper.getBoundingRectangle(id);
+		const center = { x: rectangle.x + (rectangle.width / 2), y: rectangle.y + (rectangle.height / 2) };
+
 		await interactor.mouse.hover(center.x, center.y);
 
-		await super.screenshot(project, interactor.scraper, [this.rectangle]);
+		await super.screenshot(project, interactor.scraper, [rectangle]);
 
-		const step = `hovering on '${this.name}' at (${center.x.toFixed(1)}, ${center.y.toFixed(1)})`;
+		const step = `hovering on '${name}'`;
 		this.guide.push(step);
 
 		return super.finishExecution();
