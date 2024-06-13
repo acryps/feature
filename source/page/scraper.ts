@@ -1,4 +1,4 @@
-import { KeyInput, Page } from "puppeteer";
+import { Page } from "puppeteer";
 import { Identifier } from "../shared/identifier";
 import { BrowserManager } from "../browser/manager";
 import { SearchConstraint } from "../element/constraint";
@@ -89,6 +89,37 @@ export class PageScraper {
 		}
 
 		return response.id;
+	}
+
+	async getClickableBoundingRectangle(id: string) {
+		const client = await this.page.target().createCDPSession();
+		const response = await client.send('Runtime.evaluate', { expression: `window['${id}']` });
+		let current = response.result;
+
+		while (current?.className != 'HTMLDocument') {
+			const event = await client.send('DOMDebugger.getEventListeners', { objectId: current?.objectId });
+
+			for (let listener of event?.listeners ?? []) {
+				if (listener.type = 'click') {
+					const response = await client.send('Runtime.callFunctionOn', {
+						functionDeclaration: `function() { 
+							return JSON.stringify(this.getBoundingClientRect()); 
+						}`,
+						objectId: current?.objectId
+					});
+		
+					return JSON.parse(response.result.value) as DOMRect;
+				}
+			}
+
+			const response = await client.send('Runtime.callFunctionOn', {
+				functionDeclaration: 'function() { return this.parentNode; }',
+				objectId: current?.objectId,
+				returnByValue: false 
+			});
+
+			current = response.result;
+		}
 	}
 
 	async getBoundingRectangle(id: string): Promise<DOMRect> {

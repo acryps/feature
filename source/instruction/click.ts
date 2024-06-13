@@ -26,7 +26,8 @@ export class ClickInstruction extends Instruction {
 
 		await interactor.mouse.scrollIntoView(id);
 
-		const rectangle = await interactor.scraper.getBoundingRectangle(id);
+		const clickableRectangle = await interactor.scraper.getClickableBoundingRectangle(id);
+		const rectangle = clickableRectangle ? clickableRectangle : await interactor.scraper.getBoundingRectangle(id);
 		const center = { x: rectangle.x + (rectangle.width / 2), y: rectangle.y + (rectangle.height / 2) };
 		const viewport = await interactor.scraper.page.viewport();
 		const position = this.getPosition(rectangle, viewport);
