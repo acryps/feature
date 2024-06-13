@@ -15,7 +15,7 @@ export class Keyboard {
 			input.focus();
 
 			if (document.activeElement !== input) {
-				throw new Error(`Failed to focus on current element and thus cannot write '${content}' (use only input or editable elements!)`);
+				throw new Error(`Failed to focus on current element and thus cannot write '${content}' (use only input or editable elements)`);
 			}
 
 			// remove previous content

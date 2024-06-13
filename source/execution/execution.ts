@@ -66,7 +66,7 @@ export class Execution {
 
 			if (this.configuration.video) {
 				if (!this.videoPath) {
-					throw new Error(`Cannot capture video without specified path`);
+					throw new Error(`Cannot capture video without a specified path`);
 				}
 
 				// only execute video
@@ -95,7 +95,7 @@ export class Execution {
 				this.result.videoSource = `${path}/${name}.webm`;
 			}
 		} catch (error) {
-			throw new Error(`Failed to execute feature '${this.feature.name}': ${error}`);
+			throw new Error(`Failed to execute feature '${this.feature.name}': ${error.message}`);
 		}
 
 		await browserManager.close();
@@ -108,24 +108,24 @@ export class Execution {
 		const configuration = new ExecutionConfiguration(false, false, false);
 		const interactor = new PageInteractor(page, configuration)
 
-		try {
-			for (let prepareInstruction of this.feature.prepareInstructions) {
+		for (let [index, prepareInstruction] of this.feature.prepareInstructions.entries()) {
+			try {
 				await prepareInstruction.execute(this.project, interactor);
+			} catch (error) {
+				throw new Error(`Failed to execute the ${index + 1}. prepare feature '${prepareInstruction.feature.name}': ${error.message}`);
 			}
-		} catch (error) {
-			throw new Error(`Failed to execute prepare instructions: ${error}`);
 		}
 	}
 
 	async executeInstructions(interactor: PageInteractor) {
 		const steps: Step[] = [];
 
-		try {
-			for (let instruction of this.feature.instructions) {
+		for (let [index, instruction] of this.feature.instructions.entries()) {
+			try {
 				steps.push(await instruction.execute(this.project, interactor));
+			} catch (error) {
+				throw new Error(`Failed to execute the ${index + 1}. step (${instruction.constructor.name}): ${error.message}`);
 			}
-		} catch (error) {
-			throw new Error(`Failed to execute instructions: ${error}`);
 		}
 
 		return steps;

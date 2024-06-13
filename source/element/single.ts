@@ -34,14 +34,17 @@ export class SingleElement extends Element {
 			this.id = await scraper.find(ids, selector, this.elementContent);
 		} else {
 			if (ids.length > 1) {
-				throw new Error(`Found several items for single element`);
-			} else {
+				throw new Error(`Found several items for a single element`);
+			} else if(ids.length == 0) {
+				throw new Error(`Element not found. The parent selector did not return any elements`);
+			}
+			else {
 				this.id = ids.at(0);
 			}
 		}
 
 		if (!this.id) {
-			throw new Error(`Found no element`);
+			throw new Error(`Element not found`);
 		}
 
 		return this.id;

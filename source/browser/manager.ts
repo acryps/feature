@@ -49,7 +49,7 @@ export class BrowserManager {
 
 			return page;
 		} else {
-			throw new Error(`Attempted to gather page without launching the browser manager`);
+			throw new Error(`Attempted to gather a page without launching the browser manager`);
 		}
 	}
 

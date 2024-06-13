@@ -7,7 +7,7 @@ import { PageInteractor } from "../page/interactor";
 
 export class PrepareInstruction extends Instruction {
 	constructor(
-		private feature: Feature
+		public feature: Feature
 	) {
 		super();
 	}

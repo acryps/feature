@@ -85,7 +85,7 @@ export class PageScraper {
 		}, parentIds, selector, elementContent, id);
 
 		if (response.elements > 1) {
-			throw new Error(`Found several elements for single element with selector '${selector.split(',').at(0)}, ...' (Use .elements() to handle multiple elements)`);
+			throw new Error(`Found several elements for a single element with selector '${selector.split(',').at(0)}, ...' (use .elements() to handle multiple elements)`);
 		}
 
 		return response.id;
