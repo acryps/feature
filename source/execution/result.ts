@@ -13,8 +13,7 @@ export class ExecutionResult {
 	private readonly stepsFolderName = 'steps';
 
 	private readonly fileExtension = {
-		image: '.png',
-		video: '.webm'
+		image: '.png'
 	};
 
 	constructor(
@@ -26,15 +25,10 @@ export class ExecutionResult {
 	load(path: string): ExecutionResult {
 		try {
 			this.steps = [];
-			const videoSource = `${path}/${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
 			const metadataSource = `${path}/${this.metadataFileName}`;
 
 			if (!filesystem.existsSync(path)) {
 				throw new Error(`Feature does not exist at '${path}'`);
-			}
-
-			if (filesystem.existsSync(videoSource)) {
-				this.videoSource = videoSource;
 			}
 
 			if (filesystem.existsSync(metadataSource)) {
@@ -84,14 +78,7 @@ export class ExecutionResult {
 			if (!filesystem.existsSync(`${path}/`)) {
 				filesystem.mkdirSync(`${path}/`, { recursive: true });
 			}
-			
-			if (this.videoSource) {
-				const videoName = `${process.env.MEDIA_VIDEO_NAME}${this.fileExtension.video}`;
 
-				await filesystem.renameSync(this.videoSource, `${path}/${videoName}`);
-				this.videoSource = `${path}/${videoName}`;
-			}
-	
 			const metadata: FeatureMetadata = new FeatureMetadata();
 			metadata.motion = this.motion;
 

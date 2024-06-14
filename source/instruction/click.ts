@@ -1,4 +1,4 @@
-import {  Viewport } from "puppeteer";
+import { Viewport } from "puppeteer";
 import { Project } from "../project";
 import { Instruction } from "./instruction";
 import { SingleElement } from "../element/single";
