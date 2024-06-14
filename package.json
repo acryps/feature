@@ -1,5 +1,5 @@
 {
-	"name": "@acryps/features",
+	"name": "@acryps/feature",
 	"version": "0.0.1",
 	"main": "built/index.js",
 	"typings": "built/index.d.ts",
