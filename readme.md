@@ -2,15 +2,22 @@
 
 **What is a feature and what can I do with it?**
 
-Usually, your application consists of several different functionalities. This could be, for example, that a user can configure a product on a web configurator or that a user is able to search for a specific product using a search prompt, and so on. Now, using Features, you can define those functionalities in code. You can define them step-by-step for your web applications.
+Usually, your application consists of several different functionalities. 
+This could be, for example, that a user can configure a product on a web configurator or that a user is able to search for a specific product using a search prompt, and so on. 
+Now, using Features, you can define those functionalities in code. 
+You can define them step-by-step for your web applications.
 
-Using those defined features, you can **automatically generate guides, screenshots, and videos!** Thus, no more tedious work by hand!
+Using those defined features, you can **automatically generate guides, screenshots, and videos!**.
+Thus, no more tedious work by hand!
 
 **Why would I want to do that?**
 
-Imagine you have finished the first version of your web application and created complete video guides for its functionalities. After a couple of weeks, the web application is redesigned. Now the videos are outdated, and you have to tediously recreate the video guides again by hand. Not with Features! With Features, you can **simply re-execute the features**, and the video guides are regenerated for the updated web application within seconds.
+Imagine you have finished the first version of your web application and created complete video guides for its functionalities. 
+After a couple of weeks, the web application is redesigned. Now the videos are outdated, and you have to tediously recreate the video guides again by hand. Not with Features! 
+With Features, you can **simply re-execute the features**, and the video guides are regenerated for the updated web application within seconds.
 
-Additionally, features can be used to **find bugs and unwanted UI changes across project versions**. By comparing the screenshots of features across different versions, you will see unwanted changes within seconds!
+Additionally, features can be used to **find bugs and unwanted UI changes across project versions**. 
+By comparing the screenshots of features across different versions, you will see unwanted changes within seconds!
 
 ## Requirements
 
@@ -20,7 +27,8 @@ To use Features, you need to install [ffmpeg](https://ffmpeg.org/).
 
 The following shows an example where a product is configured. 
 
-Features uses **method chaining** in order **to define the instructions of the feature**. Each instruction can simply be chained after the previous one.
+Features uses **method chaining** in order **to define the instructions of the feature**. 
+Each instruction can simply be chained after the previous one.
 
 ```typescript
 // define your project
@@ -61,7 +69,10 @@ await result.save('./media/basic-usage');
 
 ## Elements
 
-In order to interact with a web application, we need to be able to tell Features which elements we want to interact with. To do this, we have `element` to handle single elements and `elements` to handle multiple elements. Both of those use 'locators' to search the element on the webpage. These locators describe the HTML tags of the elements.
+In order to interact with a web application, we need to be able to tell Features which elements we want to interact with. 
+To do this, we have `element` to handle single elements and `elements` to handle multiple elements. 
+Both of those use 'locators' to search the element on the webpage. 
+These locators describe the HTML tags of the elements.
 
 For example, if we have the following webpage:
 
@@ -138,8 +149,10 @@ const viewport = { width: 1280, height: 720, deviceScaleFactor: 1 };
 const execution = feature.execute(project, viewport);
 ```
 
-This returns an instance of `Execution`. Using an execution, we can specify how we want to execute the feature. By adding `guide`, `screenshot`, or `video`, we can specify if we want to generate a guide, screenshots, or video.
-We can additionally tell the execution to **not** run in `headless` mode, meaning you will be able to see the browser executing the feature. This can be done by simply adding a boolean value to the run function: `.run(false)`.
+This returns an instance of `Execution`. Using an execution, we can specify how we want to execute the feature. 
+By adding `guide`, `screenshot`, or `video`, we can specify if we want to generate a guide, screenshots, or video.
+We can additionally tell the execution to **not** run in `headless` mode, meaning you will be able to see the browser executing the feature. 
+This can be done by simply adding a boolean value to the run function: `.run(false)`.
 
 ```typescript
 // generate guide, screenshot, and video

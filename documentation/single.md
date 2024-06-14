@@ -101,7 +101,8 @@ feature.elements('products product').first().show(['name']);
 
 ### `use(callback: (element: SingleElement) => void): Feature`
 
-The currently selected element can be accessed in a callback function. This is typically used when one has to do several interactions with the same element.
+The currently selected element can be accessed in a callback function. 
+This is typically used when one has to do several interactions with the same element.
 
 **Example**
 ```typescript
@@ -117,7 +118,8 @@ feature.element('product-code').use(element => {
 
 ### `select(): SelectElement`
 
-Creates a select element out of the currently selected element. This is used for selects and dropdowns.
+Creates a select element out of the currently selected element. 
+This is used for selects and dropdowns.
 
 **Example**
 ```typescript

@@ -31,7 +31,8 @@ feature.elements('panels panel')
 
 ### `use(callback: (element: MultipleElement) => void): Feature`
 
-The currently selected elements can be accessed in a callback function. This is typically used when one has to do several interactions with the same elements.
+The currently selected elements can be accessed in a callback function. 
+This is typically used when one has to do several interactions with the same elements.
 
 **Example**
 ```typescript
@@ -51,7 +52,8 @@ feature.elements('panels panel').use(elements => {
 
 ### `where(locator: string, value: string): MultipleElement`
 
-Adds a search constraint to the elements selection. Only elements which contain an element according to the specified locator with the specified value are selected.
+Adds a search constraint to the elements selection. 
+Only elements which contain an element according to the specified locator with the specified value are selected.
 
 - **Parameters:**
 	- `locator`: The locator specifying the HTML element.

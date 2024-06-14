@@ -2,7 +2,9 @@
 
 ## Defining the Project
 
-For each feature, you can select a project. The project can be customized according to your needs. You might be confused why this is nice to have, let us make an example:
+For each feature, you can select a project. 
+The project can be customized according to your needs. 
+You might be confused why this is nice to have, let us make an example:
 
 Imagine you have a project which has pages that look like this:
 
@@ -57,7 +59,9 @@ const feature = new Feature('wrap-example', 'example showing the benefit of a cu
 	.elements('panels panel').last().hover()
 ```
 
-Next to the `wrap` function, you can define the `join` function. This method specifies how the locator parts are joined together to create a selector. The default is the following.
+Next to the `wrap` function, you can define the `join` function. 
+This method specifies how the locator parts are joined together to create a selector. 
+The default is the following.
 
 ```typescript
 const project = new Project('example-project', 'https://example.com');
@@ -75,7 +79,8 @@ project.join = (first: string, second: string) => {
 
 ## Using Feature Screenshots to Compare Project Versions
 
-Features can additionally be used to **find bugs or unwanted UI changes across different project versions**. To do this, the screenshots of features across different project versions can be visually compared to find differences.
+Features can additionally be used to **find bugs or unwanted UI changes across different project versions**. 
+To do this, the screenshots of features across different project versions can be visually compared to find differences.
 
 To do this, you need two saved execution results of the same feature for two different project versions. (See how to save execution results [here](../README.md#execution-and-result).)
 
@@ -90,7 +95,12 @@ const differences = await version1.getImageDifferences(version2);
 
 The returned differences display all visual differences.
 
-In these examples, **all** differences will be displayed. Sometimes we may not want this. Imagine you have an area on your website which displays animations or other changing elements. These elements you might want to ignore during the comparison. To do this, you can specify elements which should be ignored using `ignore`. This has to be done for a project and before the feature is executed.
+In these examples, **all** differences will be displayed. 
+Sometimes we may not want this. 
+Imagine you have an area on your website which displays animations or other changing elements. 
+These elements you might want to ignore during the comparison. 
+To do this, you can specify elements which should be ignored using `ignore`. 
+This has to be done for a project and before the feature is executed.
 
 ```typescript
 const project = new Project('example-project', 'https://example.com');
