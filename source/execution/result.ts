@@ -2,9 +2,9 @@ import { Step } from "./step/step";
 import { MotionPoint } from "../mouse/point";
 import { FeatureMetadata } from "./metadata";
 import { ImageDifference } from "./image/difference";
+import { ImageAnnotation } from "./image/annotation";
 import * as filesystem from 'fs';
 import * as Jimp from 'jimp';
-import { ImageAnnotation } from "./image/annotation";
 
 export class ExecutionResult {
 	private readonly differenceThreshold = 0.0001;

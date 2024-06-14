@@ -8,9 +8,7 @@ import { ShowInstruction } from "../instruction/show";
 
 export class MultipleElement extends Element {
 	private ids?: string[];
-
 	private searchConstraints: SearchConstraint[];
-
 	private childFilter = (ids: string[]) => { return ids; };
 
 	constructor(

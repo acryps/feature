@@ -1,6 +1,5 @@
 import { cpus } from "os";
 import { Browser, launch, Permission, Page, Viewport } from "puppeteer";
-import { PageScraper } from "../page/scraper";
 
 export class BrowserManager {
 	private browsers: Browser[] = [];

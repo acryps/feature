@@ -5,9 +5,6 @@ import { SingleElement } from "../element/single";
 import { PageInteractor } from "../page/interactor";
 
 export class ScrollToInstruction extends Instruction {
-	private name: string;
-	private rectangle?: DOMRect;
-
 	constructor(
 		private element: SingleElement
 	) {
@@ -20,18 +17,20 @@ export class ScrollToInstruction extends Instruction {
 		const id = await this.element.find(interactor.scraper, project);
 
 		await interactor.mouse.scrollIntoView(id);
-		this.rectangle = await interactor.scraper.getBoundingRectangle(id);
+		const rectangle = await interactor.scraper.getBoundingRectangle(id);
+		
+		let name = '';
 
 		if (this.element.elementContent) {
-			this.name = this.element.elementContent;
+			name = this.element.elementContent;
 		} else {
 			const content = await interactor.scraper.getElementContent(id);
-			this.name = content ? content : this.element.getLocator();
+			name = content ? content : this.element.getLocator();
 		}
 
-		await super.screenshot(project, interactor.scraper, [this.rectangle]);
+		await super.screenshot(project, interactor.scraper, [rectangle]);
 
-		const step = `scrolled to '${this.name}'`;
+		const step = `scrolled to '${name}'`;
 		this.guide.push(step);
 
 		return super.finishExecution();

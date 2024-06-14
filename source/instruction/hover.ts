@@ -23,7 +23,7 @@ export class HoverInstruction extends Instruction {
 			const content = await interactor.scraper.getElementContent(id);
 			name = content ? content : name;
 		}
-		
+
 		await interactor.mouse.scrollIntoView(id);
 
 		const rectangle = await interactor.scraper.getBoundingRectangle(id);
